@@ -177,7 +177,9 @@ class Plotter:
         return sin(x * self.coeff)
 
     def add_functionality(self):
-        l, = plt.plot(self.dots, self.interpolate_l(), 'ro', markersize=1, linestyle='-')
+        l_markersize = 2
+
+        l, = plt.plot(self.dots, self.interpolate_l(), 'ro', markersize=l_markersize, linestyle='-')
         pn, = plt.plot(self.nodes_f_plot(), self.calc_f_nodes(), 'go', markersize=3)
 
         axcolor = 'lightgoldenrodyellow'
@@ -219,7 +221,7 @@ class Plotter:
         scoeff.on_changed(range_update)
 
         rax = plt.axes([0.025, 0.5, 0.15, 0.15], facecolor=axcolor)
-        radio = RadioButtons(rax, ('Lagrange', 'Newton', 'F'), active=0)
+        radio = RadioButtons(rax, ['Lagrange', 'Newton', 'F'], active=0)
 
         def change_mode(val):
             tab = []
@@ -245,6 +247,7 @@ class Plotter:
             if val == check_labels[0]:
                 self.function_plot.set_visible(not self.function_plot.get_visible())
             elif val == check_labels[1]:
+                l.set_markersize(0 if pn.get_visible() else l_markersize)
                 pn.set_visible(not pn.get_visible())
             self.fig.canvas.draw_idle()
 
