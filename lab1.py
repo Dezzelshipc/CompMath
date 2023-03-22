@@ -33,12 +33,12 @@ def request(req):
 
 
 def extr_d(n, str_func, l_bound, r_bound):
-    string = f"Extrema [{{D[{str_func},{{x,{n + 1}}}],{l_bound}<=x<={r_bound}}},{{x}}]"
+    string = f"Extrema[{{D[{str_func},{{x,{n + 1}}}],{l_bound}<=x<={r_bound}}},{{x}}]"
     return request(string)
 
 
 def extr_r(n, str_func, l_bound, r_bound, str_omega):
-    string = f"Extrema [{{D[({str_func}){str_omega},{{x,{n + 1}}}]," \
+    string = f"Extrema[{{D[({str_func}){str_omega},{{x,{n + 1}}}]," \
              f" {l_bound}<=x<={r_bound},{l_bound}<=y<={r_bound}}},{{x,y}}]"
     return request(string)
 
@@ -63,6 +63,10 @@ def omega(n, x, tab):
 
 def omega_str(n, x, tab):
     return "".join([f"(y-{tab[i]})" for i in range(*first_last(n, x, tab))])
+
+
+def omega_str2(tab, left, right):
+    return "".join([f"(y-{tab[i]})" for i in range(left, right)])
 
 
 def L(n, x, tab: list):
@@ -116,7 +120,7 @@ class Plotter:
     degree = 1
     intervals_count = 10
     interval_division = 2
-    start = 1.0
+    begin = 1.0
     end = 10.0
     delta = 1
     start2 = 0
@@ -128,23 +132,27 @@ class Plotter:
 
     nodes = []
     dots = []
+    function_y = []
+    interpolated_y = []
 
     nodes_plot = []
     inter_plot = []
     function_plot = []
 
+    def min_max_on_plot(self):
+        return min(self.function_y), max(self.function_y)
+
     def calc_nodes(self):
-        self.nodes = [round(self.start2 + i * self.delta, floor(log10(self.intervals_count) + 2)) for i in
-                      range(self.intervals_count + 1 + 2 * (self.degree + 1))]
+        self.nodes = np.linspace(self.start2, self.end2, num=self.intervals_count + 2 * (self.degree + 1) + 1)
 
     def calc_dots(self):
-        delta_ = self.delta / self.interval_division
-        self.dots = [round(self.start + i * delta_, -floor(log10(delta_)) + 1) for i in
-                     range(self.intervals_count * self.interval_division + 1)]
+        precision = int(4 - log10(self.delta / self.interval_division))
+        self.dots = np.around(np.linspace(self.begin, self.end, num=self.intervals_count * self.interval_division + 1),
+                              precision)
 
     def additional_ends(self):
-        self.delta = (self.end - self.start) / self.intervals_count
-        self.start2 = self.start - self.delta * (self.degree + 1)
+        self.delta = (self.end - self.begin) / self.intervals_count
+        self.start2 = self.begin - self.delta * (self.degree + 1)
         self.end2 = self.end + self.delta * (self.degree + 1)
 
     def calc_f(self) -> list[float]:
@@ -157,8 +165,8 @@ class Plotter:
             L(self.degree, x, self.nodes) for x in self.dots
         ]
 
-    def calc_f_nodes(self) -> list[float]:
-        return [f(x) for x in self.nodes][self.degree + 1: -self.degree - 1]
+    def calc_f_dots(self):
+        return [f(x) for x in self.nodes_f_plot()]
 
     def nodes_f_plot(self) -> list[float]:
         return self.nodes[self.degree + 1: -self.degree - 1]
@@ -169,49 +177,82 @@ class Plotter:
         ]
 
     def get_raw_function(self):
-        t = np.arange(self.start, self.end, 0.01)
-        ft = [f(k) for k in t]
-        return t, ft
+        t = np.arange(self.begin, self.end, 0.01)
+        self.function_y = [f(k) for k in t]
+        return t, self.function_y
 
     def f(self, x):
-        return sin(x * self.coeff)
+        return x**2 - x*sin(x * self.coeff)
+
+    def f_str(self):
+        return f"x**2 - x*sin({self.coeff}*x)"
 
     def add_functionality(self):
         l_markersize = 2
+        self.interpolated_y = self.interpolate_l()
 
-        l, = plt.plot(self.dots, self.interpolate_l(), 'ro', markersize=l_markersize, linestyle='-')
-        pn, = plt.plot(self.nodes_f_plot(), self.calc_f_nodes(), 'go', markersize=3)
+        l, = plt.plot(self.dots, self.interpolated_y, 'ro', markersize=l_markersize, linestyle='-')
+        pn, = plt.plot(self.nodes_f_plot(), self.calc_f_dots(), 'go', markersize=3)
+
+        _y_mi, _y_ma = self.min_max_on_plot()
+        _y_diff = (_y_ma - _y_mi) / 100
+        ni, = plt.plot(self.nodes_f_plot()[0:2], [_y_mi - _y_diff] * 2, 'co', linestyle='-')
+
+        def ax_get(n):
+            n_sliders = 6
+            sf = 0.18
+            se = 0.03
+            return se + (sf - se) * (n_sliders - n) / n_sliders
 
         axcolor = 'lightgoldenrodyellow'
-        axint = plt.axes([0.25, 0.15, 0.65, 0.03], facecolor=axcolor)
-        axdiv = plt.axes([0.25, 0.12, 0.65, 0.03], facecolor=axcolor)
-        axdeg = plt.axes([0.25, 0.09, 0.65, 0.03], facecolor=axcolor)
-        axrange = plt.axes([0.25, 0.06, 0.65, 0.03], facecolor=axcolor)
-        axcoeff = plt.axes([0.25, 0.03, 0.65, 0.03], facecolor=axcolor)
+        axint = plt.axes([0.25, ax_get(0), 0.65, 0.03], facecolor=axcolor)
+        axdiv = plt.axes([0.25, ax_get(1), 0.65, 0.03], facecolor=axcolor)
+        axdeg = plt.axes([0.25, ax_get(2), 0.65, 0.03], facecolor=axcolor)
+        axrange = plt.axes([0.25, ax_get(3), 0.65, 0.03], facecolor=axcolor)
+        axcoeff = plt.axes([0.25, ax_get(4), 0.65, 0.03], facecolor=axcolor)
+        axnint = plt.axes([0.25, ax_get(5), 0.65, 0.03], facecolor=axcolor)
 
         sints = Slider(axint, 'Intervals', 1, 50, valinit=self.intervals_count, valstep=1)
         sdivs = Slider(axdiv, 'Int Divs', 1, 20, valinit=self.interval_division, valstep=1)
         sdeg = Slider(axdeg, 'Degree', 1, 10, valinit=self.degree, valstep=1)
-        srange = RangeSlider(axrange, 'Range', -20, 20, valinit=(self.start, self.end))
+        srange = RangeSlider(axrange, 'Range', -20, 20, valinit=(self.begin, self.end))
         scoeff = Slider(axcoeff, 'Coeff', 0, 10, valinit=self.coeff)
+        snint = Slider(axnint, 'Num Int', 0, self.intervals_count - 1, valinit=0, valstep=1)
 
         def range_update(val):
-            self.start, self.end = srange.val
+            self.begin, self.end = srange.val
             self.coeff = scoeff.val
             t, ft = self.get_raw_function()
             self.function_plot.set_data(t, ft)
 
-            padding = (self.end - self.start) / 50
-            self.ax.set_xlim([self.start - padding, self.end + padding])
+            x_padding = (self.end - self.begin) / 50
+            self.ax.set_xlim([self.begin - x_padding, self.end + x_padding])
+
+            y_min, y_max = self.min_max_on_plot()
+            y_padding = (y_max - y_min + 0.0001) / 50
+            self.ax.set_ylim([y_min - y_padding, y_max + y_padding])
+
             update()
 
+        self.stop = False
+
         def update(val=""):
+            if self.stop:
+                return
+            self.stop = True
             self.degree = sdeg.val
             self.intervals_count = sints.val
             self.interval_division = sdivs.val
+
+            snint.valmax = self.intervals_count - 1
+            snint.ax.set_xlim(snint.valmin, snint.valmax)
+            snint.set_val(min(snint.val, snint.valmax))
+
             self.additional_ends()
             self.calc_nodes()
             self.calc_dots()
+
+            self.stop = False
             change_mode(radio.value_selected)
 
         sints.on_changed(update)
@@ -219,26 +260,29 @@ class Plotter:
         sdeg.on_changed(update)
         srange.on_changed(range_update)
         scoeff.on_changed(range_update)
+        snint.on_changed(update)
 
         rax = plt.axes([0.025, 0.5, 0.15, 0.15], facecolor=axcolor)
         radio = RadioButtons(rax, ['Lagrange', 'Newton', 'F'], active=0)
 
         def change_mode(val):
-            tab = []
             if val == 'Lagrange':
-                tab = self.interpolate_l()
+                self.interpolated_y = self.interpolate_l()
             elif val == 'Newton':
-                tab = self.interpolate_n()
+                self.interpolated_y = self.interpolate_n()
             else:
-                tab = self.calc_f()
-            l.set_data(self.dots, tab)
-            pn.set_data(self.nodes_f_plot(), self.calc_f_nodes())
+                self.interpolated_y = self.calc_f()
+            l.set_data(self.dots, self.interpolated_y)
+            pn.set_data(self.nodes_f_plot(), self.calc_f_dots())
+            y_mi, y_ma = self.min_max_on_plot()
+            y_diff = (y_ma - y_mi) / 100
+            ni.set_data(self.nodes_f_plot()[snint.val:snint.val + 2], [y_mi - y_diff] * 2)
             self.fig.canvas.draw_idle()
 
         radio.on_clicked(change_mode)
 
-        check_labels = ["Toggle function", "Toggle nodes"]
-        check_bools = [True, True]
+        check_labels = ["Toggle function", "Toggle nodes", "Show Interval"]
+        check_bools = [True, True, True]
 
         cax = plt.axes([0.025, 0.3, 0.15, 0.15], facecolor=axcolor)
         check = CheckButtons(cax, check_labels, check_bools)
@@ -249,37 +293,70 @@ class Plotter:
             elif val == check_labels[1]:
                 l.set_markersize(0 if pn.get_visible() else l_markersize)
                 pn.set_visible(not pn.get_visible())
+            elif val == check_labels[2]:
+                ni.set_visible(not ni.get_visible())
             self.fig.canvas.draw_idle()
 
         check.on_clicked(turn_checks)
 
-        axb = plt.axes([0.025, 0.1, 0.1, 0.1], facecolor=axcolor)
+        axb = plt.axes([0.025, 0.15, 0.1, 0.05], facecolor=axcolor)
         button = Button(axb, "Show table")
 
         def show_table(val):
-            self.table()
+            data = [[]] * 6
+            data[0] = self.dots
+            data[1] = self.calc_f()
+            data[2] = self.interpolate_l()
+            data[3] = self.interpolate_n()
+            data[4] = [data[1][i] - data[2][i] for i in range(len(self.dots))]
+            data[5] = [data[2][i] - data[3][i] for i in range(len(self.dots))]
+
+            self.table(('Dot', 'Func', 'Lagrange', 'Newton', 'R = F - L', 'L - N'), data)
 
         button.on_clicked(show_table)
 
+        axb2 = plt.axes([0.025, 0.09, 0.1, 0.05], facecolor=axcolor)
+        button2 = Button(axb2, "Show Diff Table")
+
+        def show_diff_table(val):
+            table = [[]] * 7
+
+            table[0] = self.dots[
+                       snint.val * self.interval_division: (snint.val + 1) * self.interval_division + 1]
+
+            mi, ma = extr_r(self.degree,
+                            self.f_str(),
+                            self.dots[snint.val * self.interval_division],
+                            self.dots[(snint.val + 1) * self.interval_division],
+                            omega_str2(self.nodes, snint.val,
+                                       snint.val + 1))
+
+            table[4] = [mi] * (self.interval_division + 1)
+            table[5] = [ma] * (self.interval_division + 1)
+
+            table[1] = self.calc_f()[
+                       snint.val * self.interval_division: (snint.val + 1) * self.interval_division + 1]
+            table[2] = self.interpolate_l()[
+                       snint.val * self.interval_division: (snint.val + 1) * self.interval_division + 1]
+            table[3] = [table[1][i] - table[2][i] for i in range(len(table[0]))]
+
+            table[6] = [abs(table[3][i]) < abs(table[5][i]) for i in range(len(table[0]))]
+
+            self.table(('Dot', 'Func', 'Lagrange', 'R = F - L', 'R min', 'R max', 'Compare'), table)
+
+        button2.on_clicked(show_diff_table)
+
         plt.show()
 
-    def table(self):
-        data = [[]]*6
-        data[0] = self.dots
-        data[1] = self.calc_f()
-        data[2] = self.interpolate_l()
-        data[3] = self.interpolate_n()
-        data[4] = [data[1][i] - data[2][i] for i in range(len(self.dots))]
-        data[5] = [data[2][i] - data[3][i] for i in range(len(self.dots))]
-
+    def table(self, names, vals):
         table = go.Table(
-            header=dict(values=('Dot', 'Func', 'Lagrange', 'Newton', 'R = F - L', 'L - N')),
-            cells=dict(values=data)
+            header=dict(values=names),
+            cells=dict(values=vals)
         )
         fig = go.Figure(data=table)
         fig.show()
 
-    def plot(self):
+    def start(self):
         self.fig, self.ax = plt.subplots()
 
         plt.subplots_adjust(left=0.25, bottom=0.25, top=0.99, right=0.99)
@@ -296,11 +373,11 @@ class Plotter:
 
 
 # write here wolfram api appid for full data
-wolfram_appid = ""# os.environ.get('WOLFRAM_APPID')
+wolfram_appid = os.environ.get('WOLFRAM_APPID')
 
 f = ()
 
 if __name__ == "__main__":
     p = Plotter()
     f = p.f
-    p.plot()
+    p.start()
