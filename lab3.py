@@ -88,15 +88,13 @@ def L_rav_c(n, x, tab) -> list:
 
     coeffs = [0] * (n+1)
 
-    print(tab[first:last])
-
     for j in range(first, last):
         c1 = 1
         c2 = [1]
         for i in range(first, last):
             if j != i:
                 c1 *= tab[j] - tab[i]
-                c2_1 = [-y*tab[1] for y in c2]
+                c2_1 = [-y*tab[i] for y in c2]
 
                 c2.append(0)
                 for k in range(len(c2) - 1):
@@ -104,8 +102,6 @@ def L_rav_c(n, x, tab) -> list:
 
         for k in range(n+1):
             coeffs[k] += c2[k] * f(tab[j]) / c1
-
-        print(coeffs)
 
     return coeffs
 
@@ -262,7 +258,8 @@ class Plotter:
     def f(self, x):
         # return x ** 2 - x * sin(x * self.coeff)
         # return sin(x * self.coeff)
-        return x*2
+        # return x*2
+        return x**2
 
     def f_str(self):
         return f"x**2 - x*sin({self.coeff}*x)"
