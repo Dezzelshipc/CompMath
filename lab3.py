@@ -83,6 +83,33 @@ def L(n, x, tab: list):
     return s
 
 
+def L_rav_c(n, x, tab) -> list:
+    first, last = first_last(n, x, tab)
+
+    coeffs = [0] * (n+1)
+
+    print(tab[first:last])
+
+    for j in range(first, last):
+        c1 = 1
+        c2 = [1]
+        for i in range(first, last):
+            if j != i:
+                c1 *= tab[j] - tab[i]
+                c2_1 = [-y*tab[1] for y in c2]
+
+                c2.append(0)
+                for k in range(len(c2) - 1):
+                    c2[k+1] += c2_1[k]
+
+        for k in range(n+1):
+            coeffs[k] += c2[k] * f(tab[j]) / c1
+
+        print(coeffs)
+
+    return coeffs
+
+
 def R(n, diff: tuple, om):
     fact = factorial(n + 1)
     rs = [diff[0] * om / fact, diff[1] * om / fact]
@@ -141,7 +168,7 @@ class Plotter:
     degree = 1
     intervals_count = 10
     interval_division = 2
-    begin = 1.0
+    begin = 0
     end = 10.0
     delta = 1
     start2 = 0
@@ -233,8 +260,9 @@ class Plotter:
         return t, self.function_y
 
     def f(self, x):
-        return x ** 2 - x * sin(x * self.coeff)
+        # return x ** 2 - x * sin(x * self.coeff)
         # return sin(x * self.coeff)
+        return x*2
 
     def f_str(self):
         return f"x**2 - x*sin({self.coeff}*x)"
@@ -417,6 +445,14 @@ class Plotter:
             self.table([i for i in range(self.degree+1)], self.finite_differences)
 
         button3.on_clicked(show_diff_table)
+
+        asdasd = plt.axes([0.025, 0.9, 0.1, 0.05], facecolor=axcolor)
+        button4 = Button(asdasd, "Coeffs")
+
+        def coeffs(val):
+            print(L_rav_c(self.degree, 5, self.nodes))
+
+        button4.on_clicked(coeffs)
 
         plt.show()
 
