@@ -7,6 +7,7 @@ import urllib.request, urllib.parse, re
 import numpy as np
 import plotly.graph_objs as go
 from scipy.special import binom
+from scipy.integrate import quad
 
 import json
 
@@ -277,7 +278,7 @@ def lowerbound(lst, value):
 class Plotter:
     degree = 1
     intervals_count = 10
-    interval_division = 2
+    intervals_mult = 2
     begin = 0
     end = 10.0
     delta = 1
@@ -314,8 +315,8 @@ class Plotter:
         self.nodes = np.linspace(self.start2, self.end2, num=self.intervals_count + 2 * (self.degree + 1) + 1)
 
     def calc_dots(self):
-        precision = int(4 - log10(self.delta / self.interval_division))
-        self.dots = np.around(np.linspace(self.begin, self.end, num=self.intervals_count * self.interval_division + 1),
+        precision = int(4 - log10(self.delta / self.intervals_mult))
+        self.dots = np.around(np.linspace(self.begin, self.end, num=self.intervals_count * self.intervals_mult + 1),
                               precision)
 
     def additional_ends(self):
@@ -446,7 +447,7 @@ class Plotter:
 
         _y_mi, _y_ma = self.min_max_on_plot()
         _y_diff = (_y_ma - _y_mi) / 100
-        ni, = plt.plot(self.nodes_f_plot()[0:2], [_y_mi - _y_diff] * 2, 'co', linestyle='-')
+        ni, = plt.plot(self.nodes_f_plot()[0:2], [_y_mi - _y_diff] * 2, 'co', linestyle='-', visible=False)
 
         # self.coeffs = L_c(self.degree,
         #                   sum(self.nodes[self.degree + 1:self.degree + 3]) / 2,
@@ -458,23 +459,24 @@ class Plotter:
 
         def ax_get(n):
             sf = 0.22
-            h = 0.03
+            h = 0.025
             return sf - h * n
 
         axcolor = 'lightgoldenrodyellow'
         axint = plt.axes([0.25, ax_get(0), 0.65, 0.03], facecolor=axcolor)
-        # axdiv = plt.axes([0.25, ax_get(1), 0.65, 0.03], facecolor=axcolor)
+        axdiv = plt.axes([0.25, ax_get(1), 0.65, 0.03], facecolor=axcolor)
         # axdeg = plt.axes([0.25, ax_get(2), 0.65, 0.03], facecolor=axcolor)
-        axrange = plt.axes([0.25, ax_get(1), 0.65, 0.03], facecolor=axcolor)
-        axcoeff = plt.axes([0.25, ax_get(2), 0.65, 0.03], facecolor=axcolor)
-        axnint = plt.axes([0.25, ax_get(3), 0.65, 0.03], facecolor=axcolor)
+        axrange = plt.axes([0.25, ax_get(2), 0.65, 0.03], facecolor=axcolor)
+        axcoeff = plt.axes([0.25, ax_get(3), 0.65, 0.03], facecolor=axcolor)
+        axnint = plt.axes([0.25, ax_get(4), 0.65, 0.03], facecolor=axcolor)
 
-        sints = Slider(axint, 'Intervals', 1, 1000, valinit=self.intervals_count, valstep=1)
-        # sdivs = Slider(axdiv, 'Int Divs', 1, 20, valinit=self.interval_division, valstep=1)
+        sints = Slider(axint, 'Intervals', 1, 10**self.intervals_mult, valinit=self.intervals_count, valstep=1, color='green')
+        sintmult = Slider(axdiv, 'Int Divs', 1, 10, valinit=self.intervals_mult, valstep=1, color='lime')
         # sdeg = Slider(axdeg, 'Degree', 1, 10, valinit=self.degree, valstep=1)
         srange = RangeSlider(axrange, 'Range', -20, 20, valinit=(self.begin, self.end))
-        scoeff = Slider(axcoeff, 'Coeff', 0, 10, valinit=self.coeff)
-        snint = Slider(axnint, 'Num Int', 0, self.intervals_count - 1, valinit=0, valstep=1)
+        scoeff = Slider(axcoeff, 'Coeff', 0, 10, valinit=self.coeff, color='red')
+        snint = Slider(axnint, 'Num Int', 0, self.intervals_count - 1, valinit=0, valstep=1, color='cyan')
+        snint.ax.set_visible(False)
 
         def range_update(val=""):
             self.begin, self.end = srange.val
@@ -501,7 +503,10 @@ class Plotter:
             # self.degree = sdeg.val
 
             self.intervals_count = sints.val
-            # self.interval_division = sdivs.val
+            self.intervals_mult = sintmult.val
+            sints.valmax = 10 ** self.intervals_mult
+            sints.ax.set_xlim(sints.valmin, sints.valmax)
+            sints.set_val(min(sints.val, sints.valmax))
 
             snint.valmax = self.intervals_count - 1
             snint.ax.set_xlim(snint.valmin, snint.valmax)
@@ -515,7 +520,7 @@ class Plotter:
             change_mode(radio.value_selected)
 
         sints.on_changed(update)
-        # sdivs.on_changed(update)
+        sintmult.on_changed(update)
         # sdeg.on_changed(update)
         srange.on_changed(range_update)
         scoeff.on_changed(range_update)
@@ -572,7 +577,7 @@ class Plotter:
         radio.on_clicked(change_mode)
 
         check_labels = ["Toggle function", "Toggle nodes", "Show Interval", "Toggle Rets"]
-        check_bools = [True, True, True, True]
+        check_bools = [True, True, False, True]
 
         cax = plt.axes([0.025, 0.48, 0.15, 0.15], facecolor=axcolor)
         check = CheckButtons(cax, check_labels, check_bools)
@@ -585,6 +590,7 @@ class Plotter:
                 pn.set_visible(not pn.get_visible())
             elif val == check_labels[2]:
                 ni.set_visible(not ni.get_visible())
+                snint.ax.set_visible(ni.get_visible())
             elif val == check_labels[3]:
                 check_bools[3] = not check_bools[3]
             self.fig.canvas.draw_idle()
@@ -611,7 +617,8 @@ class Plotter:
         button2 = Button(axb2, "Evaluate")
 
         def evaluate(val):
-            self.actual_value = integral_req(self.f_str(), *srange.val)
+            # self.actual_value = integral_req(self.f_str(), *srange.val)
+            self.actual_value = quad(f, *srange.val)[0]
             update()
 
         button2.on_clicked(evaluate)
