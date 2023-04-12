@@ -1,25 +1,28 @@
 import os
 from math import *
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 from matplotlib.widgets import Slider, Button, RadioButtons, CheckButtons, RangeSlider, TextBox
 import urllib.request, urllib.parse, re
 import numpy as np
 import plotly.graph_objs as go
 from scipy.special import binom
 
+import json
 
-def request(req, podids=""):
+
+def request(req, additional="", formated='moutput'):
     data = {
         'input': req,
         'appid': wolfram_appid,
-        'format': 'moutput',
+        'format': formated,
         'output': 'json',
     }
     url = 'http://api.wolframalpha.com/v1/query'
 
     url_values = urllib.parse.urlencode(data)
 
-    req_url = "?".join([url, url_values]) + podids
+    req_url = "?".join([url, url_values]) + additional
     print(req)
     print(req_url)
 
@@ -34,6 +37,15 @@ def min_max_parse(req):
     resp = [float(re.search('(\{.*, {)', out).group()
                   .replace(",", "").replace("{", "").replace("*^", "e")) for out in resp]
     return min(resp), max(resp)
+
+
+def integral_parse(req):
+    resp = request(req, "&includepodid=Input&podstate=Input__More+digits")
+
+    resp = json.loads(resp)["queryresult"]["pods"][0]["subpods"][0]["moutput"]
+    delim = "≈" if "≈" in resp else "="
+    pos_delim = resp.rfind(delim)
+    return float(resp[pos_delim + 1:])
 
 
 def diff_parse(req):
@@ -112,6 +124,11 @@ def extr_r(n, str_func, l_bound, r_bound, str_omega):
 def diff_req(n, k, str_func, str_omega):
     string = f"D[({str_func}){str_omega},{{x,{n + 1}}},{{y,{k}}}]"
     return diff_parse(string)
+
+
+def integral_req(str_func, left, right):
+    string = f"Integrate[{str_func},{{x,{left},{right}}}]"
+    return integral_parse(string)
 
 
 def first_last(n, x, tab):
@@ -267,18 +284,19 @@ class Plotter:
     start2 = 0
     end2 = 0
 
-    coeff = 2
+    coeff = 1
 
     fig, ax = (0, 0)
 
     diff_type = -1
 
-    finite_differences = []
+    calculated = 0
+    actual_value = 1.83907
 
     nodes = []
     dots = []
     function_y = []
-    interpolated_y = []
+    patches = []
 
     nodes_plot = []
     inter_plot = []
@@ -300,29 +318,6 @@ class Plotter:
         self.dots = np.around(np.linspace(self.begin, self.end, num=self.intervals_count * self.interval_division + 1),
                               precision)
 
-    def calc_fin_diff(self):
-        match self.diff_type:
-            case 0 | 1:
-                self.calc_fin_diff_n()
-
-    def calc_fin_f(self):
-        match self.diff_type:
-            case 0:
-                return [
-                    N_rav1(self.degree, x, self.nodes, self.finite_differences, self.delta) for x in self.dots
-                ]
-            case 1:
-                return [
-                    N_rav2(self.degree, x, self.nodes, self.finite_differences, self.delta) for x in self.dots
-                ]
-
-    def calc_fin_diff_n(self):
-        self.finite_differences = [[]] * (self.degree + 1)
-        self.finite_differences[0] = self.calc_f_nodes(self.cur_func)
-        for i in range(self.degree):
-            cur = self.finite_differences[i]
-            self.finite_differences[i + 1] = [cur[k + 1] - cur[k] for k in range(len(cur) - 1)]
-
     def additional_ends(self):
         self.delta = (self.end - self.begin) / self.intervals_count
         self.start2 = self.begin - self.delta * (self.degree + 1)
@@ -333,21 +328,11 @@ class Plotter:
             func(x) for x in self.dots
         ]
 
-    def interpolate_l(self) -> list[float]:
-        return [
-            L(self.degree, x, self.nodes) for x in self.dots
-        ]
-
     def calc_f_dots(self, func):
         return [func(x) for x in self.nodes_f_plot()]
 
     def nodes_f_plot(self) -> list[float]:
         return self.nodes[self.degree + 1: -self.degree - 1]
-
-    def interpolate_n(self):
-        return [
-            N(self.degree, x, self.nodes) for x in self.dots
-        ]
 
     def calc_f_nodes(self, func):
         return [func(x) for x in self.nodes]
@@ -367,31 +352,96 @@ class Plotter:
     def df(self, x, n=1):
         return (self.coeff ** n) * sin(self.coeff * x + pi * n / 2)
 
-    def P(self, coeffs, x):
-        s = 0
-        for xi in coeffs:
-            s *= x
-            s += xi
-        return s
-
-    def dP(self, coeffs, x):
-        coeffs = derivative(coeffs)
-        s = 0
-        for xi in coeffs:
-            s *= x
-            s += xi
-        return s
-
     def f_str(self):
         # return f"x**2 - x*sin({self.coeff}*x)"
-        return f"sin(x*{self.coeff})"
+        return f"sin({self.coeff} * x)"
         # return "x**3-sin(x)"
+
+    @staticmethod
+    def poly(x, y):
+        return patches.Polygon(xy=list(zip(x, y)),
+                               alpha=0.5,
+                               edgecolor='red',
+                               linewidth=1,
+                               closed=False)
+
+    def left_rectangles_poly(self):
+        lst = []
+        f_nodes = self.calc_f_nodes(f)
+        for i in range(self.degree + 1, self.degree + self.intervals_count + 1):
+            x = [self.nodes[i], self.nodes[i], self.nodes[i + 1], self.nodes[i + 1]]
+            y = [0, f_nodes[i], f_nodes[i], 0]
+            lst.append(self.poly(x, y))
+        return lst
+
+    def calc_left_rectangles(self):
+        return sum(
+            x for x in self.calc_f_nodes(f)[self.degree + 1: self.degree + self.intervals_count + 1]
+        ) * self.delta
+
+    def right_rectangles_poly(self):
+        lst = []
+        f_nodes = self.calc_f_nodes(f)
+        for i in range(self.degree + 1, self.degree + self.intervals_count + 1):
+            x = [self.nodes[i], self.nodes[i], self.nodes[i + 1], self.nodes[i + 1]]
+            y = [0, f_nodes[i + 1], f_nodes[i + 1], 0]
+            lst.append(self.poly(x, y))
+        return lst
+
+    def calc_right_rectangles(self):
+        return sum(
+            x for x in self.calc_f_nodes(f)[self.degree + 2: self.degree + self.intervals_count + 2]
+        ) * self.delta
+
+    def central_rectangles_poly(self):
+        lst = []
+        nodes = [(self.nodes[i] + self.nodes[i + 1]) / 2 for i in range(len(self.nodes) - 1)]
+        f_nodes = [f(x) for x in nodes]
+        for i in range(self.degree + 1, self.degree + self.intervals_count + 1):
+            x = [self.nodes[i], self.nodes[i], self.nodes[i + 1], self.nodes[i + 1]]
+            y = [0, f_nodes[i], f_nodes[i], 0]
+            lst.append(self.poly(x, y))
+        return lst
+
+    def calc_central_rectangles(self):
+        nodes = [(self.nodes[i] + self.nodes[i + 1]) / 2 for i in range(len(self.nodes) - 1)]
+        f_nodes = [f(x) for x in nodes]
+        return sum(
+            x for x in f_nodes[self.degree + 1: self.degree + self.intervals_count + 1]
+        ) * self.delta
+
+    def trapezoid_poly(self):
+        lst = []
+        f_nodes = self.calc_f_nodes(f)
+        for i in range(self.degree + 1, self.degree + self.intervals_count + 1):
+            x = [self.nodes[i], self.nodes[i], self.nodes[i + 1], self.nodes[i + 1]]
+            y = [0, f_nodes[i], f_nodes[i + 1], 0]
+            lst.append(self.poly(x, y))
+        return lst
+
+    def calc_trapezoid(self):
+        f_nodes = self.calc_f_nodes(f)
+        return sum(
+            (f_nodes[i] + f_nodes[i + 1]) / 2 for i in range(self.degree + 1, self.degree + self.intervals_count + 1)
+        ) * self.delta
 
     def add_functionality(self):
         l_markersize = 2
-        self.interpolated_y = self.interpolate_l()
+        self.patches = self.left_rectangles_poly()
 
-        l, = plt.plot(self.dots, self.interpolated_y, 'ro', markersize=l_markersize, linestyle='-')
+        for pat in self.patches:
+            self.ax.add_patch(pat)
+
+        self.calculated = self.calc_left_rectangles()
+        t = plt.figtext(0.01, 0.07, f"Calc: {self.calculated}")
+        tr = plt.figtext(0.01, 0.04, f"Act: {self.actual_value}")
+        td = plt.figtext(0.01, 0.01, "Diff: 0")
+
+        tdelta = plt.figtext(0.4, 0.1, f"h: {self.delta}")
+        tddelta = plt.figtext(0.4, 0.07, f"diff/h: {self.actual_value / self.delta}")
+        tdelta2 = plt.figtext(0.4, 0.04, f"h^2: {self.delta ** 2}")
+        tddelta2 = plt.figtext(0.4, 0.01, f"diff/h^2: {self.actual_value / self.delta ** 2}")
+
         pn, = plt.plot(self.nodes_f_plot(), self.calc_f_dots(self.cur_func), 'go', markersize=3)
 
         _y_mi, _y_ma = self.min_max_on_plot()
@@ -407,22 +457,21 @@ class Plotter:
         # print(self.coeffs)
 
         def ax_get(n):
-            n_sliders = 6
-            sf = 0.18
-            se = 0.03
-            return se + (sf - se) * (n_sliders - n) / n_sliders
+            sf = 0.22
+            h = 0.03
+            return sf - h * n
 
         axcolor = 'lightgoldenrodyellow'
         axint = plt.axes([0.25, ax_get(0), 0.65, 0.03], facecolor=axcolor)
-        axdiv = plt.axes([0.25, ax_get(1), 0.65, 0.03], facecolor=axcolor)
-        axdeg = plt.axes([0.25, ax_get(2), 0.65, 0.03], facecolor=axcolor)
-        axrange = plt.axes([0.25, ax_get(3), 0.65, 0.03], facecolor=axcolor)
-        axcoeff = plt.axes([0.25, ax_get(4), 0.65, 0.03], facecolor=axcolor)
-        axnint = plt.axes([0.25, ax_get(5), 0.65, 0.03], facecolor=axcolor)
+        # axdiv = plt.axes([0.25, ax_get(1), 0.65, 0.03], facecolor=axcolor)
+        # axdeg = plt.axes([0.25, ax_get(2), 0.65, 0.03], facecolor=axcolor)
+        axrange = plt.axes([0.25, ax_get(1), 0.65, 0.03], facecolor=axcolor)
+        axcoeff = plt.axes([0.25, ax_get(2), 0.65, 0.03], facecolor=axcolor)
+        axnint = plt.axes([0.25, ax_get(3), 0.65, 0.03], facecolor=axcolor)
 
-        sints = Slider(axint, 'Intervals', 1, 50, valinit=self.intervals_count, valstep=1)
-        sdivs = Slider(axdiv, 'Int Divs', 1, 20, valinit=self.interval_division, valstep=1)
-        sdeg = Slider(axdeg, 'Degree', 1, 10, valinit=self.degree, valstep=1)
+        sints = Slider(axint, 'Intervals', 1, 1000, valinit=self.intervals_count, valstep=1)
+        # sdivs = Slider(axdiv, 'Int Divs', 1, 20, valinit=self.interval_division, valstep=1)
+        # sdeg = Slider(axdeg, 'Degree', 1, 10, valinit=self.degree, valstep=1)
         srange = RangeSlider(axrange, 'Range', -20, 20, valinit=(self.begin, self.end))
         scoeff = Slider(axcoeff, 'Coeff', 0, 10, valinit=self.coeff)
         snint = Slider(axnint, 'Num Int', 0, self.intervals_count - 1, valinit=0, valstep=1)
@@ -449,10 +498,10 @@ class Plotter:
                 return
 
             self.stop = True
-            self.degree = sdeg.val
+            # self.degree = sdeg.val
 
             self.intervals_count = sints.val
-            self.interval_division = sdivs.val
+            # self.interval_division = sdivs.val
 
             snint.valmax = self.intervals_count - 1
             snint.ax.set_xlim(snint.valmin, snint.valmax)
@@ -462,75 +511,87 @@ class Plotter:
             self.calc_nodes()
             self.calc_dots()
 
-            # self.coeffs = L_c(self.degree,
-            #                   sum(self.nodes[self.degree + 1 + snint.val:self.degree + 3 + snint.val]) / 2,
-            #                   self.nodes)
-            # p_x = np.linspace(self.begin, self.end, 1000)
-            # p_y = [self.P(self.coeffs, x) for x in p_x]
-            # self.polynom_plot.set_data(p_x, p_y)
-
             self.stop = False
             change_mode(radio.value_selected)
 
         sints.on_changed(update)
-        sdivs.on_changed(update)
-        sdeg.on_changed(update)
+        # sdivs.on_changed(update)
+        # sdeg.on_changed(update)
         srange.on_changed(range_update)
         scoeff.on_changed(range_update)
         snint.on_changed(update)
 
-        rax = plt.axes([0.025, 0.5, 0.15, 0.3], facecolor=axcolor)
-        radio = RadioButtons(rax, ['Lagrange', 'Newton', 'NewtR1', 'NewtR2', 'dF'], active=0)
+        rax = plt.axes([0.025, 0.65, 0.15, 0.3], facecolor=axcolor)
+        radio = RadioButtons(rax, ['Left', 'Right', 'Central', 'Trapezoid'], active=0)
 
         def change_mode(val):
-            self.diff_type = -1
+            if check_bools[3]:
+                for patch in self.patches:
+                    patch.remove()
+
+                match val:
+                    case 'Left':
+                        self.patches = self.left_rectangles_poly()
+                    case 'Right':
+                        self.patches = self.right_rectangles_poly()
+                    case 'Central':
+                        self.patches = self.central_rectangles_poly()
+                    case 'Trapezoid':
+                        self.patches = self.trapezoid_poly()
+
+                for patch in self.patches:
+                    self.ax.add_patch(patch)
+
             match val:
-                case 'Lagrange':
-                    self.interpolated_y = self.interpolate_l()
-                case 'Newton':
-                    self.interpolated_y = self.interpolate_n()
-                case 'NewtR1':
-                    self.diff_type = 0
-                case 'NewtR2':
-                    self.diff_type = 1
-                case 'dF':
-                    self.interpolated_y = [
-                        self.P(derivative_n(int(textbox.text), L_c(self.degree, x, self.nodes)), x) for
-                        x in self.dots
-                    ]
+                case 'Left':
+                    self.calculated = self.calc_left_rectangles()
+                case 'Right':
+                    self.calculated = self.calc_right_rectangles()
+                case 'Central':
+                    self.calculated = self.calc_central_rectangles()
+                case 'Trapezoid':
+                    self.calculated = self.calc_trapezoid()
 
-            if self.diff_type >= 0:
-                self.calc_fin_diff_n()
-                self.interpolated_y = self.calc_fin_f()
-
-            l.set_data(self.dots, self.interpolated_y)
             pn.set_data(self.nodes_f_plot(), self.calc_f_dots(self.cur_func))
             y_mi, y_ma = self.min_max_on_plot()
             y_diff = (y_ma - y_mi) / 100
             ni.set_data(self.nodes_f_plot()[snint.val:snint.val + 2], [y_mi - y_diff] * 2)
+
+            t.set(text=f"Calc: {self.calculated}")
+            tr.set(text=f"Act: {self.actual_value}")
+            diff = self.calculated - self.actual_value
+            td.set(text=f"Diff: {diff}")
+            tdelta.set(text=f"h: {self.delta}")
+            tdelta2.set(text=f"h^2: {self.delta ** 2}")
+
+            tddelta.set(text=f"diff/h: {diff / self.delta}")
+            tddelta2.set(text=f"diff/h^2: {diff / self.delta ** 2}")
+
             self.fig.canvas.draw_idle()
 
         radio.on_clicked(change_mode)
 
-        check_labels = ["Toggle function", "Toggle nodes", "Show Interval"]
-        check_bools = [True, True, True]
+        check_labels = ["Toggle function", "Toggle nodes", "Show Interval", "Toggle Rets"]
+        check_bools = [True, True, True, True]
 
-        cax = plt.axes([0.025, 0.3, 0.15, 0.15], facecolor=axcolor)
+        cax = plt.axes([0.025, 0.48, 0.15, 0.15], facecolor=axcolor)
         check = CheckButtons(cax, check_labels, check_bools)
 
         def turn_checks(val):
             if val == check_labels[0]:
                 self.function_plot.set_visible(not self.function_plot.get_visible())
             elif val == check_labels[1]:
-                l.set_markersize(0 if pn.get_visible() else l_markersize)
+                # l.set_markersize(0 if pn.get_visible() else l_markersize)
                 pn.set_visible(not pn.get_visible())
             elif val == check_labels[2]:
                 ni.set_visible(not ni.get_visible())
+            elif val == check_labels[3]:
+                check_bools[3] = not check_bools[3]
             self.fig.canvas.draw_idle()
 
         check.on_clicked(turn_checks)
 
-        y_b = 0.24
+        y_b = 0.41
 
         axb = plt.axes([0.025, y_b, 0.1, 0.05], facecolor=axcolor)
         button = Button(axb, "Show table")
@@ -539,7 +600,7 @@ class Plotter:
             data = [[]] * 4
             data[0] = self.dots
             data[1] = self.calc_f(self.cur_func)
-            data[2] = self.interpolated_y
+            data[2] = self.patches
             data[3] = [data[1][i] - data[2][i] for i in range(len(self.dots))]
 
             self.table(('Dot', 'Func', 'Interpolated', 'R = F - L'), data)
@@ -547,143 +608,23 @@ class Plotter:
         button.on_clicked(show_table)
 
         axb2 = plt.axes([0.025, y_b - 0.06, 0.1, 0.05], facecolor=axcolor)
-        button2 = Button(axb2, "Show Rem Table")
+        button2 = Button(axb2, "Evaluate")
 
-        def show_rem_table(val):
-            table = [[]] * 7
+        def evaluate(val):
+            self.actual_value = integral_req(self.f_str(), *srange.val)
+            update()
 
-            table[0] = self.dots[
-                       snint.val * self.interval_division: (snint.val + 1) * self.interval_division + 1]
-
-            mi1, ma1 = extr_d(self.degree,
-                              self.f_str(),
-                              self.dots[snint.val * self.interval_division],
-                              self.dots[(snint.val + 1) * self.interval_division])
-
-            omegas = [omega(self.degree, x, self.nodes)
-                      for x in self.dots[snint.val * self.interval_division:
-                                         (snint.val + 1) * self.interval_division + 1]]
-
-            rs = [R(self.degree, (mi1, ma1), omegas[i]) for i in range(len(omegas))]
-
-            table[3] = [rs[i][0] for i in range(self.interval_division + 1)]
-            table[5] = [rs[i][1] for i in range(self.interval_division + 1)]
-
-            table[1] = self.calc_f(self.cur_func)[
-                       snint.val * self.interval_division: (snint.val + 1) * self.interval_division + 1]
-            table[2] = self.interpolate_l()[
-                       snint.val * self.interval_division: (snint.val + 1) * self.interval_division + 1]
-            table[4] = [table[1][i] - table[2][i] for i in range(len(table[0]))]
-
-            table[6] = [table[3][i] <= table[4][i] <= table[5][i] for i in range(len(table[0]))]
-
-            # table[7] = omegas
-            # table[8] = [mi1, ma1]
-
-            self.table(('Dot', 'Func', 'Lagrange', 'R min', 'R = F - L', 'R max', 'Compare'), table)
-
-        button2.on_clicked(show_rem_table)
-
-        axb3 = plt.axes([0.025, y_b - 0.06 * 2, 0.1, 0.05], facecolor=axcolor)
-        button3 = Button(axb3, "Show Diff Table")
-
-        def show_diff_table(val):
-            self.calc_fin_diff_n()
-            self.table([i for i in range(self.degree + 1)], self.finite_differences)
-
-        button3.on_clicked(show_diff_table)
-
-        btn4ax = plt.axes([0.025, 0.9, 0.1, 0.05], facecolor=axcolor)
-        button4 = Button(btn4ax, "Coeffs")
-
-        def coeffs_(val):
-            mid = sum(self.nodes[self.degree + 1 + snint.val:self.degree + 3 + snint.val]) / 2
-            coe = L_c(self.degree, mid, self.nodes)
-            print(coe)
-            der = derivative_n(int(textbox.text), coe)
-            print(der)
-
-            # omegas = omega_str(self.degree, mid, self.nodes)
-            # diff_req(self.degree, 1, self.f_str(), omegas)
-
-            oc = omega_coeffs(self.degree, mid, self.nodes)
-            print(oc, omega_str(self.degree, mid, self.nodes))
-            print(derivative_n(int(textbox.text), oc))
-
-        button4.on_clicked(coeffs_)
-
-        tbax = plt.axes([0.25, ax_get(6), 0.2, 0.03], facecolor=axcolor)
-        textbox = TextBox(tbax, "DiffDeg", initial="1")
-
-        btn5ax = plt.axes([0.6, ax_get(6), 0.2, 0.03], facecolor=axcolor)
-        button5 = Button(btn5ax, "Derriv")
-
-        def take_diff(val=""):
-            mid = sum(self.nodes[self.degree + 1 + snint.val:self.degree + 3 + snint.val]) / 2
-            coe = L_c(self.degree, mid, self.nodes)
-            deg = int(textbox.text)
-            der = derivative_n(deg, coe)
-
-            table = [[]] * 10
-
-            table[0] = self.dots[
-                       snint.val * self.interval_division: (snint.val + 1) * self.interval_division + 1]
-
-            mi1, ma1 = extr_d(self.degree,
-                              self.f_str(),
-                              self.dots[snint.val * self.interval_division],
-                              self.dots[(snint.val + 1) * self.interval_division])
-
-            coef = omega_coeffs(self.degree, self.dots[snint.val * self.interval_division] + self.delta / 2, self.nodes)
-            print(coef)
-            omegas = [self.P(derivative_n(deg, coef), x)
-                      for x in self.dots[snint.val * self.interval_division:
-                                         (snint.val + 1) * self.interval_division + 1]]
-
-            rs = [R(self.degree, (mi1, ma1), omegas[i]) for i in range(len(omegas))]
-
-            table[3] = [rs[i][0] for i in range(self.interval_division + 1)]
-            table[5] = [rs[i][1] for i in range(self.interval_division + 1)]
-
-            table[1] = [
-                self.df(x) for x in self.dots[snint.val * self.interval_division:
-                                              (snint.val + 1) * self.interval_division + 1]
-            ]
-            table[2] = [
-                self.P(der, x) for x in self.dots[snint.val * self.interval_division:
-                                                  (snint.val + 1) * self.interval_division + 1]
-            ]
-            table[4] = [table[1][i] - table[2][i] for i in range(len(table[0]))]
-
-            table[6] = [table[3][i] <= table[4][i] <= table[5][i] for i in range(len(table[0]))]
-
-            for i in range(6):
-                table[i] = np.around(table[i], 6)
-
-            table[7] = omegas
-            table[8] = [mi1, ma1]
-
-            for i in range(7, 8):
-                table[i] = np.around(table[i], 4)
-            self.table(('Dot', 'dF', 'dLagrange', 'dR min', 'dF - dL', 'dR max', 'Compare', f'd Omega'), table)
-
-        button5.on_clicked(take_diff)
-
-        check_labels2 = ["Is Diff1"]
-        check_bools2 = [False]
-
-        c2ax = plt.axes([0.025, 0.83, 0.15, 0.05], facecolor=axcolor)
-        check2 = CheckButtons(c2ax, check_labels2, check_bools2)
-
-        def change_to_diff(val=""):
-            if val == check_labels2[0]:
-                self.cur_func = self.f if check_bools2[0] else self.df
-                check_bools2[0] = not check_bools2[0]
-            range_update()
-
-        check2.on_clicked(change_to_diff)
+        button2.on_clicked(evaluate)
 
         plt.show()
+
+    @staticmethod
+    def set_coordinates():
+        ax = plt.gca()
+        ax.spines['top'].set_color('none')
+        ax.spines['bottom'].set_position('zero')
+        ax.spines['left'].set_position('zero')
+        ax.spines['right'].set_color('none')
 
     def table(self, names, vals):
         table = go.Table(
@@ -707,7 +648,7 @@ class Plotter:
         t, ft = self.get_raw_function(self.cur_func)
         self.function_plot, = plt.plot(t, ft, 'bo', markersize=0, linestyle='-', linewidth=2)
 
-        self.calc_fin_diff()
+        self.set_coordinates()
 
         self.add_functionality()
 
