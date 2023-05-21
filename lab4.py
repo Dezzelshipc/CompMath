@@ -345,10 +345,11 @@ class Plotter:
 
     def f(self, x):
         # return x ** 2 - x * sin(x * self.coeff)
-        return sin(x * self.coeff)
+        # return sin(x * self.coeff)
         # return x*2
         # return x ** 3 - sin(x)
         # return x - cos(x)
+        return sin(x)/x if x != 0 else 1
 
     def df(self, x, n=1):
         return (self.coeff ** n) * sin(self.coeff * x + pi * n / 2)
@@ -426,9 +427,15 @@ class Plotter:
             (f_nodes[i] + f_nodes[i + 1]) / 2 for i in range(self.degree + 1, self.degree + self.intervals_count + 1)
         ) * self.delta
 
+    def calc_simpson(self):
+        f_nodes = self.calc_f_dots(f)
+        s = f_nodes[0] + f_nodes[-1] + 4 * sum(f_nodes[1::2]) + 2 * sum(f_nodes[2:-1:2])
+        return s * self.delta / 3
+
     def add_functionality(self):
         l_markersize = 2
         self.patches = self.left_rectangles_poly()
+        self.actual_value = quad(f, self.begin, self.end)[0]
 
         for pat in self.patches:
             self.ax.add_patch(pat)
@@ -470,7 +477,8 @@ class Plotter:
         axcoeff = plt.axes([0.25, ax_get(3), 0.65, 0.03], facecolor=axcolor)
         axnint = plt.axes([0.25, ax_get(4), 0.65, 0.03], facecolor=axcolor)
 
-        sints = Slider(axint, 'Intervals', 1, 10**self.intervals_mult, valinit=self.intervals_count, valstep=1, color='green')
+        sints = Slider(axint, 'Intervals', 1, 10 ** self.intervals_mult, valinit=self.intervals_count, valstep=1,
+                       color='green')
         sintmult = Slider(axdiv, 'Int Divs', 1, 10, valinit=self.intervals_mult, valstep=1, color='lime')
         # sdeg = Slider(axdeg, 'Degree', 1, 10, valinit=self.degree, valstep=1)
         srange = RangeSlider(axrange, 'Range', -20, 20, valinit=(self.begin, self.end))
@@ -490,6 +498,7 @@ class Plotter:
             y_min, y_max = self.min_max_on_plot()
             y_padding = (y_max - y_min + 0.0001) / 50
             self.ax.set_ylim([y_min - y_padding, y_max + y_padding])
+            self.actual_value = quad(f, *srange.val)[0]
 
             update()
 
@@ -527,9 +536,14 @@ class Plotter:
         snint.on_changed(update)
 
         rax = plt.axes([0.025, 0.65, 0.15, 0.3], facecolor=axcolor)
-        radio = RadioButtons(rax, ['Left', 'Right', 'Central', 'Trapezoid'], active=0)
+        radio = RadioButtons(rax, ['Left', 'Right', 'Central', 'Trapezoid', 'Simpson'], active=0)
 
         def change_mode(val):
+            if self.stop:
+                return
+
+            self.stop = True
+
             if check_bools[3]:
                 for patch in self.patches:
                     patch.remove()
@@ -543,10 +557,13 @@ class Plotter:
                         self.patches = self.central_rectangles_poly()
                     case 'Trapezoid':
                         self.patches = self.trapezoid_poly()
+                    case _:
+                        self.patches = self.left_rectangles_poly()
 
                 for patch in self.patches:
                     self.ax.add_patch(patch)
 
+            sints.valstep = 1
             match val:
                 case 'Left':
                     self.calculated = self.calc_left_rectangles()
@@ -556,6 +573,11 @@ class Plotter:
                     self.calculated = self.calc_central_rectangles()
                 case 'Trapezoid':
                     self.calculated = self.calc_trapezoid()
+                case 'Simpson':
+                    self.intervals_count -= self.intervals_count % 2
+                    sints.set_val(self.intervals_count)
+                    sints.valstep = 2
+                    self.calculated = self.calc_simpson()
 
             pn.set_data(self.nodes_f_plot(), self.calc_f_dots(self.cur_func))
             y_mi, y_ma = self.min_max_on_plot()
@@ -572,6 +594,7 @@ class Plotter:
             tddelta.set(text=f"diff/h: {diff / self.delta}")
             tddelta2.set(text=f"diff/h^2: {diff / self.delta ** 2}")
 
+            self.stop = False
             self.fig.canvas.draw_idle()
 
         radio.on_clicked(change_mode)

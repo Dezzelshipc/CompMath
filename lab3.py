@@ -359,13 +359,14 @@ class Plotter:
 
     def f(self, x):
         # return x ** 2 - x * sin(x * self.coeff)
-        return sin(x * self.coeff)
+        # return sin(x * self.coeff)
         # return x*2
         # return x ** 3 - sin(x)
-        # return x - cos(x)
+        return x - cos(x)
 
     def df(self, x, n=1):
-        return (self.coeff ** n) * sin(self.coeff * x + pi * n / 2)
+        # return (self.coeff ** n) * sin(self.coeff * x + pi * n / 2)
+        return 1 + sin(x)
 
     def P(self, coeffs, x):
         s = 0
@@ -384,8 +385,9 @@ class Plotter:
 
     def f_str(self):
         # return f"x**2 - x*sin({self.coeff}*x)"
-        return f"sin(x*{self.coeff})"
+        # return f"sin(x*{self.coeff})"
         # return "x**3-sin(x)"
+        return f"(x-cos(x))"
 
     def add_functionality(self):
         l_markersize = 2
