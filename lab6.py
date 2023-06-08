@@ -18,7 +18,7 @@ def df(t):
 
 eps = 1e-15
 a, b = -10, 10
-n = 100
+n = 10
 
 intervals = [(a, b)]
 intervals2 = []
