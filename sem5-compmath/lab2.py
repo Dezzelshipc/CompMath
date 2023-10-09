@@ -10,9 +10,10 @@ def generate_values(size: int):
 
 
 def get_max_index(mat: np.matrix, exclude: list):
-    args = list(zip(abs(mat).argmax(axis=1), abs(mat).max(axis=1)))
-    args = [((k, v[0][0].max()), v[1][0].max()) for k, v in enumerate(args) if k not in exclude]
-    argmax = max(args, key=lambda x: x[1])
+    args = abs(mat).argmax(axis=1)
+    maxes = abs(mat).max(axis=1)
+    alist = [((k, args[k]), maxes[k]) for k in range(len(args)) if k not in exclude]
+    argmax = max(alist, key=lambda x: x[1])
     return argmax[0]
 
 
@@ -26,7 +27,6 @@ def solve(matrix: np.matrix, values: np.array):
     rows_exclude = []
     for _ in range(N):
         ind = get_max_index(matrix, rows_exclude)
-        # print(matrix, values, ind, '', sep='\n')
         rows_exclude.append(ind[0])
         values[ind[0]] = values[ind[0]] / matrix[ind]
         matrix[ind[0]] = matrix[ind[0]] / matrix[ind]
@@ -36,12 +36,10 @@ def solve(matrix: np.matrix, values: np.array):
                 matrix[i] -= matrix[(i, ind[1])] * matrix[ind[0]]
 
     rows_exclude.reverse()
-    rows_back_exclude = []
     for i in rows_exclude:
         ind = matrix[i].argmax()
-        rows_back_exclude.append(i)
         for j in range(N):
-            if j not in rows_back_exclude:
+            if j != i:
                 values[j] -= matrix[(j, ind)] * values[i]
                 matrix[j] -= matrix[(j, ind)] * matrix[i]
 
@@ -53,20 +51,47 @@ def solve(matrix: np.matrix, values: np.array):
     return solution
 
 
-N = 5
-MAX_M = 10
-MAX_B = 10
-np.random.seed()
+def main_solve():
+    import time
+    # A = np.matrix('1 2; 3 5')
+    # b = np.array([1, 2])
+    A = generate_matrix(N)
+    b = generate_values(N)
 
-# A = np.matrix('1 2; 3 5')
-# b = np.array([1, 2])
-A = generate_matrix(N)
-b = generate_values(N)
+    start_time = time.time()
+    my_sol = solve(A, b)
+    end_time = time.time() - start_time
+    start_time_np = time.time()
+    np_sol = np.linalg.solve(A, b)
+    end_time_np = time.time() - start_time_np
+    diff = my_sol - np_sol
 
-my_sol = solve(A, b)
-np_sol = np.linalg.solve(A, b)
+    print(A, b, '', sep='\n')
+    print(f"Обусловленность: {np.linalg.cond(A)}")
 
-print(A, b, '', sep='\n')
-print(f"Обусловленность: {np.linalg.cond(A)}")
+    print(f"{diff = }", f"{np.linalg.norm(diff) = }\n", f"{my_sol = }", f"{np_sol = }\n", sep='\n')
+    print(*zip(my_sol, np_sol), sep='\n')
+    print(end_time, end_time_np, end_time / end_time_np)
 
-print(f"{my_sol-np_sol = }", f"{my_sol = }", f"{np_sol = }", sep='\n')
+
+def test(iterations):
+    differs = []
+    for _ in range(iterations):
+        A = generate_matrix(N)
+        b = generate_values(N)
+
+        my_sol = solve(A, b)
+        np_sol = np.linalg.solve(A, b)
+        diff = my_sol - np_sol
+        differs.append(np.linalg.norm(diff, ord=1))
+    print(f"Min: {min(differs)}", f"Max: {max(differs)}")
+
+
+N = 10
+MAX_M = 100
+MAX_B = 100
+np.random.seed(0)
+
+if __name__ == "__main__":
+    # main_solve()
+    test(100)
