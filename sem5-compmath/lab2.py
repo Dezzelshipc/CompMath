@@ -47,4 +47,4 @@ def solve(matrix: np.matrix, values: np.array):
 
 if __name__ == "__main__":
     # gt.main_solve(solve, 10)
-    gt.max_val_test(100, solve, 10)
+    gt.max_val_test(10000, solve, 10, plot=1)

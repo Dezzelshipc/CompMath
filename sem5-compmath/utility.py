@@ -1,3 +1,6 @@
+import math
+import matplotlib.pyplot as plt
+
 import numpy as np
 
 MAX_M = 10
@@ -33,23 +36,39 @@ def main_solve(solve_func, size=5, matrix=None, values=None, is_time=False):
     print(matrix, values, '', sep='\n')
     print(f"Обусловленность: {np.linalg.cond(matrix)}")
 
-    print(f"{diff = }", f"{np.linalg.norm(diff) = }\n", f"{my_sol = }", f"{np_sol = }\n", sep='\n')
+    print(f"{diff = }", f"{np.linalg.norm(diff, ord=1) = }\n", f"{my_sol = }", f"{np_sol = }\n", sep='\n')
     print(*zip(my_sol, np_sol), sep='\n')
     if is_time:
         print(end_time, end_time_np, end_time / end_time_np if end_time_np > 0 else "-")
 
 
-def max_val_test(iterations, solve_func, size=5, norm_ord=1):
-    differs = []
+def max_val_test(iterations, solve_func, size=5, norm_ord=1, plot=False):
+    minmax = [1e100, -1e100]
+    counts = dict()
     for _ in range(iterations):
         A = generate_matrix(size)
         b = generate_values(size)
 
         my_sol = solve_func(A, b)
         np_sol = np.linalg.solve(A, b)
-        diff = my_sol - np_sol
-        differs.append(np.linalg.norm(diff, ord=norm_ord))
-    print(f"Min: {min(differs)}", f"Max: {max(differs)}")
+        diff = np.linalg.norm(my_sol - np_sol, ord=norm_ord)
+        minmax = [min(minmax[0], diff), max(minmax[1], diff)]
+
+        power = round(math.log10(diff), 1)
+        if power not in counts:
+            counts[power] = 0
+        counts[power] += 1
+        if power > -10:
+            print(power, np.linalg.cond(A))
+
+    if plot:
+        print(counts)
+        order = sorted(counts, key=lambda x: x)
+        values = [counts[x] for x in order]
+
+        plt.bar(order, values, edgecolor='k', align='edge', width=0.1)
+        plt.show()
+    print(f"Min: {min(minmax)}", f"Max: {max(minmax)}")
 
 
 def matrix_str(matrix: np.matrix, values: np.array):

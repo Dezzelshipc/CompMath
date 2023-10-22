@@ -44,6 +44,6 @@ if __name__ == "__main__":
     # ut.main_solve(solve, matrix=A, values=b)
 
     # ut.main_solve(solve, 10)
-    ut.max_val_test(1000, solve, 10)
-    # A1, b1 = ut.read_data("in.txt")
-    # ut.main_solve(solve, matrix=A1, values=b1)
+    # ut.max_val_test(1000, solve, 10)
+    A1, b1 = ut.read_data("in2.txt")
+    ut.main_solve(solve, matrix=A1, values=b1)

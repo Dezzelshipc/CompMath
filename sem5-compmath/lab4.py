@@ -52,7 +52,7 @@ def lu_decompose(matrix: np.matrix) -> (np.matrix, np.matrix):
     return lower, upper
 
 
-def solve_gauss(matrix: np.matrix, values: np.array):
+def solve_exclusion(matrix: np.matrix, values: np.array):
     matrix = matrix.copy().astype(float)
     values = values.copy().astype(float)
     order = zip(np.count_nonzero(matrix, axis=1), range(len(matrix)))
@@ -75,8 +75,9 @@ def solve_lu(matrix: np.matrix, values: np.array):
     # matrix = matrix.copy().astype(float)
     # values = values.copy().astype(float)
     lower, upper = lu_decompose(matrix)
-    inner_sol = solve_gauss(lower, values)  # Ly = b
-    return solve_gauss(upper, inner_sol)    # Ux = y
+    inner_sol = solve_exclusion(lower, values)  # Ly = b
+    # print(inner_sol)
+    return solve_exclusion(upper, inner_sol)    # Ux = y
 
 
 if __name__ == "__main__":
