@@ -36,8 +36,8 @@ def main_solve(solve_func, size=5, matrix=None, values=None, is_time=False):
     print(matrix, values, '', sep='\n')
     print(f"Обусловленность: {np.linalg.cond(matrix)}")
 
-    print(f"{diff = }", f"{np.linalg.norm(diff, ord=1) = }\n", f"{my_sol = }", f"{np_sol = }\n", sep='\n')
-    print(*zip(my_sol, np_sol), sep='\n')
+    print(f"{my_sol = }", f"{np_sol = }\n", f"{diff = }", f"{max(abs(diff)) = }\n", sep='\n')
+    # print(*zip(my_sol, np_sol), sep='\n')
     if is_time:
         print(end_time, end_time_np, end_time / end_time_np if end_time_np > 0 else "-")
 

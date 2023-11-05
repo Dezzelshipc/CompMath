@@ -1,6 +1,6 @@
 # main element method
 import numpy as np
-import utility as gt
+import utility as ut
 
 
 def get_max_index(mat: np.matrix, exclude: list):
@@ -29,6 +29,8 @@ def solve(matrix: np.matrix, values: np.array):
                 values[i] -= matrix[(i, ind[1])] * values[ind[0]]
                 matrix[i] -= matrix[(i, ind[1])] * matrix[ind[0]]
 
+        print(matrix, '\n1')
+
     rows_exclude.reverse()
     for i in rows_exclude:
         ind = matrix[i].argmax()
@@ -46,5 +48,7 @@ def solve(matrix: np.matrix, values: np.array):
 
 
 if __name__ == "__main__":
-    # gt.main_solve(solve, 10)
-    gt.max_val_test(10000, solve, 10, plot=1)
+    # ut.main_solve(solve, 10)
+    # ut.max_val_test(10000, solve, 10, plot=np.inf)
+    A1, b1 = ut.read_data("in.txt")
+    ut.main_solve(solve, matrix=A1, values=b1)

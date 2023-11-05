@@ -62,9 +62,11 @@ def solve_exclusion(matrix: np.matrix, values: np.array):
     for k, i in enumerate(order):
         values[i] /= matrix[i, i]
         matrix[i] /= matrix[i, i]
-        for j in order[k+1:]:
+        for j in order[k + 1:]:
             values[j] -= matrix[j, i] * values[i]
             matrix[j] -= matrix[j, i] * matrix[i]
+
+    # print(matrix)
 
     return values
 
@@ -75,9 +77,9 @@ def solve_lu(matrix: np.matrix, values: np.array):
     # matrix = matrix.copy().astype(float)
     # values = values.copy().astype(float)
     lower, upper = lu_decompose(matrix)
+    print(lower, upper)
     inner_sol = solve_exclusion(lower, values)  # Ly = b
-    # print(inner_sol)
-    return solve_exclusion(upper, inner_sol)    # Ux = y
+    return solve_exclusion(upper, inner_sol)  # Ux = y
 
 
 if __name__ == "__main__":
@@ -92,4 +94,3 @@ if __name__ == "__main__":
     # ut.max_val_test(1000, solve, 10)
     A1, b1 = ut.read_data("in.txt")
     ut.main_solve(solve_lu, matrix=A1, values=b1)
-
