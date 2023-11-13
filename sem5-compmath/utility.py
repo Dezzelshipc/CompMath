@@ -18,7 +18,7 @@ def generate_values(size: int, min_e=MIN_V, max_e=MAX_V) -> np.array:
     return np.random.randint(min_e, max_e, size)
 
 
-def main_solve(solve_func, size=5, matrix=None, values=None, is_time=False):
+def main_solve(solve_func, size=5, matrix=None, values=None, eps=None, is_time=False):
     import time
     if matrix is None:
         matrix = generate_matrix(size)
@@ -26,7 +26,10 @@ def main_solve(solve_func, size=5, matrix=None, values=None, is_time=False):
         values = generate_values(size)
 
     start_time = time.time()
-    my_sol = solve_func(matrix, values)
+    if type(eps) is float or type(eps) is int:
+        my_sol = solve_func(matrix, values, eps)
+    else:
+        my_sol = solve_func(matrix, values)
     end_time = time.time() - start_time
     start_time_np = time.time()
     np_sol = np.linalg.solve(matrix, values)
@@ -36,7 +39,8 @@ def main_solve(solve_func, size=5, matrix=None, values=None, is_time=False):
     print(matrix, values, '', sep='\n')
     print(f"Обусловленность: {np.linalg.cond(matrix)}")
 
-    print(f"{my_sol = }", f"{np_sol = }\n", f"{diff = }", f"{max(abs(diff)) = }\n", sep='\n')
+    print(f"{my_sol = }", f"{np_sol = }\n", f"{diff = }", f"{max(abs(diff)) = }", f"{np.linalg.norm(diff) = }",
+          sep='\n')
     # print(*zip(my_sol, np_sol), sep='\n')
     if is_time:
         print(end_time, end_time_np, end_time / end_time_np if end_time_np > 0 else "-")
@@ -69,6 +73,23 @@ def max_val_test(iterations, solve_func, size=5, norm_ord=1, plot=False):
         plt.bar(order, values, edgecolor='k', align='edge', width=0.1)
         plt.show()
     print(f"Min: {min(minmax)}", f"Max: {max(minmax)}")
+
+
+def solve_exclusion(matrix: np.matrix, values: np.array):
+    matrix = matrix.copy().astype(float)
+    values = values.copy().astype(float)
+    order = zip(np.count_nonzero(matrix, axis=1), range(len(matrix)))
+    order = sorted(order, key=lambda x: x[0])
+    order = [order[k][1] for k in range(len(order))]
+
+    for k, i in enumerate(order):
+        values[i] /= matrix[i, i]
+        matrix[i] /= matrix[i, i]
+        for j in order[k + 1:]:
+            values[j] -= matrix[j, i] * values[i]
+            matrix[j] -= matrix[j, i] * matrix[i]
+
+    return values
 
 
 def matrix_str(matrix: np.matrix, values: np.array):
