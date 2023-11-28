@@ -14,7 +14,7 @@ def check_usability(matrix: np.matrix):
     return True
 
 
-def solve(matrix: np.matrix, values: np.array, eps: float = 1e-5):
+def solve(matrix: np.matrix, values: np.array, eps: float = 1e-5) -> (np.array, int):
     matrix = matrix.copy().astype(float)
     values = values.copy().astype(float)
 
@@ -38,12 +38,9 @@ def solve(matrix: np.matrix, values: np.array, eps: float = 1e-5):
         if np.linalg.norm(x - x_prev) < eps:
             break
 
-    print(f"{iterations = }")
-    return np.array(x.flatten())
+    return np.array(x.flatten()), iterations
 
 
 if __name__ == "__main__":
-    # ut.main_solve(solve, 10)
-    # ut.max_val_test(100, solve, 10, plot=np.inf)
-    A1, b1 = ut.read_data("in.txt")
-    ut.main_solve(solve, matrix=A1, values=b1, eps=1e-10)
+    A1, b1 = ut.read_data("in_i.txt")
+    ut.iter_solve(solve, matrix=A1, values=b1, eps=1e-10)

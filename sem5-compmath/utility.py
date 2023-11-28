@@ -18,7 +18,7 @@ def generate_values(size: int, min_e=MIN_V, max_e=MAX_V) -> np.array:
     return np.random.randint(min_e, max_e, size)
 
 
-def main_solve(solve_func, size=5, matrix=None, values=None, eps=None, is_time=False):
+def main_solve(solve_func, size=5, matrix=None, values=None, is_time=False):
     import time
     if matrix is None:
         matrix = generate_matrix(size)
@@ -26,10 +26,7 @@ def main_solve(solve_func, size=5, matrix=None, values=None, eps=None, is_time=F
         values = generate_values(size)
 
     start_time = time.time()
-    if type(eps) is float or type(eps) is int:
-        my_sol = solve_func(matrix, values, eps)
-    else:
-        my_sol = solve_func(matrix, values)
+    my_sol = solve_func(matrix, values)
     end_time = time.time() - start_time
     start_time_np = time.time()
     np_sol = np.linalg.solve(matrix, values)
@@ -42,6 +39,50 @@ def main_solve(solve_func, size=5, matrix=None, values=None, eps=None, is_time=F
     print(f"{my_sol = }", f"{np_sol = }\n", f"{diff = }", f"{max(abs(diff)) = }", f"{np.linalg.norm(diff) = }",
           sep='\n')
     # print(*zip(my_sol, np_sol), sep='\n')
+    if is_time:
+        print(end_time, end_time_np, end_time / end_time_np if end_time_np > 0 else "-")
+
+
+def iter_solve(solve_func, size=5, matrix=None, values=None, is_time=False, **kwargs):
+    import time
+    if matrix is None:
+        matrix = generate_matrix(size)
+    if values is None:
+        values = generate_values(size)
+
+    start_time = time.time()
+    my_sol, iterations = solve_func(matrix, values, **kwargs)
+    end_time = time.time() - start_time
+    start_time_np = time.time()
+    np_sol = np.linalg.solve(matrix, values)
+    end_time_np = time.time() - start_time_np
+    diff = my_sol - np_sol
+
+    print(matrix, values, '', sep='\n')
+    # print(f"Обусловленность: {np.linalg.cond(matrix)}")
+
+    print(f"{my_sol = }", f"{np_sol = }\n", f"{diff = }", f"{max(abs(diff)) = }", f"{np.linalg.norm(diff) = }",
+          f"{iterations = }", sep='\n')
+    if is_time:
+        print(end_time, end_time_np, end_time / end_time_np if end_time_np > 0 else "-")
+
+
+def eigen_solve(solve_func, size=5, matrix=None, is_time=False, **kwargs):
+    import time
+    if matrix is None:
+        matrix = generate_matrix(size)
+
+    start_time = time.time()
+    my_sol, my_eigval, iterations = solve_func(matrix, **kwargs)
+    end_time = time.time() - start_time
+    start_time_np = time.time()
+    np_sol = np.linalg.eig(matrix)
+    end_time_np = time.time() - start_time_np
+
+    print(matrix, '', sep='\n')
+    # print(f"Обусловленность: {np.linalg.cond(matrix)}")
+
+    print(f"{my_sol = }", f"{my_eigval = }", f"{matrix.dot(my_sol) = }", f"{my_eigval * my_sol = }\n",  f"{np_sol = }", f"{iterations = }", sep='\n')
     if is_time:
         print(end_time, end_time_np, end_time / end_time_np if end_time_np > 0 else "-")
 
@@ -106,9 +147,7 @@ def read_data(file_name: str) -> (np.matrix, np.ndarray):
         for _ in range(len(start) - 1):
             raw_mat.append(f.readline().split())
 
-        s = ''
-        while s.strip() == '':
-            s = f.readline()
+        s = f.read().strip()
 
         return np.matrix(raw_mat).astype(float), np.array(s.split()).astype(float)
 

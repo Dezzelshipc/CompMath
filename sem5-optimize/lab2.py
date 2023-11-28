@@ -61,16 +61,25 @@ def g_vec(vv: np.ndarray, mat: np.matrix, b_vec: np.ndarray, center: np.ndarray,
 # b = np.matrix([2., 6., 5., 3.]).T
 # c = np.matrix([5., 5., 5., 2.]).T
 # r = 2
-# l = 1
+# l = 10
 
-A = np.matrix([[5., 1., 0., 10.],
-               [1., 4., 2., 4.],
-               [0., 2., 1., 20.],
-               [10., 4., 20., 0.]])
-b = np.matrix([0., 1., 1., 1.]).T
-c = np.matrix([0., 0., 0., 0.]).T
-l = 5.
+A = np.array([[5, 2, 1, 3],
+         [2, 6, 4, 7],
+         [1, 4, 10, 8],
+         [3, 7, 8, 1]])
+b = np.array([6, 1, 7, 2]).reshape([4, 1]).astype(float)
+c = np.array([1, 1, 3, 1]).reshape([4, 1]).astype(float)
 r = 10
+l = r
+
+# A = np.matrix([[5., 1., 0., 10.],
+#                [1., 4., 2., 4.],
+#                [0., 2., 1., 20.],
+#                [10., 4., 20., 0.]])
+# b = np.matrix([0., 1., 1., 1.]).T
+# c = np.matrix([0., 0., 0., 0.]).T
+# l = 5.
+# r = 10
 
 # A = np.matrix([[8., 3., 6., 6.],
 #                [3., 4., 5., 5.],
@@ -122,14 +131,15 @@ for x_i in xs:
 print(*mins, sep='\n')
 print()
 
-# l = 0
+# l == 0
 A_inv = np.linalg.inv(A)
 x = - A_inv.dot(b)
 x = np.append(np.array(x), [0]).T
 g_num = g_func(x, c, r)
 if g_num < 0:
-    print(f'При l = 0 решение подходит: {x = }, f0 = {f(x, A, b, c, r)}, g = {g_num}')
+    print(f'При l = 0 решение подходит: {x = }, f0 = {f0(x, A, b)}, g = {g_num}')
 else:
-    print(f'При l = 0 решение не подходит: {x = }, f0 = {f(x, A, b, c, r)}, g = {g_num}')
+    print(f'При l = 0 решение не подходит: {x = }, f0 = {f0(x, A, b)}, g = {g_num}')
 
+# mins = filter(mins, lambda y: y[1][-1] > 0)
 print(f"MINMIN: {min(mins, key=lambda y: y[0])}")

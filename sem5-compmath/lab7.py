@@ -25,14 +25,16 @@ def solve(matrix: np.matrix, values: np.array):
         for i in range(k, n):
             values_new[i] = values[i] - 2 * p[i] * sum(p[l] * values[l] for l in range(k, n)) / sum(
                 p[l] ** 2 for l in range(k, n))
-            for j in range(k + 1, n):
+            for j in range(k+1, n):
                 matrix_new[i, j] = matrix[i, j] - 2 * p[i] * sum(p[l] * matrix[l, j] for l in range(k, n)) / sum(
                     p[l] ** 2 for l in range(k, n))
         matrix_new[k + 1:, k] = np.zeros((n - k - 1, 1))
 
         matrix = matrix_new
         values = values_new
+        # print(matrix)
 
+    # print(values)
     sol = np.array([0.] * n).astype(float)
 
     for i in reversed(range(n)):
