@@ -4,7 +4,7 @@ import numpy as np
 import utility as ut
 
 
-def solve(matrix: np.matrix, values: np.array, eps: float = 1e-5):
+def solve(matrix: np.matrix, values: np.array, eps: float = 1e-5, iter_max=1e5):
     x = np.matrix(values).T
     values = np.matrix(values).T
     iterations = 0
@@ -15,7 +15,7 @@ def solve(matrix: np.matrix, values: np.array, eps: float = 1e-5):
         wwTr = matrix.dot(matrix.T).dot(r)
         m = r.T.dot(wwTr) / wwTr.T.dot(wwTr)
         x = x - m[0, 0] * matrix.T.dot(r)
-        if np.linalg.norm(x - x_prev) < eps:
+        if np.linalg.norm(x - x_prev) < eps or iterations > iter_max:
             break
 
     return np.array(x.flatten()), iterations
