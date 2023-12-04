@@ -14,7 +14,7 @@ def check_usability(matrix: np.matrix):
     return True
 
 
-def solve(matrix: np.matrix, values: np.array, eps: float = 1e-5) -> (np.array, int):
+def solve(matrix: np.matrix, values: np.array, eps: float = 1e-5, max_iter=1e5) -> (np.array, int):
     matrix = matrix.copy().astype(float)
     values = values.copy().astype(float)
 
@@ -27,7 +27,7 @@ def solve(matrix: np.matrix, values: np.array, eps: float = 1e-5) -> (np.array, 
         matrix[i] /= -matrix[i, i]
         matrix[i, i] = 0
 
-    values = np.matrix(values).reshape((n, 1))
+    values = np.matrix(values).T
 
     x = values.copy()
     iterations = 0
@@ -35,7 +35,8 @@ def solve(matrix: np.matrix, values: np.array, eps: float = 1e-5) -> (np.array, 
         iterations += 1
         x_prev = x.copy()
         x = values + matrix.dot(x)
-        if np.linalg.norm(x - x_prev) < eps:
+        # print(iterations, ":", x.T)
+        if np.linalg.norm(x - x_prev) < eps or iterations > max_iter:
             break
 
     return np.array(x.flatten()), iterations
@@ -43,4 +44,4 @@ def solve(matrix: np.matrix, values: np.array, eps: float = 1e-5) -> (np.array, 
 
 if __name__ == "__main__":
     A1, b1 = ut.read_data("in_i.txt")
-    ut.iter_solve(solve, matrix=A1, values=b1, eps=1e-10)
+    ut.iter_solve(solve, matrix=A1, values=b1, eps=1e-16)

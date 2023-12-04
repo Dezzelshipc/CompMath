@@ -67,6 +67,7 @@ def iter_solve(solve_func, size=5, matrix=None, values=None, is_time=False, **kw
         print(end_time, end_time_np, end_time / end_time_np if end_time_np > 0 else "-")
 
 
+
 def eigen_solve(solve_func, size=5, matrix=None, is_time=False, **kwargs):
     import time
     if matrix is None:

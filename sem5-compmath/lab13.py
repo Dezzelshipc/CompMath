@@ -20,9 +20,10 @@ def max_eigen(matrix: np.matrix, eps: float = 1e-5):
             eig_val = 1 / abs(x).max()
             break
 
-    return np.array(x.flatten()), eig_val, iterations
+    x = np.array(x.flatten()) / np.linalg.norm(x)
+    return x, eig_val, iterations
 
 
 if __name__ == "__main__":
-    A1, b1 = ut.read_data("in_e2.txt")
+    A1, b1 = ut.read_data("in_e.txt")
     ut.eigen_solve(max_eigen, matrix=A1, eps=1e-10)
