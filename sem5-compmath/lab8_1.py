@@ -25,8 +25,10 @@ def solve(matrix: np.matrix, values: np.array, eps: float = 1e-5, w: float = 1, 
 if __name__ == "__main__":
     A1, b1 = ut.read_data("in_i.txt")
     print(A1, b1, sep='\n')
-    print(np.linalg.solve(A1, b1))
+    np_sol = np.linalg.solve(A1, b1)
+    print(np_sol)
     for w in [1e-3, 0.5, 1, 1.5, 2 - 1e-3]:
-        print(f"{w = }:", solve(A1, b1, eps=1e-10, w=w))
+        my_sol = solve(A1, b1, eps=1e-5, w=w)
+        print(f"{w = }:", my_sol, np_sol - my_sol[0], '\n', abs(np_sol - my_sol[0]).max())
 
     # ut.iter_solve(solve, matrix=A1, values=b1, eps=1e-10, w=0.5)

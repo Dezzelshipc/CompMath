@@ -23,4 +23,4 @@ def solve(matrix: np.matrix, values: np.array, eps: float = 1e-5, iter_max=1e5):
 
 if __name__ == "__main__":
     A1, b1 = ut.read_data("in_i.txt")
-    ut.iter_solve(solve, matrix=A1, values=b1, eps=1e-10)
+    ut.iter_solve(solve, matrix=A1, values=b1, eps=1e-3)

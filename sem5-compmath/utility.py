@@ -67,7 +67,6 @@ def iter_solve(solve_func, size=5, matrix=None, values=None, is_time=False, **kw
         print(end_time, end_time_np, end_time / end_time_np if end_time_np > 0 else "-")
 
 
-
 def eigen_solve(solve_func, size=5, matrix=None, is_time=False, **kwargs):
     import time
     if matrix is None:
@@ -81,9 +80,35 @@ def eigen_solve(solve_func, size=5, matrix=None, is_time=False, **kwargs):
     end_time_np = time.time() - start_time_np
 
     print(matrix, '', sep='\n')
-    # print(f"Обусловленность: {np.linalg.cond(matrix)}")
 
-    print(f"{my_sol = }", f"{my_eigval = }", f"{matrix.dot(my_sol) = }", f"{my_eigval * my_sol = }\n",  f"{np_sol = }", f"{iterations = }", sep='\n')
+    print(f"{iterations = }", f"{my_sol = }", f"{my_eigval = }", f"{matrix.dot(my_sol) = }",
+          f"{my_eigval * my_sol = }", sep='\n')
+    print('\nnp_sol = ', *zip(np_sol.eigenvalues, np_sol.eigenvectors), sep='\n')
+    print(f'\n{np_sol.eigenvalues - my_eigval = }')
+
+    if is_time:
+        print(end_time, end_time_np, end_time / end_time_np if end_time_np > 0 else "-")
+
+
+def eigen_full_solve(solve_func, size=5, matrix=None, is_time=False, **kwargs):
+    import time
+    if matrix is None:
+        matrix = generate_matrix(size)
+
+    start_time = time.time()
+    my_eigvec, my_eigval, iterations = solve_func(matrix, **kwargs)
+    end_time = time.time() - start_time
+    start_time_np = time.time()
+    np_sol = np.linalg.eig(matrix)
+    end_time_np = time.time() - start_time_np
+
+    print(matrix, '', sep='\n')
+
+    print(f"{iterations = }", f"{my_eigvec = }", f"{my_eigval = }", sep='\n')
+    print('\nnp_sol = ', *zip(np_sol.eigenvalues, np_sol.eigenvectors), sep='\n')
+
+    print(f'\n{np.array(sorted(np_sol.eigenvalues)) - np.array(sorted(np.array(my_eigval)[0,:])) = }')
+
     if is_time:
         print(end_time, end_time_np, end_time / end_time_np if end_time_np > 0 else "-")
 
