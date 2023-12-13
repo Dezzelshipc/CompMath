@@ -1,26 +1,39 @@
-# eigenvalues simple iteration
+# richardson method
 
 import numpy as np
 import utility as ut
+import math
 
 
-def max_eigen(matrix: np.matrix, eps: float = 1e-5, iter_max=1e5):
-    x = np.ones((len(matrix), 1))
-    eig_val = 0
+def solve(matrix: np.matrix, values: np.array, eps: float = 1e-5) -> (np.array, int):
+    matrix = matrix.copy().astype(float)
+    values = values.copy().astype(float)
+
+    eigen = np.linalg.eig(matrix)
+
+    eigen_max = eigen.eigenvalues.max()
+    eigen_min = eigen.eigenvalues.min()
+
+    eta = eigen_min / eigen_max
+    ro0 = (1 - eta) / (1 + eta)
+    ro1 = (1 - math.sqrt(eta)) / (1 + math.sqrt(eta))
+    n = math.log(2 / eps) / math.log(1 / ro1)
+    # print(n, math.log(eps / 2, ro1))
+    t0 = 2 / (eigen_min + eigen_max)
+
+    values = np.matrix(values).T
+
+    x = np.zeros((len(matrix), 1))
     iterations = 0
-    while True:
+    for k in range(math.ceil(n) + 1):
         iterations += 1
-        x_prev = x.copy()
-        y = matrix.dot(x)
-        eig_val = y.T.dot(x_prev)[0, 0]
-        x = y / np.linalg.norm(y)
-        if np.linalg.norm(np.sign(eig_val) * x - x_prev) < eps or iterations > iter_max:
-            break
+        d = math.cos((2 * k + 1) * math.pi / 2 * n)
+        t = t0 / (1 + ro0 * d)
+        x = t * (values - matrix.dot(x)) + x
 
-    x = np.array(x.flatten())[0]
-    return x, eig_val, iterations
+    return np.array(x.flatten()), iterations
 
 
 if __name__ == "__main__":
-    A1, b1 = ut.read_data("in_e.txt")
-    ut.eigen_solve(max_eigen, matrix=A1, eps=1e-10)
+    A1, b1 = ut.read_data("in_i.txt")
+    ut.iter_solve(solve, matrix=A1, values=b1, eps=1e-10)

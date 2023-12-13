@@ -90,27 +90,26 @@ def eigen_solve(solve_func, size=5, matrix=None, is_time=False, **kwargs):
         print(end_time, end_time_np, end_time / end_time_np if end_time_np > 0 else "-")
 
 
-def eigen_full_solve(solve_func, size=5, matrix=None, is_time=False, **kwargs):
+def eigen_full_solve(solve_func, size=5, matrix=None, **kwargs):
     import time
     if matrix is None:
         matrix = generate_matrix(size)
 
-    start_time = time.time()
     my_eigvec, my_eigval, iterations = solve_func(matrix, **kwargs)
-    end_time = time.time() - start_time
-    start_time_np = time.time()
     np_sol = np.linalg.eig(matrix)
-    end_time_np = time.time() - start_time_np
 
     print(matrix, '', sep='\n')
 
-    print(f"{iterations = }", f"{my_eigvec = }", f"{my_eigval = }", sep='\n')
+    print(f"{iterations = }")
     print('\nnp_sol = ', *zip(np_sol.eigenvalues, np_sol.eigenvectors), sep='\n')
+    print('\nmy_sol = ', *zip(my_eigval, my_eigvec), '', sep='\n')
 
-    print(f'\n{np.array(sorted(np_sol.eigenvalues)) - np.array(sorted(np.array(my_eigval)[0,:])) = }')
+    print("my_sol check:")
+    print(f'{np.array(sorted(np_sol.eigenvalues)) - np.array(sorted(my_eigval)) = }\n')
+    for val, vec in zip(my_eigval, my_eigvec):
+        print(f'{val, vec}', sep='\n')
+        print(f'{matrix.dot(vec.T) - val * vec.T = }\n')
 
-    if is_time:
-        print(end_time, end_time_np, end_time / end_time_np if end_time_np > 0 else "-")
 
 
 def max_val_test(iterations, solve_func, size=5, norm_ord=1, plot=False):

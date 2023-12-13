@@ -1,39 +1,68 @@
-# richardson method
+# rotation method
 
 import numpy as np
 import utility as ut
 import math
 
 
-def solve(matrix: np.matrix, values: np.array, eps: float = 1e-5) -> (np.array, int):
+def sign(num):
+    return 1 if num >= 0 else -1
+
+
+def solve(matrix: np.matrix, sigmas=None, p: int = 3) -> (np.array, int):
     matrix = matrix.copy().astype(float)
-    values = values.copy().astype(float)
 
-    eigen = np.linalg.eig(matrix)
+    n = len(matrix)
 
-    eigen_max = eigen.eigenvalues.max()
-    eigen_min = eigen.eigenvalues.min()
+    if not sigmas:
+        sigmas = (10 ** (-k) for k in range(1, p + 1))
 
-    eta = eigen_min / eigen_max
-    ro0 = (1 - eta) / (1 + eta)
-    ro1 = (1 - math.sqrt(eta)) / (1 + math.sqrt(eta))
-    n = math.log(2 / eps) / math.log(1 / ro1)
-    # print(n, math.log(eps / 2, ro1))
-    t0 = 2 / (eigen_min + eigen_max)
-
-    values = np.matrix(values).T
-
-    x = np.zeros((len(matrix), 1))
+    sigma = next(sigmas)
     iterations = 0
-    for k in range(math.ceil(n) + 1):
+    matrix_vectors = np.eye(n)
+    while True:
+        diag = np.diagflat(matrix.diagonal())
+        flat_index = abs(matrix - diag).argmax()
+        i, j = np.unravel_index(flat_index, diag.shape)
+        if abs(matrix[i, j]) < sigma:
+            try:
+                sigma = next(sigmas)
+            except StopIteration:
+                break
         iterations += 1
-        d = math.cos((2 * k + 1) * math.pi / 2 * n)
-        t = t0 / (1 + ro0 * d)
-        x = t * (values - matrix.dot(x)) + x
 
-    return np.array(x.flatten()), iterations
+        aii = matrix[i, i]
+        ajj = matrix[j, j]
+        aij = matrix[i, j]
+        d = math.sqrt((aii - ajj) ** 2 + 4 * aij ** 2)
+        c = math.sqrt((1 + abs(aii - ajj) / d) / 2)
+        s = sign(aij * (aii - ajj)) * math.sqrt((1 - abs(aii - ajj) / d) / 2)
+
+        T = np.eye(n)
+        T[i, i] = c
+        T[j, j] = c
+        T[i, j] = -s
+        T[j, i] = s
+        matrix_vectors = matrix_vectors.dot(T)
+
+        new_matrix = matrix.copy()
+
+        for k in range(n):
+            new_matrix[k, i] = new_matrix[i, k] = c * matrix[k, i] + s * matrix[k, j]
+            new_matrix[k, j] = new_matrix[j, k] = -s * matrix[k, i] + c * matrix[k, j]
+
+        new_matrix[i, i] = c ** 2 * aii + 2 * c * s * aij + s ** 2 * ajj
+        new_matrix[j, j] = s ** 2 * aii - 2 * c * s * aij + c ** 2 * ajj
+        new_matrix[i, j] = new_matrix[j, i] = 0
+
+        matrix = new_matrix
+
+    for i in range(len(matrix_vectors)):
+        matrix_vectors[i] /= np.linalg.norm(matrix_vectors[i])
+
+    return matrix_vectors.T, np.array(matrix.diagonal())[0], iterations
 
 
 if __name__ == "__main__":
-    A1, b1 = ut.read_data("in_i.txt")
-    ut.iter_solve(solve, matrix=A1, values=b1, eps=1e-10)
+    A1, b1 = ut.read_data("in_e.txt")
+    ut.eigen_full_solve(solve, matrix=A1)
