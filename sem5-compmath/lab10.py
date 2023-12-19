@@ -9,26 +9,32 @@ def sign(num):
     return 1 if num >= 0 else -1
 
 
-def solve(matrix: np.matrix, sigmas=None, p: int = 3) -> (np.array, int):
+def solve(matrix: np.matrix, p: int = 3) -> (np.array, int):
     matrix = matrix.copy().astype(float)
 
     n = len(matrix)
 
-    if not sigmas:
-        sigmas = (10 ** (-k) for k in range(1, p + 1))
+    p_i = 0
+    sigma = np.max(abs(matrix)) + 1
 
-    sigma = next(sigmas)
     iterations = 0
     matrix_vectors = np.eye(n)
+
+    stop_flag = False
     while True:
         diag = np.diagflat(matrix.diagonal())
-        flat_index = abs(matrix - diag).argmax()
+        mat_wo_diag = abs(matrix - diag) - np.eye(n)
+        flat_index = mat_wo_diag.argmax()
         i, j = np.unravel_index(flat_index, diag.shape)
-        if abs(matrix[i, j]) < sigma:
-            try:
-                sigma = next(sigmas)
-            except StopIteration:
+
+        while abs(matrix[i, j]) < sigma:
+            p_i += 1
+            if p_i > p:
+                stop_flag = True
                 break
+            sigma = math.sqrt(np.max(abs(diag))) * 10 ** (-p_i)
+        if stop_flag:
+            break
         iterations += 1
 
         aii = matrix[i, i]
@@ -38,12 +44,12 @@ def solve(matrix: np.matrix, sigmas=None, p: int = 3) -> (np.array, int):
         c = math.sqrt((1 + abs(aii - ajj) / d) / 2)
         s = sign(aij * (aii - ajj)) * math.sqrt((1 - abs(aii - ajj) / d) / 2)
 
-        T = np.eye(n)
-        T[i, i] = c
-        T[j, j] = c
-        T[i, j] = -s
-        T[j, i] = s
-        matrix_vectors = matrix_vectors.dot(T)
+        rot = np.eye(n)
+        rot[i, i] = c
+        rot[j, j] = c
+        rot[i, j] = -s
+        rot[j, i] = s
+        matrix_vectors = matrix_vectors.dot(rot)
 
         new_matrix = matrix.copy()
 
@@ -65,4 +71,4 @@ def solve(matrix: np.matrix, sigmas=None, p: int = 3) -> (np.array, int):
 
 if __name__ == "__main__":
     A1, b1 = ut.read_data("in_e.txt")
-    ut.eigen_full_solve(solve, matrix=A1)
+    ut.eigen_full_solve(solve, matrix=A1, p =7)

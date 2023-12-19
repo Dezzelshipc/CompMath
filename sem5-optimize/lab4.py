@@ -23,15 +23,17 @@ maxmin = A.min(axis=1).max()
 minmax = A.max(axis=0).min()
 print(f'{maxmin = } {minmax = }')
 
-n = len(A)
-m = len(A.T)
+n = len(A)  # 6
+m = len(A.T)  # 8
 
 b = np.ones((1, n))
 f = np.ones((1, m))
 # print(b, f)
 
+
 pv, x = lab3.simplex_dual(A, b, f)
 qv, y = lab3.simplex(A, b, f)
+print(x, y)
 v = 1 / pv
 v2 = 1 / qv
 print(v, v2)

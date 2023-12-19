@@ -16,7 +16,7 @@ def simplex(mat_orig: np.matrix, lim_orig: np.matrix, coef_orig: np.matrix):
         k = delta.argmax()
         if delta[k, :] <= 0:
             max_val = coef[base_var, :].T.dot(lim)
-            opt_val = np.zeros(n+m)
+            opt_val = np.zeros(n + m)
             opt_val[base_var] = lim.flatten()
             return max_val[0, 0], opt_val[:n]
 
@@ -55,7 +55,7 @@ def simplex_dual(mat_orig: np.matrix, lim_orig: np.matrix, coef_orig: np.matrix)
         # print(delta.T)
         if delta[k, :] >= 0:
             max_val = coef[base_var, :].T.dot(lim)
-            opt_val = np.zeros(n + m)
+            opt_val = np.zeros(n + 2 * m)
             opt_val[base_var] = lim.flatten()
             return max_val[0, 0], opt_val[:n]
 
@@ -82,7 +82,6 @@ if __name__ == "__main__":
                    [2., 1.]])
     c = np.matrix([4., 5.])
     b = np.matrix([560., 170., 300.])
-
 
     # A = np.matrix([[4., 5., 1., 2., 2., 5.],
     #                [2., 9., 3., 5., 3., 6.],
