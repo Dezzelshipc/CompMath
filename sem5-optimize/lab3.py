@@ -6,7 +6,7 @@ def simplex(mat_orig: np.matrix, lim_orig: np.matrix, coef_orig: np.matrix):
     n = len(coef_orig.T)
     m = len(mat_orig)
     full_range = np.arange(m)
-    mat = np.append(mat_orig, np.eye(m), axis=1)
+    mat = np.matrix( np.append(mat_orig, np.eye(m), axis=1) )
     base_var = np.arange(n, m + n)
     lim = lim_orig.copy().T
     coef = np.append(coef_orig, np.zeros((1, m)), axis=1).T
@@ -44,7 +44,7 @@ def simplex_dual(mat_orig: np.matrix, lim_orig: np.matrix, coef_orig: np.matrix)
     n = len(coef_orig.T)
     m = len(mat_orig)
     full_range = np.arange(m)
-    mat = np.append(mat_orig, np.append(-np.eye(m), np.eye(m), axis=1), axis=1)
+    mat = np.matrix( np.append(mat_orig, np.append(-np.eye(m), np.eye(m), axis=1), axis=1) )
     base_var = np.arange(n + m, n + 2 * m)
     lim = lim_orig.copy().T
     coef = np.append(coef_orig, np.append(np.zeros((1, m)), big_number * np.ones((1, m)), axis=1), axis=1).T
@@ -110,6 +110,6 @@ if __name__ == "__main__":
     # c = np.matrix(np.random.randint(1, 10, (1, 6))).astype(float)
     # b = np.matrix(np.random.randint(500, 1000, (1, 8))).astype(float)
 
-    # print(A, b, c, sep='\n')
+    print(A, b, c, sep='\n')
     print(simplex(A, b, c))
     print(simplex_dual(A, b, c))

@@ -46,5 +46,5 @@ def solve(matrix: np.matrix, values: np.array):
 if __name__ == "__main__":
     # ut.main_solve(solve, 10)
     # ut.max_val_test(100, solve, 10, plot=np.inf)
-    A1, b1 = ut.read_data("in.txt")
+    A1, b1 = ut.read_data("./in_i.txt")
     ut.main_solve(solve, matrix=A1, values=b1)
