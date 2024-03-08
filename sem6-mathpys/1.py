@@ -1,3 +1,5 @@
+# Var 6
+
 import numpy as np
 import scipy
 import matplotlib.pyplot as plt
@@ -31,8 +33,8 @@ def update(frame):
     plot.set_data(x, u(x, frame))
     return plot,
 
-frames, interval = np.linspace(0, 2/a, 100), 40
-# frames, interval = [ 1/(4*a), 1/(2*a), 3/(4*a), 1/a, 2/(a) ], 1000
+# frames, interval = np.linspace(0, 2/a, 100), 40
+frames, interval = [ 1/(4*a), 1/(2*a), 3/(4*a), 1/a, 2/(a) ], 1000
 
 ani = FuncAnimation(fig, update, frames=frames,
                     init_func=init, blit=True, interval=interval)

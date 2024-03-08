@@ -21,17 +21,17 @@ def runge_kutta(function, y0: float, a: float, b: float, h: float):
 
 KC = 276
 
-P = 2000
-m = 0.5
-c = 920
+P = 3000
+m = 1.5
+c = 897  # Алюминий
 S = 0.4
-k = 10
-T0 = 300
-sigma = 1.380649e-23
+k = 1
+T0 = 20 + KC
+sigma = 5.670367e-8
 
 
-T_l = 290 + KC
-T_u = 300 + KC
+T_l = 140 + KC
+T_u = 150 + KC
 
 is_turned = True
 def H(T):
@@ -43,7 +43,10 @@ def H(T):
         is_turned = True
     
     return float(is_turned)
-        
+
+def H0(T):
+    return 1.
+
 
 def dTdt(t, T):
     return (P * H(T) - k * S * (T - T0) - sigma * S * (T**4 - T0**4)) / (c * m)
@@ -58,10 +61,12 @@ x = np.linspace(a, b, n)
 # y = sci.integrate.odeint(dTdt2, T0, x)
 y = (sci.integrate.solve_ivp(dTdt, [a, b], [T0], t_eval=x)).y[0]
 y = np.array(y)
+# plt.plot(x, y - KC)
 
 x_, y_ = runge_kutta(dTdt, T0, a, b, (b-a)/n)
-
-
-# plt.plot(x, y - KC)
 plt.plot(x_, y_ - KC)
+
+plt.xlabel('t - Время')
+plt.ylabel('T(t) - Температура в цельсиях')
+
 plt.show()
