@@ -60,7 +60,7 @@ def u(t):
 
 a, b = 0, 1
 ua, ub = 0, 1
-N = 3
+N = 100
 h = 1 / N
 
 under = [1 / h ** 2 for _ in range(N)]

@@ -2,11 +2,13 @@ import numpy as np
 import math
 from enum import Enum
 import matplotlib.pyplot as plt
+from matplotlib.widgets import Slider
 
 
 def euler(function, y0: float, a: float, b: float, h: float):
-    num = math.ceil((b - a) / h + 1)
-    x_a = np.linspace(a, b, num=num)
+    num = math.ceil((b - a) / h )
+    x_a = np.linspace(a, b, num=num, endpoint=False)
+    
     y_a = [y0] * num
 
     for i in range(num - 1):
@@ -16,20 +18,20 @@ def euler(function, y0: float, a: float, b: float, h: float):
 
 
 def euler_recalc(function, y0: float, a: float, b: float, h: float):
-    num = math.ceil((b - a) / h + 1)
-    x_a = np.linspace(a, b, num=num)
+    num = math.ceil((b - a) / h )
+    x_a = np.linspace(a, b, num=num, endpoint=False)
     y_a = [y0] * num
 
     for i in range(num - 1):
         y_r = y_a[i] + h * function(x_a[i], y_a[i])
-        y_a[i + 1] = y_a[i] + h * function(x_a[i], y_r)
+        y_a[i + 1] = y_a[i] + h / 2 * (function(x_a[i], y_a[i]) + function(x_a[i+1], y_r))
 
     return x_a, np.array(y_a)
 
 
 def runge_kutta(function, y0: float, a: float, b: float, h: float):
-    num = math.ceil((b - a) / h + 1)
-    x_a = np.linspace(a, b, num=num)
+    num = math.ceil((b - a) / h)
+    x_a = np.linspace(a, b, num=num, endpoint=False)
     y_a = [y0] * num
 
     for i in range(num - 1):
@@ -50,17 +52,21 @@ def plot_funcs(f, y0: float, a: float, b: float, h: float):
     y_f = f[1](x)
 
     fig, (ax1, ax2) = plt.subplots(1, 2)
-
+    fig.subplots_adjust(bottom=0.25)
     x_f = np.linspace(a, b, num=10000)
 
     ax1.plot(x_f, f[1](x_f), 'g')
-    ax1.plot(x, y_e, 'b')
-    ax1.plot(x, y_er, 'c')
-    ax1.plot(x, y_rk, 'r')
+    e_plot, = ax1.plot(x, y_e, 'b')
+    er_plot, = ax1.plot(x, y_er, 'c')
+    rk_plot, = ax1.plot(x, y_rk, 'r')
+    
+    e_d = np.abs(y_f - y_e)
+    er_d =  np.abs(y_f - y_er)
+    rk_d = np.abs(y_f - y_rk)
 
-    ax2.plot(x, np.abs(y_f - y_e), 'b')
-    ax2.plot(x, np.abs(y_f - y_er), 'c')
-    ax2.plot(x, np.abs(y_f - y_rk), 'r')
+    e_d_plot, = ax2.plot(x, e_d, 'b')
+    er_d_plot, = ax2.plot(x, er_d, 'c')
+    rk_d_plot, = ax2.plot(x, rk_d, 'r')
 
     ax1.set_title("Functions")
     ax2.set_title("Error")
@@ -68,16 +74,59 @@ def plot_funcs(f, y0: float, a: float, b: float, h: float):
     ax1.set_xlabel("x")
     ax1.set_ylabel("y")
 
-    ax2.set_xlabel(f"{h=}")
+    ax2.set_xlabel(f"{h=:.5f},\nn={int((b-a)/h)+1}")
 
     ax1.legend(['Func', 'Euler', 'Euler Recalc', 'Runge-Kutta'])
+    ax2.legend([max(e_d), max(er_d), max(rk_d)])
+    
+    h_ax = fig.add_axes([0.1, 0.1, 0.8, 0.03])
+    h_slider = Slider(
+        ax=h_ax,
+        label='log2 h',
+        valmin=-12,
+        valmax=1,
+        valinit=int(np.log2(h)),
+    )
+    
+    def upd(val_h):
+        h = 2 ** val_h
+        ax2.set_xlabel(f"{h=:.5f},\nn={int((b-a)/h)+1}")
 
-    plt.draw()
+        x, y_e = euler(f[0], y0, a, b, h)
+        _, y_er = euler_recalc(f[0], y0, a, b, h)
+        _, y_rk = runge_kutta(f[0], y0, a, b, h)
+
+        y_f = f[1](x)
+        
+        e_plot.set_data(x, y_e)
+        er_plot.set_data(x, y_er)
+        rk_plot.set_data(x, y_rk)
+        
+        e_d = np.abs(y_f - y_e)
+        er_d =  np.abs(y_f - y_er)
+        rk_d = np.abs(y_f - y_rk)
+        
+        e_d_plot.set_data(x, e_d)
+        er_d_plot.set_data(x, er_d)
+        rk_d_plot.set_data(x, rk_d)
+        
+        ax2.legend([max(e_d), max(er_d), max(rk_d)])
+        
+        ax2.relim()
+        ax2.autoscale_view()
+        
+        fig.canvas.draw_idle()
+    
+    h_slider.on_changed(upd)
+
+    # fig.canvas.draw_idle()
+    
+    return h_slider
 
 
 def plot_funcs_h(f, y0: float, a: float, b: float, h: float):
     n = int(-np.log2(h))
-    h_a = np.logspace(0, -n, base=2, num=n)
+    h_a = np.logspace(-1, -n, base=2, num=n)
 
     y_e_e = [0] * n
     y_er_e = [0] * n
@@ -95,14 +144,15 @@ def plot_funcs_h(f, y0: float, a: float, b: float, h: float):
         y_er_e[i] = np.max(np.abs(y_f - y_er))
         y_rk_e[i] = np.max(np.abs(y_f - y_rk))
 
-    fig, (ax1, ax2) = plt.subplots(1, 2)
+    fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
 
-    ax1.plot(h_a, y_e_e, 'b')
-    ax1.plot(h_a, y_er_e, 'c')
-    ax1.plot(h_a, y_rk_e, 'r')
+    ax1.plot(h_a, y_e_e, 'bo-')
+    ax1.plot(h_a, y_er_e, 'co-')
+    ax1.plot(h_a, y_rk_e, 'ro-')
 
     ax1.set_title("Errors Log")
-    ax2.set_title("Errors Normal")
+    ax2.set_title("Errors Log x, norm y")
+    ax3.set_title("Errors Normal")
 
     ax1.legend(['Euler', 'Euler Recalc', 'Runge-Kutta'])
     ax1.set_xlabel("h")
@@ -110,13 +160,23 @@ def plot_funcs_h(f, y0: float, a: float, b: float, h: float):
 
     ax1.set_xscale('log')
     ax1.set_yscale('log')
+    
+    ax2.plot(h_a, y_e_e, 'bo-')
+    ax2.plot(h_a, y_er_e, 'co-')
+    ax2.plot(h_a, y_rk_e, 'ro-')
+    
+    ax2.set_xscale('log')
 
-    ax2.plot(h_a, y_e_e, 'b')
-    ax2.plot(h_a, y_er_e, 'c')
-    ax2.plot(h_a, y_rk_e, 'r')
-
-    plt.draw()
-
+    ax3.plot(h_a, y_e_e, 'bo-')
+    ax3.plot(h_a, y_er_e, 'co-')
+    ax3.plot(h_a, y_rk_e, 'ro-')
+    
+    print("h, e, er, rk")
+    print(*(zip(h_a, y_e_e, y_er_e, y_rk_e)), sep="\n")
+    
+    
+    # fig.canvas.draw_idle()
+    
 
 class Test(Enum):
     NONE = -1
@@ -128,15 +188,17 @@ class Test(Enum):
     COS2Y = 5
     LN = 6
     SINX2Y = 7
+    ESINYCOS = 8
+    
 
 
 if __name__ == '__main__':
 
-    y0 = 1
-    x0, xn = 0, 5
-    h = 0.0000237
+    y0 = 0
+    x0, xn = 0, 10
+    h = 0.02
 
-    t = Test.SINX2Y
+    t = Test.ESINYCOS
 
     match t:
         case Test.ONE:
@@ -166,7 +228,7 @@ if __name__ == '__main__':
         case Test.XY:
             f = (
                 lambda a, b: a + b,
-                lambda a: (y0 + x0 + 1) / np.e ** x0 * np.e ** a - a - 1
+                lambda a: (y0 + x0 + 1) * np.e ** (a - x0) - a - 1
             )
 
         case Test.COS2Y:
@@ -189,8 +251,19 @@ if __name__ == '__main__':
                 lambda a: y0 / sol(x0) * sol(a)
             )
 
-    plot_funcs(f, y0, x0, xn, h)
+        case Test.ESINYCOS:
+            
+            y0 = 0
+            x0 = 0
+            
+            f = (
+                lambda a, b: np.exp(-np.sin(a)) - b * np.cos(a),
+                lambda a: a * np.exp(-np.sin(a))
+            )
+
+    sliders = plot_funcs(f, y0, x0, xn, h)
 
     plot_funcs_h(f, y0, x0, xn, h)
 
+    plt.autoscale()
     plt.show()
