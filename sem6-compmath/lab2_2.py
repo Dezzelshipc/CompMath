@@ -24,10 +24,27 @@ def TDMA(a,b,c,f):
     return x
 
 
+def TDMAsolver(a, b, c, d):
+    nf = len(d)  # number of equations
+    ac, bc, cc, dc = map(np.array, (a, b, c, d))  # copy arrays
+    for it in range(1, nf):
+        mc = ac[it - 1] / bc[it - 1]
+        bc[it] = bc[it] - mc * cc[it - 1]
+        dc[it] = dc[it] - mc * dc[it - 1]
+
+    xc = bc
+    xc[-1] = dc[-1] / bc[-1]
+
+    for il in range(nf - 2, -1, -1):
+        xc[il] = (dc[il] - cc[il] * xc[il + 1]) / bc[il]
+
+    return xc
+
+
 
 # Var 5
-al0, be0, ga0 = 1, -2, 1
-al1, be1, ga1 = 1, 0, 0.5
+# al0, be0, ga0 = 1, -2, 1
+# al1, be1, ga1 = 1, 0, 0.5
 
 # Var 1
 # al0, be0, ga0 = 1, 0, 1
@@ -38,39 +55,39 @@ al1, be1, ga1 = 1, 0, 0.5
 # al1, be1, ga1 = 1, 0, np.sqrt(2)
 
 # Var 9
-# al0, be0, ga0 = 3, -1, 1
-# al1, be1, ga1 = 0, 1, np.sqrt(2)
+al0, be0, ga0 = 3, -1, 1
+al1, be1, ga1 = 0, 1, np.sqrt(2)
 
 def exact(x):
-    return 1 / (x ** 2 + 1)
+    # return 1 / (x ** 2 + 1)
     # return 1 / (x+1)
     # return np.sqrt(x+1)
-    # return 2/3 * (x+1)**(3/2)
+    return 2/3 * (x+1)**(3/2)
 
 def p(x):
-    return -(x ** 2 + 1)
+    # return -(x ** 2 + 1)
     # return -x+1
     # return 1/(2*(x+1))
-    # return 0
+    return 0
 
 def q(x):
-    return -2*x
+    # return -2*x
     # return -1
     # return -1
-    # return -3/(x+1)**2
+    return -3/(x+1)**2
 
 def f(x):
-    return 2 * (3 * x**2 - 1) / (x ** 2 + 1) ** 3
+    # return 2 * (3 * x**2 - 1) / (x ** 2 + 1) ** 3
     # return -2*x/(x+1)**3
     # return -np.sqrt(x+1)
-    # return -3/(2 * np.sqrt(x+1))
+    return -3/(2 * np.sqrt(x+1))
 
 def ac(h, p_):
     r = p_ * h / 2
-    mid = abs(r) + np.exp(-abs(r))
+    # mid = abs(r) + np.exp(-abs(r))
     # mid = 1
     # mid = np.arctan(r)/r
-    # mid = 1 + r**2 / (1 + abs(r) + np.sin(r)**2)
+    mid = 1 + r**2 / (1 + abs(r) + np.sin(r)**2)
     return (mid - r) / h ** 2, (mid + r) / h ** 2
 
 
@@ -79,10 +96,9 @@ def solver(l, r, n):
     al.append(0)
     xl = np.linspace(l, r, n+1)
     
-    h = (r - l) / n
-    
+    h = (r - l)/(n)
+
     x = l
-    i_c = 1
 
     a0 = al0 - 3 * be0 / (2 * h)
     b0 = 2 * be0 / h
@@ -96,17 +112,16 @@ def solver(l, r, n):
         a1, c1 = ac(h, p(x))
         
         b1 = q(x) - a1 - c1
-        k = a1/a0
+        k = c0/c1
         
-        bl.append(b1 - k * b0)
-        cl.append(c1 - k * c0)
-        fl.append(f(x) - k * ga0)
-        i_c = 2
+        bl.append(a0 - k * a1)
+        cl.append(b0 - k * b1)
+        fl.append(ga0 - k * f(x))
 
 
-    end_i = n-1 if be1 != 0 else n
+    end_i = n-1 if be0 != 0 else n
 
-    for i in range(i_c, end_i):
+    for i in range(1, n):
         x = xl[i]
         
         ai, ci = ac(h, p(x))
@@ -125,17 +140,20 @@ def solver(l, r, n):
         al.append(0)
         bl.append(al1)
         fl.append(ga1)
+
     else:
         x = xl[-2]
         
         an1, cn1 = ac(h, p(x))
         bn1 = q(x) - an1 - cn1
         
-        k = cn1 / cn
+        k = an1 / an
         
-        al.append(an1 - k * an)
+        x = xl[-1]
+        al.append(0)
         bl.append(bn1 - k * bn)
-        fl.append(f(x) - k * ga1)
+        cl.append(cn1 - k * cn)
+        fl.append(fl[-1] - k * ga1)
     
     # tf = np.array([abs(al[i])+abs(cl[i]) <= abs(bl[i]) for i in range(1,len(cl))])
     # print(tf.all())
@@ -149,29 +167,27 @@ def solver(l, r, n):
 
     # yl = np.linalg.solve(A, fl)
     
-    if be0 != 0:
-        y0 = (ga0 - b0 * yl[0] - c0 * yl[1]) / a0
-        yl = np.append([y0], yl)
+     
+    # if be0 != 0:
+    #     y0 = (ga0 - b0 * yl[0] - c0 * yl[1]) / a0
+    #     yl = np.append([y0], yl)
+    #     xl = np.append([l], xl)
         
-    if be1 != 0:
-        yn = (ga1 - bn * yl[-1] - an * yl[-2]) / cn
-        yl = np.append(yl, yn)
-    
+    # if be1 != 0:
+    #     yn = (ga1 - bn * yl[-1] - an * yl[-2]) / cn
+    #     yl = np.append(yl, yn)
+    #     xl = np.append(xl, r)
 
     return np.array( xl ), np.array( yl )
     
 
 fig, (ax, ax2) = plt.subplots(1, 2)
 
-n = 10
+n = 100
 l, r = 0, 1
 
 xl, yl = solver(l, r, n)
 y_ex = exact(xl)
-
-# np.set_printoptions(formatter={'all': lambda x: "{:.4g}".format(x)})
-# print(yl)
-# print(y_ex)
 
 my_sol, = ax.plot(xl, yl, 'bo-', markersize=3)
 exa, = ax.plot(xl, y_ex, 'g')
@@ -192,9 +208,6 @@ def upd(val_n):
     diff = np.abs(yl - y_ex)
     diff_p.set_data(xl, diff)
     ax2.legend([np.max(diff)])
-    
-    ax2.relim()
-    ax2.autoscale_view()
     
 n_ax = fig.add_axes([0.1, 0.02, 0.8, 0.03])
 n_slider = Slider(

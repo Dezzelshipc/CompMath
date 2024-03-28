@@ -195,8 +195,8 @@ class Test(Enum):
 if __name__ == '__main__':
 
     y0 = 0
-    x0, xn = 0, 10
-    h = 0.02
+    x0, xn = 0, 1
+    h = 0.1
 
     t = Test.ESINYCOS
 
