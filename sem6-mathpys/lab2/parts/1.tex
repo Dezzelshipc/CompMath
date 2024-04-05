@@ -1,25 +1,23 @@
 \section*{Задание 1}
     Найти собственные функции $y_k, ~ k = 0, 1, 2, \dots$, оператора: 
     \[
-        \left\{
-            \begin{aligned}
-                & y'' + 3y = \lambda y, \quad x \in (0, 1), \\
-                & y(0) = 0,\quad y'(1) = 0
-            \end{aligned}
-        \right.
+        \begin{cases}
+            y'' + 3y = \lambda y, \quad x \in (0, 1), \\
+            y(0) = 0,\quad y'(1) = 0
+        \end{cases}
     \]
-    \[ y'' + (3-\lambda) y = 0; \quad k^2 + (3-\lambda) = 0; \quad k = \pm \sqrt{3 - \lambda} \]
-    \[ \lambda - 3 = -\mu^2; \quad k_{1,2} = \pm \mu i \]
+    \[ y'' + (3-\lambda) y = 0; \quad k^2 + (3-\lambda) = 0; \quad k = \pm \sqrt{\lambda - 3} \]
+    \[ \sqsupset \lambda - 3 = -\mu^2; \quad k_{1,2} = \pm \mu i \]
     \[ 
         y(x) = C_1 \sin \mu x + C_2 \cos \mu x; \quad y'(x) = C_1 \mu \cos \mu x - C_2 \mu \sin \mu x 
     \]
-    \[ y(0) = C_2 = 0; \quad y'(1) = C_1 \mu \cos \mu = 0 \implies \mu_k = \frac{\pi}{2} + \pi k, k = 0, 1, \dots \]
+    \[ y(0) = C_2 = 0; \quad y'(1) = C_1 \mu \cos \mu = 0 \Rightarrow \mu_k = \frac{\pi}{2} + \pi k, ~ k = 0, 1, \dots \]
     \[ y_k(x) = C_1 \sin \left( (0.5 + k) \pi x \right) \]
 
     Нормируем систему:
-    \[ \frac{y_k}{||y_k||} = \frac{C_1 \sin \left( (0.5 + k) \pi x \right) }{ \sqrt{ C_1^2 \int_0^1 \left( \sin^2 \left( (0.5 + k) \pi x \right) \right) dx }} = \star \]
+    \[ \overline{ y_k }(x) = \frac{y_k}{||y_k||} = \frac{C_1 \sin \left( (0.5 + k) \pi x \right) }{ \sqrt{ C_1^2 \int_0^1 \left( \sin^2 \left( (0.5 + k) \pi x \right) \right) dx }} = \star \]
 
-    \[ \int_0^1 \left( \sin^2 \left( (0.5 + k) \pi x \right) \right)dx = \int_0^1 \frac{1 - \cos\left((1 + 2k)\pi \right)}{2}dx = \]
+    \[ \int_0^1 \sin^2 \left( (0.5 + k) \pi x \right) dx = \int_0^1 \frac{1 - \cos\left((1 + 2k)\pi \right)}{2}dx = \]
     \[ = \frac{1}{2} - \frac{\sin(\pi + 2 \pi k)}{2(\pi + 2 \pi k)} = \frac{1}{2} \]
 
     \[ \star = \frac{ \sin \left( (0.5 + k) \pi x \right) }{ \sqrt{ \frac{1}{2} } } = \sqrt{2} \sin \left( (0.5 + k) \pi x \right) \]

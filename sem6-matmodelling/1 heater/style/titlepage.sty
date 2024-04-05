@@ -16,7 +16,7 @@
     <<\uline{~\the\day~}>> \uline{~\monthname{\the\month}~} 20\uline{\DTMtwodigits{\the\year}}~г.
 }
 
-\newcommand{\fefutitlepage}[6]{
+\newcommand{\fefutitlepage}[7]{
 
     \thispagestyle{empty}
 
@@ -85,7 +85,9 @@
 
         \usersignature{#5}
 
-        \usersignature{#6}
+        #6
+
+        \usersignature{#7}
 
         \vspace{10pt}
 

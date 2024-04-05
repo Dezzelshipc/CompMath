@@ -1,11 +1,9 @@
 import numpy as np
-import scipy as sci 
-import matplotlib.pyplot as plt 
-import math
+import matplotlib.pyplot as plt
 
 
 def runge_kutta(function, y0: float, a: float, b: float, h: float):
-    num = math.ceil((b - a) / h)
+    num = int((b - a) / h + 1)
     x_a = np.linspace(a, b, num=num, endpoint=False)
     y_a = [y0] * num
 
@@ -40,13 +38,10 @@ def H(T):
 def H0(T):
     return 1.
 
-def H1(T):
-    return 1 if T < T_l else (T_u - T)/(T_u - T_l)
-
 
 def utug(P, m, c, S, k):
     def dTdt(t, T):
-        return (P * H(T) - k * S * (T - T0) - sigma * S * (T**4 - T0**4)) / (c * m)
+        return (P * H0(T) - k * S * (T - T0) - sigma * S * (T**4 - T0**4)) / (c * m)
     
     x = np.linspace(a, b, n)
 
@@ -62,7 +57,7 @@ P = 3000
 m = 0.5
 c = 897  # Алюминий
 S = 0.4
-k = 10
+k = 2
 T0 = 20 + KC
 
 
@@ -75,6 +70,6 @@ plt.ylabel('T(t) - Температура в цельсиях')
 plt.xlim([a,b])
 # plt.ylim([min(y_), max(y_)+ 10])
 
-plt.savefig("./sem6-matmodelling/asd.png")
+plt.savefig("./sem6-matmodelling/utug.pdf")
 
 plt.show()
