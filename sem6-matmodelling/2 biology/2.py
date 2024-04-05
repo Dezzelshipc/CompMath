@@ -67,14 +67,14 @@ def model(a, b, c, d, y0):
     # plt.plot(y[1], y[0])
 
 t0, tn = 0, 10
-n = 10000
+n = 1000
 
 a, c = 2, 0.5
 b, d = 1, 0.5
 
 init_val = [[4,4], [2,6], [3,2], [5, 3], [2,3], [2,1]]
 
-count_time(a,b,c,d, [4,4])
+# count_time(a,b,c,d, [4,4])
 
 phase(a,b,c,d, init_val)
 

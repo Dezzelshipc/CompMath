@@ -163,7 +163,7 @@ def solver(l, r, n):
 
 fig, (ax, ax2) = plt.subplots(1, 2)
 
-n = 10
+n = 100
 l, r = 0, 1
 
 xl, yl = solver(l, r, n)

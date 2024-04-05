@@ -1,5 +1,4 @@
 import numpy as np
-import scipy as sci 
 import matplotlib.pyplot as plt 
 import math
 
@@ -59,7 +58,7 @@ def model(y0, right):
     
     return x_, y_
 
-t0, tn = 0, 150
+t0, tn = 0, 15
 n = 1000
 
 g = 9.8
@@ -70,21 +69,32 @@ k = 0.1
 Af = 2
 wf = 0.5
 
-init = [np.pi/10, 0]
-# x_, y_ = model(init, right_lin)
-# plt.plot(x_, y_[0])
+plt.figure(0)
+init = [np.pi/5, 0]
+x_, y_ = model(init, right_lin)
+plt.plot(x_, y_[0])
 
-# x_, y_ = model(init, right_sin)
-# plt.plot(x_, y_[0])
+x_, y_ = model(init, right_sin)
+plt.plot(x_, y_[0])
 
-# x_, y_ = model(init, right_fric)
-# plt.plot(x_, y_[0])
+plt.figure(5)
+tn = 50
+x_, y_ = model(init, right_fric)
+plt.plot(x_, y_[0])
 
-# x_, y_ = model(init, right_force)
-# plt.plot(x_, y_[0])
 
+plt.figure(7)
+x_, y_ = model(init, right_force)
+plt.plot(x_, y_[0])
+
+
+tn = 150
+plt.figure(8)
+x_, y_ = model(init, right_force_firc)
+plt.plot(x_, y_[0])
 
 # 5
+plt.figure(10)
 c = 100
 hw = 0.005
 wl = []
