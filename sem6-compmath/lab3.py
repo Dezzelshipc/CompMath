@@ -1,7 +1,7 @@
 import numpy as np
 import math
 import matplotlib.pyplot as plt
-from matplotlib.widgets import Slider
+from matplotlib import cm
 
 def TDMA(a,b,c,f):
     a, b, c, f = tuple(map(lambda k_list: list(map(float, k_list)), (a, c, b, f)))
@@ -40,31 +40,33 @@ def be(t):
 
 ax, bx = 0, 4
 at, bt = 0, 0.1
-
-h = 0.01
-tau = 0.01
 a = 16 / np.pi
 
-n = int((bx-ax)/h)
-m = int((bt-at)/tau)
+n = 100 # spase steps
+m = 10000 # time steps
 
 u = np.zeros((m+1, n+1))
 xl = np.linspace(ax, bx, num=n+1)
 tl = np.linspace(at, bt, num=m+1)
 
+h = xl[1]-xl[0]
+tau = tl[1]-tl[0]
+
+print(tau, h**2 / (2*a**2), tau < h**2 / (2 * a**2))
+
 u[0] = g(xl)
 u[:, 0] = mu(tl)
 u[:, -1] = be(tl)
 
-
+ul = [[]] * 3
 
 def explicit():
     var = a * tau / h ** 2
     for ti in range(m):
         for xi in range(1, n):
             u[ti+1, xi] = var * (u[ti, xi-1] - 2*u[ti, xi] + u[ti, xi+1]) + u[ti, xi]
-        
-    print(max(abs(u[-1] - exact(xl, bt))))
+    
+    ul[0] = u.copy()
             
 def implicit():
     var = a * tau / h ** 2
@@ -82,7 +84,7 @@ def implicit():
         
         u[ti+1] = TDMA(al, bl, cl, -u[ti])
         
-    print(max(abs(u[-1] - exact(xl, bt))))
+    ul[1] = u.copy()
 
 def kr_nik():
     var = a * tau / (2 * h ** 2)
@@ -103,8 +105,8 @@ def kr_nik():
             f[xi] += -var * (u[ti, xi-1] - 2*u[ti, xi] + u[ti, xi+1])
         
         u[ti+1] = TDMA(al, bl, cl, f)
-        
-    print(max(abs(u[-1] - exact(xl, bt))))
+      
+    ul[2] = u.copy()  
 
 
 explicit()
@@ -112,8 +114,34 @@ implicit()
 kr_nik()
 
 # print(max(abs(u[-1] - exact(xl, bt))))
+il = range( len(tl))
 
-plt.plot(xl, exact(xl, bt))
-plt.plot(xl, u[-1])
+for ui in ul:
+    dl = []
+    if len(ui):
+        for i in il:
+            dl.append(max(abs(ui[i] - exact(xl, tl[i]))))
+    else:
+        dl = [0]*len(il)
+        
+    plt.plot(tl, dl, 'o-', markersize=2)
+    
+leg = ["1. Explicit", "2. Implicit", "3. Kr-Nick"]
+plt.legend(leg)
+plt.xlabel("t")
+plt.ylabel("max error")
+plt.title(f"space steps: {n}, time steps: {m}")
 
+xx, tt = np.meshgrid(xl, tl)
+for i in range(3):
+    if len(ul[i]):
+        fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+        ax.plot_surface(xx, tt, ul[i], cmap=cm.plasma,
+                        linewidth=0, antialiased=False)
+        ax.set_title(leg[i])
+        ax.set_xlabel('x')
+        ax.set_ylabel('t')
+        ax.set_zlabel('u')
+
+# print(cm.cmaps_listed)
 plt.show()

@@ -69,43 +69,46 @@ k = 0.1
 Af = 2
 wf = 0.5
 
-plt.figure(0)
 init = [np.pi/5, 0]
-x_, y_ = model(init, right_lin)
-plt.plot(x_, y_[0])
+# plt.figure(0)
+# x_, y_ = model(init, right_lin)
+# plt.plot(x_, y_[0])
 
-x_, y_ = model(init, right_sin)
-plt.plot(x_, y_[0])
+# x_, y_ = model(init, right_sin)
+# plt.plot(x_, y_[0])
 
-plt.figure(5)
-tn = 50
-x_, y_ = model(init, right_fric)
-plt.plot(x_, y_[0])
-
-
-plt.figure(7)
-x_, y_ = model(init, right_force)
-plt.plot(x_, y_[0])
+# plt.figure(5)
+# tn = 50
+# x_, y_ = model(init, right_fric)
+# plt.plot(x_, y_[0])
 
 
-tn = 150
-plt.figure(8)
-x_, y_ = model(init, right_force_firc)
-plt.plot(x_, y_[0])
+# plt.figure(7)
+# x_, y_ = model(init, right_force)
+# plt.plot(x_, y_[0])
+
+
+# tn = 150
+# plt.figure(8)
+# x_, y_ = model(init, right_force_firc)
+# plt.plot(x_, y_[0])
 
 # 5
 plt.figure(10)
-c = 100
-hw = 0.005
-wl = []
+
+t0, tn = 0, 150
+n = 1000
+
+c = 201
+aw = w-w/4
+bw = w+w/4
+wfs = [aw + i * (bw-aw)/c for i in range(c + 1)]
 Al = []
-for i in range(-c, c+1):
-    wf = w + hw * i
+for wf in wfs:
     x_, y_ = model(init, right_force_firc)
-    wl.append( wf )
     Al.append(max(abs( y_[0][-n//4 : -1] )))
     
-plt.plot(wl, Al)
+plt.plot(wfs, Al, 'o-', markersize=3)
 plt.xlabel("w")
 plt.ylabel("A")
 

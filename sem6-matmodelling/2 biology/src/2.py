@@ -79,5 +79,5 @@ init_val = [[4,4], [2,6], [3,2], [5, 3], [2,3], [2,1]]
 phase(a,b,c,d, init_val)
 
 # plt.savefig("./sem6-matmodelling/asd.png")
-
+plt.title(f"{a=}, {c=}; {b=}, {d=}")
 plt.show()

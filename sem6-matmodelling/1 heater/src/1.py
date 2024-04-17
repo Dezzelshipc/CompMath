@@ -25,7 +25,7 @@ T_u = 200 + KC
 
 
 is_turned = True
-def H(T):
+def H1(T):
     global is_turned
 
     if T > T_u:
@@ -38,18 +38,21 @@ def H(T):
 def H0(T):
     return 1.
 
+H = ()
 
+leg = []
 def utug(P, m, c, S, k):
     def dTdt(t, T):
-        return (P * H0(T) - k * S * (T - T0) - sigma * S * (T**4 - T0**4)) / (c * m)
+        return (P * H(T) - k * S * (T - T0) - sigma * S * (T**4 - T0**4)) / (c * m)
     
     x = np.linspace(a, b, n)
 
     x, y = runge_kutta(dTdt, T0, a, b, (b-a)/n)
-    y -= KC
+    # y -= KC
+    leg.append(f"{P = }, {m = }, {c = }, {S = }, {k = }")
     plt.plot(x, y)
 
-a, b = 0, 100
+a, b = 0, 250
 n = 10000
 
 
@@ -60,16 +63,68 @@ S = 0.4
 k = 2
 T0 = 20 + KC
 
+def roots():
+    def diff(T):
+        return (-4 * sigma * S * T**3 - k * S) / (c*m)
 
-utug(P, m, c, S, k)
+    coeff = np.zeros(5)
+    coeff[0] = sigma
+    coeff[3] = k
+    coeff[4] = -sigma*T0**4 - k*T0 - P/S
+
+
+    for root in np.roots(coeff):
+        print(root, diff(root))
+
+def without_term():
+    global H
+    H = H0
+    utug(P, m, c, S, k)
+    utug(P, 1.0, c, S, k)
+    utug(P, m, 554, S, k) # Чугун
+    utug(P, m, c, S/2, k)
+    utug(2500, m, c, S, k)
+    utug(P, m, c, S, 4)
+
+    plt.legend(leg)
     
-# plt.legend(ms)
+    plt.plot([a, b], [600, 600], 'y--')
+    plt.savefig("./sem6-matmodelling/utug1.pdf")
+
+def with_trem(P, m, c, S, k):
+    global H, T_l, T_u
+    H = H1
+    leg2 = []
+    def al2():
+        leg2.append(f"T_min = {T_l}, T_max = {T_u}")
+
+    T_l = 490
+    T_u = 500
+    al2()
+
+    utug(P, m, c, S, k)
+    T_l = 530
+    T_u = 560
+    al2()
+    utug(P, m, c, S, k)
+
+    T_l = 510
+    T_u = 515
+    al2()
+    utug(P, m, c, S, k)
+    
+    plt.legend(leg2)
+    plt.savefig("./sem6-matmodelling/utug2.pdf")
+
+
+
 plt.xlabel('t - Время')
-plt.ylabel('T(t) - Температура в цельсиях')
+plt.ylabel('T(t) - Температура в кельвинах')
 
+# without_term()
+with_trem(2500, 1, c, S/2, 2)
+
+plt.xlabel('t - Время')
+plt.ylabel('T(t) - Температура в кельвинах')
 plt.xlim([a,b])
-# plt.ylim([min(y_), max(y_)+ 10])
-
-plt.savefig("./sem6-matmodelling/utug.pdf")
-
 plt.show()
