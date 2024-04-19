@@ -97,6 +97,8 @@ def with_trem(P, m, c, S, k):
     leg2 = []
     def al2():
         leg2.append(f"T_min = {T_l}, T_max = {T_u}")
+        plt.plot([a, b], [T_l-1]*2, '--', color='#A0A0A0')
+        plt.plot([a, b], [T_u+1]*2, '--', color='#A0A0A0')
 
     T_l = 490
     T_u = 500
@@ -122,6 +124,8 @@ plt.xlabel('t - Время')
 plt.ylabel('T(t) - Температура в кельвинах')
 
 # without_term()
+# with_trem(3000, 0.5, c, S, 2)
+# with_trem(2500, 0.4, 554, S/2, 2)
 with_trem(2500, 1, c, S/2, 2)
 
 plt.xlabel('t - Время')

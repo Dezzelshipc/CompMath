@@ -14,8 +14,10 @@ def solve(matrix: np.matrix, values: np.array, eps: float = 1e-5, w: float = 1, 
         for i in range(len(matrix)):
             x[i] = (1 - w) * x[i] + w / matrix[i, i] * (values[i] - sum(matrix[i, j] * x[j] for j in range(i)) - sum(
                 matrix[i, j] * x[j] for j in range(i + 1, len(matrix))))
-        if np.linalg.norm(x - x_prev, ord=1) < eps or iterations > iter_max:
+        norm = np.linalg.norm(x - x_prev, ord=1)
+        if norm < eps or iterations > iter_max:
             break
+        print(iterations, norm, "\r")
 
     return x, iterations
 
@@ -79,7 +81,7 @@ values = values.flatten()
 # print(matrix)
 # print(values)
 
-u, it = solve(matrix, values, eps=1e-2)
+u, it = solve(matrix, values, eps=1e-5)
 print(it)
 uu = u.reshape(m+1, n+1)
 

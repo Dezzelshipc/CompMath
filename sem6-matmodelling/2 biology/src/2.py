@@ -21,14 +21,17 @@ def runge_kutta(function, y0: float, a: float, b: float, h: float):
 
 def count_time(a, b, c, d, y0):
     plt.figure("C(t)")
-    x, y = model(a, b, c, d, np.array(y0))
+    leg = []
+    for i in range(len(y0)):
+        x, y = model(a, b, c, d, np.array(y0[i]))
 
-    plt.plot(x, y[0])
-    plt.plot(x, y[1])
+        plt.plot(x, y[0])
+        plt.plot(x, y[1])
+        leg.extend([f"N{i} - жертвы", f"M{i} - хищники"])
     
     plt.xlabel('t - Время')
     plt.ylabel('C(t) - Количество')
-    plt.legend(["N - жертвы", "M - хищники"])
+    plt.legend(leg)
     
     plt.xlim(left=0)
     plt.ylim(bottom=0)
@@ -69,15 +72,21 @@ def model(a, b, c, d, y0):
 t0, tn = 0, 10
 n = 1000
 
-a, c = 2, 0.5
-b, d = 1, 0.5
+# a, c = 2, 0.5
+# b, d = 1, 0.5
 
-init_val = [[4,4], [2,6], [3,2], [5, 3], [2,3], [2,1]]
+a, c = 2, 2
+b, d = 1, 4
 
-# count_time(a,b,c,d, [4,4])
+ravno = [b/d, a/c]
+
+init_val = [[4,4], [2,6], [3,2], [5, 3], [2,3], [2,1], [1/2, 1/2]]
+
+# count_time(a,b,c,d, [[4,4], [2,6], ravno])
 
 phase(a,b,c,d, init_val)
 
-# plt.savefig("./sem6-matmodelling/asd.png")
+plt.savefig("./sem6-matmodelling/population.pdf")
 plt.title(f"{a=}, {c=}; {b=}, {d=}")
+print(f"{a = }, {c = }, {b = }, {d = }")
 plt.show()

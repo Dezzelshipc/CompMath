@@ -1,6 +1,11 @@
 \section{Вычислительные эксперименты}
+
     \subsection{Алгоритм}
-        Для расчётов и визуализации был использован язык Python с библиотеками numpy и matplotlib, в котором был реализован метод Рунге-Кутта.
+        Для компьютерного вычисления будем использовать метод Рунге-Кутты, с помощью которого получим численное решение системы дифференциальных уравнений с заданными параметрами. После чего построим графики решений на координатной и фазовой плоскостях.
+
+
+    \subsection{Программа}
+        Для расчётов и визуализации был использован язык Python с библиотеками numpy и matplotlib.
 
         \lstinputlisting[language=Python,
         captionpos=t,
@@ -8,39 +13,39 @@
         basicstyle=\footnotesize\dejavu,
         frame=lines]{src/2.py}
 
-    \subsection{Модель без терморегулятора}
+    \subsection{Графики на координатной плоскости}
+        Построим несколько решений системы с одинаковыми параметрами, но разными начальными условиями, в том числе и точку равновесия.
+
         \begin{figure}[H]
             \centering
-            \includegraphics[width=17cm]{pictures/utug1.pdf}
-            \caption{Графики моделей при $T_0 = 296$.}
+            \includegraphics[width=11cm]{pictures/population.pdf}
+            \caption{Графики при $a = 2, c = 0.5, b = 1, d = 0.5$, с начальными условиями $x_0=(4,4), ~ x_1 = (2,6), ~ x_2 = (N_e, M_e)$}
         \end{figure}
 
-        На графике (Рис. 1) построены несколько моделей с указанными параметрами, а также жёлтый пунктир на отметке $T = 600$ -- округлённое значение, найденное при анализе.
-        
-        Как можно увидеть, первые три модели, которые отличаются только массой и удельной теплоёмкостью, возрастают до определённого значения -- точки равновесия. 
-        
-        Остальные модели различаются в параметрах, которые влияют на максимальное значение, что можно также увидеть.
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=11cm]{pictures/population2.pdf}
+            \caption{Графики при $a = 2, c = 2, b = 1, d = 4$, с начальными условиями $x_0=(4,4), ~ x_1 = (2,6), ~ x_2 = (N_e, M_e)$}
+        \end{figure}
+
     
-    \subsection{Модель с терморегулятора}
+    \subsection{Графики на фазовой плоскости}
         \begin{figure}[H]
             \centering
-            \includegraphics[width=12cm]{pictures/utug2.pdf}
-            \caption{Графики моделей при $P = 3000 \text{Вт}, ~ m = 0.5 \text{кг}, ~ c = 897 \frac{\text{Дж}}{\text{кг} \cdot \text{К}}, ~ S = 0.4 \text{м}^2, ~ k = 2, ~ T_0 = 296 \text{K}$.}
+            \includegraphics[width=12cm]{pictures/population3.pdf}
+            \caption{Графики при $a = 2, c = 0.5, b = 1, d = 0.5$, с указанными начальными условиями на интервале времени $ [0, 10] $.}
         \end{figure}
-
-
-        \begin{figure}[H]
-            \centering
-            \includegraphics[width=12cm]{pictures/utug3.pdf}
-            \caption{Графики моделей при $P = 2500 \text{Вт}, ~ m = 0.4 \text{кг}, ~ c = 554 \frac{\text{Дж}}{\text{кг} \cdot \text{К}}, ~ S = 0.2 \text{м}^2, ~ k = 4, ~ T_0 = 296 \text{K}$.}
-        \end{figure}
-
 
         \begin{figure}[H]
             \centering
-            \includegraphics[width=12cm]{pictures/utug4.pdf}
-            \caption{Графики моделей при $P = 2500 \text{Вт}, ~ m = 1 \text{кг}, ~ c = 897 \frac{\text{Дж}}{\text{кг} \cdot \text{К}}, ~ S = 0.2 \text{м}^2, ~ k = 2, ~ T_0 = 296 \text{K}$.}
+            \includegraphics[width=12cm]{pictures/population4.pdf}
+            \caption{Графики при $a = 2, c = 0.5, b = 1, d = 0.5$, с указанными начальными условиями на интервале времени $ [0, 1] $.}
         \end{figure}
 
-        На (Рис. 2, 3, 4) построены модели, у которых отличаются только максимальное и минимальное значение температуры для функции-<<переключателя>>.
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=12cm]{pictures/population5.pdf}
+            \caption{Графики при $a = 2, c = 2, b = 1, d = 4$, с указанными начальными условиями на интервале времени $ [0, 10] $.}
+        \end{figure}
+
 
