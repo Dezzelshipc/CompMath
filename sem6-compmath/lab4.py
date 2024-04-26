@@ -24,6 +24,7 @@ def solve(matrix: np.matrix, values: np.array, eps: float = 1e-5, w: float = 1, 
 def g(x, y):
     return -x*y*(x-1)*(y-1)*(2*y+x)
     # return 0
+    # return x**2 * y*(x-1)*(y-1)*(1+x)**2
 
 def phi(x, y):
     return 0
@@ -33,8 +34,8 @@ def phi(x, y):
 
 ax, bx = 0, 1
 ay, by = 0, 1
-n = 20
-m = 20
+n = 3
+m = 3
 
 hx = bx/n
 hy = by/m
@@ -78,24 +79,27 @@ for i in [0, n]:
 
 values = values.flatten()
 
-# print(matrix)
+print(matrix)
 # print(values)
 
-u, it = solve(matrix, values, eps=1e-5)
-print(it)
-uu = u.reshape(m+1, n+1)
+# u, it = solve(matrix, values, eps=1e-5)
+# print(it)
+u = np.linalg.solve(matrix, values)
+uu = u.reshape(n+1, m+1)
 
 
 xx, yy = np.meshgrid(xl, yl)
         
-fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
-ax.plot_surface(xx, yy, uu, 
-                cmap=cm.plasma,
-                linewidth=0, antialiased=True)
-# ax.set_title(leg[i])
-ax.set_xlabel('x')
-ax.set_ylabel('y')
-ax.set_zlabel('u')
+# fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+# ax.plot_surface(xx, yy, uu, 
+#                 cmap=cm.plasma,
+#                 linewidth=0, antialiased=True)
+# # ax.set_title(leg[i])
+# ax.set_xlabel('x')
+# ax.set_ylabel('y')
+# ax.set_zlabel('u')
+
+plt.imshow(uu, origin='lower', extent=[ax,bx,ay,by])
 
 # print(cm.cmaps_listed)
 plt.show()
