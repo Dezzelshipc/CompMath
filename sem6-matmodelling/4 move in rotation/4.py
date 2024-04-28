@@ -27,7 +27,7 @@ def right(t, x):
 
 
 t0, tn = 0, 10
-n = 100
+n = 1000
     
 w = 1
 
@@ -35,10 +35,12 @@ def model(init):
     t, x = runge_kutta(right, init, t0, tn, (tn-t0)/n)
     x = x.T
 
-    plt.plot(x[0] , x[1])
+    plt.plot(x[0] , x[1], marker='o', markevery=[0])
 
 model([5,3,4,4])
 model([5,3,5,5])
+model([5,3,1,1])
+model([5,3,-1,-1])
 
 plt.grid(True)
 plt.axhline(y=0, color='k')

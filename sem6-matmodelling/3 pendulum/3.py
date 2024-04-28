@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt 
+import matplotlib.cm as cm
 import math
 
 
@@ -59,7 +60,7 @@ def model(y0, right):
     return x_, y_
 
 t0, tn = 0, 15
-n = 1000
+n = 10000
 
 g = 9.8
 L = 1
@@ -69,48 +70,88 @@ k = 0.1
 Af = 2
 wf = 0.5
 
-init = [np.pi/5, 0]
-# plt.figure(0)
-# x_, y_ = model(init, right_lin)
-# plt.plot(x_, y_[0])
+init = [np.pi/10, 0]
+asd1 = False
+# asd1 = True
+if asd1:
+    plt.figure(0)
+    x_, y_1 = model(init, right_lin)
+    plt.plot(x_, y_1[0])
 
-# x_, y_ = model(init, right_sin)
-# plt.plot(x_, y_[0])
+    x_, y_2 = model(init, right_sin)
+    plt.plot(x_, y_2[0])
 
-# plt.figure(5)
-# tn = 50
-# x_, y_ = model(init, right_fric)
-# plt.plot(x_, y_[0])
+    plt.figure(1)
+    plt.plot(y_1[0], y_1[1])
+    plt.plot(y_2[0], y_2[1])
+
+asd2 = False
+# asd2 = True
+if asd2:
+    plt.figure(5)
+    tn = 50
+    x_, y_ = model(init, right_fric)
+    plt.plot(x_, y_[0])
+
+    plt.figure(6)
+    plt.plot(y_[0], y_[1])
+
+asd3 = False
+# asd3 = True
+if asd3:
+    plt.figure(70)
+    x_, y_ = model(init, right_force)
+    plt.plot(x_, y_[0])
+
+    plt.figure(71)
+    plt.plot(y_[0], y_[1])
 
 
-# plt.figure(7)
-# x_, y_ = model(init, right_force)
-# plt.plot(x_, y_[0])
+asd4 = False
+# asd4 = True
+if asd4:
+    wf = w
+    ne = 3* n//4
+    tn = 150
 
+    x_, y_ = model(init, right_force_firc)
 
-# tn = 150
-# plt.figure(8)
-# x_, y_ = model(init, right_force_firc)
-# plt.plot(x_, y_[0])
+    plt.figure(90)
+    ax = plt.gca()
+    ax.set_prop_cycle('color',plt.cm.plasma(np.linspace(0,1,n)))
+    
+    for i in range(n-1):
+        plt.plot(x_[i:i+2], y_[0][i:i+2])
+        
+    plt.figure(91)
+
+    ax = plt.gca()
+    ax.set_prop_cycle('color',plt.cm.plasma(np.linspace(0,1,n)))
+    for i in range(n-1):
+        plt.plot(y_[0][i:i+2], y_[1][i:i+2])
 
 # 5
-plt.figure(10)
+asd5 = False
+asd5 = True
+# Добавить рюшечек  (легенда, резонансная частота)
+if asd5:
+    tn = 150
+    plt.figure(100)
 
-t0, tn = 0, 150
-n = 1000
+    t0, tn = 0, 150
+    n = 1000
 
-c = 201
-aw = w-w/4
-bw = w+w/4
-wfs = [aw + i * (bw-aw)/c for i in range(c + 1)]
-Al = []
-for wf in wfs:
-    x_, y_ = model(init, right_force_firc)
-    Al.append(max(abs( y_[0][-n//4 : -1] )))
-    
-plt.plot(wfs, Al, 'o-', markersize=3)
-plt.xlabel("w")
-plt.ylabel("A")
+    c = 200
+    wh = w/4
+    wfs = [w + wh*(c//2 - i)/c for i in range(c + 1)]
+    Al = []
+    for wf in wfs:
+        x_, y_ = model(init, right_force_firc)
+        Al.append(max(abs( y_[0][-n//4 : -1] )))
+        
+    plt.plot(wfs, Al, 'o-', markersize=3)
+    plt.xlabel("w")
+    plt.ylabel("A")
 
 
 
