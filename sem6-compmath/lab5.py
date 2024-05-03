@@ -4,36 +4,36 @@ from matplotlib import cm
 
 # var 13
 def g(x, t):
-    # return t* x**2*(1-x)
+    return t* x**2*(1-x)
     # return 2*t*x**2*(1-x)
     # return -x**2*(1-x)
-    return 0
+    # return 0
 
 def phi(x):
     # return x*(1-x)
-    # return 2*x*(1-x)
+    return 2*x*(1-x)
     # return x*(x**2-1)
-    return 0
+    # return 0
 
 def psi(x):
-    # return x**3 - x**2
+    return x**3 - x**2
     # return -x**2 + x**3
-    return 0
+    # return 0
 
 def ga0(t):
     # return 0
     return 3*t
 
 def ga1(t):
-    return 0
-    # return t*(1-t)
+    # return 0
+    return t*(1-t)
 
 
-a = 4
+a = 2
 ax, bx = 0, 1
 at, bt = 0, 1
 
-n = 100
+n = 200
 m = 1000
 
 h = (bx - ax)/n

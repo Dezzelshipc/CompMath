@@ -67,10 +67,10 @@ L = 1
 w = np.sqrt( g / L )
 
 k = 0.1
-Af = 2
+Af = 1
 wf = 0.5
 
-init = [np.pi/10, 0]
+init = [np.pi/100, 0]
 asd1 = False
 # asd1 = True
 if asd1:
@@ -133,26 +133,34 @@ if asd4:
 # 5
 asd5 = False
 asd5 = True
-# Добавить рюшечек  (легенда, резонансная частота)
 if asd5:
-    tn = 150
     plt.figure(100)
 
     t0, tn = 0, 150
     n = 1000
 
-    c = 200
-    wh = w/4
-    wfs = [w + wh*(c//2 - i)/c for i in range(c + 1)]
+    c = 121
+    wh = 0.2
+    wfs = np.linspace(w-wh, w+wh, c+1)
+    
     Al = []
-    for wf in wfs:
+    for wfi in wfs:
+        wf = wfi
         x_, y_ = model(init, right_force_firc)
         Al.append(max(abs( y_[0][-n//4 : -1] )))
-        
+    
+
     plt.plot(wfs, Al, 'o-', markersize=3)
     plt.xlabel("w")
     plt.ylabel("A")
 
+    Al = np.array(Al)
 
+    plt.plot([w,w], [min(Al), max(Al)], '--')
+    wm = wfs[Al.argmax()]
+    plt.plot([wm, wm], [min(Al), max(Al)], '--')
+
+    plt.title("Зависимость амплитуды от частоты вынуждающих колебаний")
+    plt.legend(["Кривая амплитуд", f"Собственная частота ({w})", f"Резонансная частота ({wm})"])
 
 plt.show()
