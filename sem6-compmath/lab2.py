@@ -41,29 +41,38 @@ al1, be1, ga1 = 1, 0, 0.5
 # al0, be0, ga0 = 3, -1, 1
 # al1, be1, ga1 = 0, 1, np.sqrt(2)
 
+# lab 6
+al0, be0, ga0 = 1, 0, 0
+al1, be1, ga1 = 1, 0, 0
+
+
 def exact(x):
-    return 1 / (x ** 2 + 1)
+    # return 1 / (x ** 2 + 1)
     # return 1 / (x+1)
     # return np.sqrt(x+1)
     # return 2/3 * (x+1)**(3/2)
+    return 0.934 - 0.988 * x**2 + 0.054 * x**4
 
 def p(x):
-    return -(x ** 2 + 1)
+    # return -(x ** 2 + 1)
     # return -x+1
     # return 1/(2*(x+1))
     # return 0
+    return 1
 
 def q(x):
-    return -2*x
+    # return -2*x
     # return -1
     # return -1
     # return -3/(x+1)**2
+    return (1+x**2)
 
 def f(x):
-    return 2 * (3 * x**2 - 1) / (x ** 2 + 1) ** 3
+    # return 2 * (3 * x**2 - 1) / (x ** 2 + 1) ** 3
     # return -2*x/(x+1)**3
     # return -np.sqrt(x+1)
     # return -3/(2 * np.sqrt(x+1))
+    return -1
 
 def ac(h, p_):
     r = p_ * h / 2
@@ -164,7 +173,7 @@ def solver(l, r, n):
 fig, (ax, ax2) = plt.subplots(1, 2)
 
 n = 100
-l, r = 0, 1
+l, r = -1, 1
 
 xl, yl = solver(l, r, n)
 y_ex = exact(xl)

@@ -1,36 +1,69 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy as sc
+import sympy as sy
+from functools import cache
 
 # var 25
 def exact(x):
     return np.log(x**2 + x + 1)
-    # return 0.934 - 0.988 * x**2 + 0.054 * x**4
+    # return np.exp(x) / (x+1)
+    # return np.sqrt(x+1) * np.log(x+1)
 
-def p(x):
+def P(x):
     return 1 / (x**2 + x + 1)
-    # return 1
+    # return 0
+    # return -2
+    # return 2 * np.sqrt(x+1) / (x+1)
 
-def q(x):
+def Q(x):
     return 0
     # return (1+x**2)
+    # return -1
+    # return 1
+    # return -1/(np.sqrt(x+1) * (x+1))
 
-def f(x):
+def F(x):
     return (2 - 2*x**2)/(x**2 + x + 1)**2
     # return -1
+    # return -x
+    # return x**2 -4*x+2
+    # return 2 * np.exp(x) / (x+1)**3
+    # return (2 - np.log(x + 1) / (4 * np.sqrt(x+1))) / (x+1)
+
+@cache
+def p(x):
+    # x_ = sy.Symbol('x')
+    # integ = sy.integrate(P(x_), (x_, 0, x))
+    # print(integ.subs(x_, x))
+    # integ = float(integ.subs(x_, 3))
+    
+    integ = sc.integrate.quad(P, 0, x)[0]
+    
+    return np.exp(integ)
+
+def q(x):
+    return p(x) * Q(x)
+
+def f(x):
+    return p(x) * F(x)
 
 
 def phi(x, k):
-    if k == 0:
-        return x
-    else:
-        return np.sin(2 * np.pi * k * x) / (2 * np.pi * k)
+    # return 1 - x**(2*k) if k > 0 else 0
+    # return x**k * (1 - x)  if k > 0 else 0
+    return x**(k+1) / (k+1) - x**(k+2) / (k+2) if k > 0 else x
+    # return (x-1) * x**k if k > 0 else x
+    # return x**k * (1 - x)  if k > 0 else np.sqrt(2) * np.log(2) * x
+    # return x**k * (1 - x)  if k > 0 else exact(1) * x
+    
     
 def phi_p(x, k):
-    if k == 0:
-        return 1
-    else:
-        return np.cos(2 * np.pi * k * x)
+    x_ = sy.Symbol('x')
+    p = phi(x_, k)
+    p = sy.diff(p, x_)
+    return p.subs(x_, x)
+
 
 def u(x, c):
     return sum(c[i] * phi(x, i) for i in range(len(c)))
@@ -45,30 +78,43 @@ def right(i):
     return lambda x: -f(x) * phi(x, i) + q(x) * phi(x, 0) * phi(x, i) - p(x) * phi_p(x, 0) * phi_p(x, i)
 
 a, b = 0, 1
-n = 3
+n = 10
 
 matrix = np.zeros((n-1,n-1))
 values = np.zeros(n-1)
+
+x_ = sy.Symbol('x')
+
 for i in range(1, n):
     for j in range(1, n):
-        matrix[i - 1, j - 1] = sc.integrate.quad(part_p(i,j), a, b)[0] + sc.integrate.quad(part(i,j), a, b)[0]
+        int1 = sc.integrate.quad(part_p(i,j), a, b)
+        int2 = sc.integrate.quad(part(i,j), a, b)
+        
+        matrix[i - 1, j - 1] = int1[0] + int2[0]
+        
     
-    values[i-1] = sc.integrate.quad(right(i), a, b)[0]
+    intv = sc.integrate.quad(right(i), a, b)
+    values[i-1] = intv[0]
+    
     
 # print(matrix)
 # print(values)
 c = np.linalg.solve(matrix, values)
 c = np.append([1], c)
 
-print(c)
+# print(c)
 num = 1000
 x = np.linspace(a, b, num+1)
-plt.plot(x, exact(x))
 
-plt.plot(x, u(x, c))
+uu = u(x, c)
+plt.plot(x, uu)
 
-# for i in range(n):
-#     plt.plot(x, c[i]*phi(x, i))
+plt.plot(x, exact(x), '--')
+
+plt.figure(123)
+udiff = abs( exact(x) - uu )
+
+plt.plot(x, udiff)
 
 
 plt.show()

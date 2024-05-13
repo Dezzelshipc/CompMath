@@ -36,14 +36,14 @@ def right_sin(t, ab):
 def right_fric(t, ab):
     return np.array([
         ab[1],
-        -k * ab[1] - w**2 * ab[0]
+        -k * ab[1] - w**2 * np.sin( ab[0] )
     ])
 
 # 4
 def right_force(t, ab):
     return np.array([
         ab[1],
-        Af * np.sin(wf * t) - w**2 * ab[0]
+        Af * np.sin(wf * t) - w**2 * np.sin( ab[0] )
     ])
 
 # 5
@@ -66,11 +66,11 @@ g = 9.8
 L = 1
 w = np.sqrt( g / L )
 
-k = 0.1
+k = 0.01
 Af = 1
 wf = 0.5
 
-init = [np.pi/100, 0]
+init = [np.pi/10, 0]
 asd1 = False
 # asd1 = True
 if asd1:
@@ -112,23 +112,26 @@ asd4 = False
 if asd4:
     wf = w
     ne = 3* n//4
-    tn = 150
+    tn = 1000
+    n = 10000
 
     x_, y_ = model(init, right_force_firc)
 
-    plt.figure(90)
-    ax = plt.gca()
-    ax.set_prop_cycle('color',plt.cm.plasma(np.linspace(0,1,n)))
+    # plt.figure(90)
+    # ax = plt.gca()
+    # ax.set_prop_cycle('color',plt.cm.plasma(np.linspace(0,1,n)))
     
-    for i in range(n-1):
-        plt.plot(x_[i:i+2], y_[0][i:i+2])
+    # for i in range(n-1):
+    #     plt.plot(x_[i:i+2], y_[0][i:i+2])
         
-    plt.figure(91)
+    # plt.figure(91)
 
-    ax = plt.gca()
-    ax.set_prop_cycle('color',plt.cm.plasma(np.linspace(0,1,n)))
-    for i in range(n-1):
-        plt.plot(y_[0][i:i+2], y_[1][i:i+2])
+    # ax = plt.gca()
+    # ax.set_prop_cycle('color',plt.cm.plasma(np.linspace(0,1,n)))
+    # for i in range(n-1):
+    #     plt.plot(y_[0][i:i+2], y_[1][i:i+2])
+
+    plt.plot(x_, y_[0])
 
 # 5
 asd5 = False
@@ -136,31 +139,39 @@ asd5 = True
 if asd5:
     plt.figure(100)
 
-    t0, tn = 0, 150
-    n = 1000
+    t0, tn = 0, 1000
+    n = 10000
 
-    c = 121
-    wh = 0.2
-    wfs = np.linspace(w-wh, w+wh, c+1)
-    
-    Al = []
-    for wfi in wfs:
-        wf = wfi
-        x_, y_ = model(init, right_force_firc)
-        Al.append(max(abs( y_[0][-n//4 : -1] )))
-    
+    c = 100
+    wc = w
+    wh = 0.1
+    wfs = np.linspace(wc-wh, wc+wh, c+1)
+    wmax = []
+    Almax = []
+    for k in [0.1, 0.05, 0.01]:
+        print(k)
+        Al = []
+        for wfi in wfs:
+            wf = wfi
+            x_, y_ = model(init, right_force_firc)
+            Al.append(max(abs( y_[0][-min(n//4, 100) : -1] )))
+        
+        Al = np.array(Al)
 
-    plt.plot(wfs, Al, 'o-', markersize=3)
+        Almax.append(max(Al))
+        wmax.append(wfs[Al.argmax()])
+        plt.plot(wfs, Al, 'o-', markersize=3)
+
     plt.xlabel("w")
     plt.ylabel("A")
 
     Al = np.array(Al)
 
     plt.plot([w,w], [min(Al), max(Al)], '--')
-    wm = wfs[Al.argmax()]
-    plt.plot([wm, wm], [min(Al), max(Al)], '--')
+    
+    plt.plot(wmax, Almax, 'o--')
 
     plt.title("Зависимость амплитуды от частоты вынуждающих колебаний")
-    plt.legend(["Кривая амплитуд", f"Собственная частота ({w})", f"Резонансная частота ({wm})"])
+    plt.legend(["k = 0.1", "k = 0.05", "k = 0.01"])
 
 plt.show()
