@@ -1,45 +1,24 @@
+# Ritz method
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy as sc
 import sympy as sy
-from functools import cache
 
 # var 25
 def exact(x):
     return np.log(x**2 + x + 1)
-    # return np.exp(x) / (x+1)
-    # return np.sqrt(x+1) * np.log(x+1)
 
 def P(x):
     return 1 / (x**2 + x + 1)
-    # return 0
-    # return -2
-    # return 2 * np.sqrt(x+1) / (x+1)
 
 def Q(x):
     return 0
-    # return (1+x**2)
-    # return -1
-    # return 1
-    # return -1/(np.sqrt(x+1) * (x+1))
 
 def F(x):
     return (2 - 2*x**2)/(x**2 + x + 1)**2
-    # return -1
-    # return -x
-    # return x**2 -4*x+2
-    # return 2 * np.exp(x) / (x+1)**3
-    # return (2 - np.log(x + 1) / (4 * np.sqrt(x+1))) / (x+1)
 
-@cache
 def p(x):
-    # x_ = sy.Symbol('x')
-    # integ = sy.integrate(P(x_), (x_, 0, x))
-    # print(integ.subs(x_, x))
-    # integ = float(integ.subs(x_, 3))
-    
     integ = sc.integrate.quad(P, 0, x)[0]
-    
     return np.exp(integ)
 
 def q(x):
@@ -50,12 +29,9 @@ def f(x):
 
 
 def phi(x, k):
-    # return 1 - x**(2*k) if k > 0 else 0
-    # return x**k * (1 - x)  if k > 0 else 0
-    return x**(k+1) / (k+1) - x**(k+2) / (k+2) if k > 0 else x
-    # return (x-1) * x**k if k > 0 else x
-    # return x**k * (1 - x)  if k > 0 else np.sqrt(2) * np.log(2) * x
+    return x**k * (1 - x)  if k > 0 else (1- np.log(3)) * x**2 + (2*np.log(3) - 1) * x
     # return x**k * (1 - x)  if k > 0 else exact(1) * x
+    # return x**(k+1) / (k+1) - x**(k+2) / (k+2) if k > 0 else (1- np.log(3)) * x**2 + (2*np.log(3) - 1) * x
     
     
 def phi_p(x, k):
@@ -63,6 +39,7 @@ def phi_p(x, k):
     p = phi(x_, k)
     p = sy.diff(p, x_)
     return p.subs(x_, x)
+    
 
 
 def u(x, c):
@@ -94,6 +71,7 @@ for i in range(1, n):
         
     
     intv = sc.integrate.quad(right(i), a, b)
+    
     values[i-1] = intv[0]
     
     
@@ -102,7 +80,7 @@ for i in range(1, n):
 c = np.linalg.solve(matrix, values)
 c = np.append([1], c)
 
-# print(c)
+print(c)
 num = 1000
 x = np.linspace(a, b, num+1)
 
@@ -110,6 +88,7 @@ uu = u(x, c)
 plt.plot(x, uu)
 
 plt.plot(x, exact(x), '--')
+plt.legend(["Решение", "Точное"])
 
 plt.figure(123)
 udiff = abs( exact(x) - uu )

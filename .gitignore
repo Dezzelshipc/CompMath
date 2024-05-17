@@ -7,3 +7,4 @@
 *.synctex.*
 *.toc
 *.xdv
+*/__pycache__

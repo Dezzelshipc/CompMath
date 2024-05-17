@@ -1,3 +1,4 @@
+# Galerkin method
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy as sc
@@ -8,27 +9,31 @@ def exact(x):
     return np.log(x**2 + x + 1)
     # return 0.934 - 0.988 * x**2 + 0.054 * x**4
     # return x + np.exp(1) / (np.exp(2) - 1) * (np.exp(-x) - np.exp(x))
+    # return np.sin(x) - np.cos(x)
 
 def p(x):
     return 1 / (x**2 + x + 1)
     # return 1
     # return 0
+    # return -1
 
 def q(x):
     return 0
     # return (1+x**2)
     # return -1
+    # return 1
 
 def f(x):
     return (2 - 2*x**2)/(x**2 + x + 1)**2
     # return -1
     # return -x
+    # return -(np.sin(x)+np.cos(x))
 
 
 
 def phi(x, k):
-    return -x**(k+1) / (k+1) + x**(k+2) / (k+2) if k > 0 else x
-    # return x**k * (1 - x)  if k > 0 else 0
+    # return x**(k+1) / (k+1) - x**(k+2) / (k+2) if k > 0 else (1- np.log(3)) * x**2 + (2*np.log(3) - 1) * x
+    return x**(k+1) / (k+1) - x**(k+2) / (k+2) if k > 0 else x
 
 
 def L(x, ff):
@@ -46,7 +51,7 @@ def u(x, c):
 
 
 a, b = 0, 1
-n = 3
+n = 20
 
 matrix = np.zeros((n-1,n-1))
 values = np.zeros(n-1)
@@ -69,7 +74,7 @@ for i in range(1, n):
 c = np.linalg.solve(matrix, values)
 c = np.append([1], c)
 
-# print(c)
+print(c)
 num = 1000
 x = np.linspace(a, b, num+1)
 
