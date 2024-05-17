@@ -36,14 +36,14 @@ def right_sin(t, ab):
 def right_fric(t, ab):
     return np.array([
         ab[1],
-        -k * ab[1] - w**2 * np.sin( ab[0] )
+        -k * ab[1] - w**2 * ab[0] 
     ])
 
 # 4
 def right_force(t, ab):
     return np.array([
         ab[1],
-        Af * np.sin(wf * t) - w**2 * np.sin( ab[0] )
+        Af * np.sin(wf * t) - w**2 * ab[0]
     ])
 
 # 5
@@ -66,53 +66,70 @@ g = 9.8
 L = 1
 w = np.sqrt( g / L )
 
-k = 0.01
+k = 0.1
 Af = 1
-wf = 0.5
+wf = w/2
 
 init = [np.pi/10, 0]
 asd1 = False
 # asd1 = True
 if asd1:
-    plt.figure(0)
     x_, y_1 = model(init, right_lin)
-    plt.plot(x_, y_1[0])
-
     x_, y_2 = model(init, right_sin)
-    plt.plot(x_, y_2[0])
+    # plt.figure(0)
+    # plt.xlabel("t")
+    # plt.ylabel("a")
+    # plt.plot(x_, y_1[0])
+
+    # plt.plot(x_, y_2[0])
+    
 
     plt.figure(1)
+    plt.xlabel("a")
+    plt.ylabel("a'")
     plt.plot(y_1[0], y_1[1])
     plt.plot(y_2[0], y_2[1])
 
 asd2 = False
 # asd2 = True
 if asd2:
-    plt.figure(5)
     tn = 50
     x_, y_ = model(init, right_fric)
-    plt.plot(x_, y_[0])
+
+    # plt.figure(5)
+    # plt.xlabel("t")
+    # plt.ylabel("a")
+
+    # plt.plot(x_, y_[0])
 
     plt.figure(6)
-    plt.plot(y_[0], y_[1])
+    plt.xlabel("a")
+    plt.ylabel("a'")
+
+    plt.plot(y_[0], y_[1], marker='o', markevery=[0])
 
 asd3 = False
 # asd3 = True
 if asd3:
-    plt.figure(70)
+    tn = 25
     x_, y_ = model(init, right_force)
+    plt.figure(70)
+    plt.xlabel("t")
+    plt.ylabel("a")
     plt.plot(x_, y_[0])
 
-    plt.figure(71)
-    plt.plot(y_[0], y_[1])
+    # plt.figure(71)
+    # plt.xlabel("a")
+    # plt.ylabel("a'")
+    # plt.plot(y_[0], y_[1], marker='o', markevery=[0])
 
 
 asd4 = False
-# asd4 = True
+asd4 = True
 if asd4:
-    wf = w
-    ne = 3* n//4
-    tn = 1000
+    wf = 0.5
+    ne = n//4
+    tn = 100
     n = 10000
 
     x_, y_ = model(init, right_force_firc)
@@ -131,27 +148,40 @@ if asd4:
     # for i in range(n-1):
     #     plt.plot(y_[0][i:i+2], y_[1][i:i+2])
 
-    plt.plot(x_, y_[0])
+    # plt.plot(x_[:ne], y_[0][:ne])
+    # plt.plot(x_[ne:], y_[0][ne:])
+    # plt.xlabel("t")
+    # plt.ylabel("a")
+
+    
+    plt.plot(y_[0][:ne], y_[1][:ne], marker='o', markevery=[0])
+    plt.plot(y_[0][ne:], y_[1][ne:])
+    plt.xlabel("a")
+    plt.ylabel("a'")
+
 
 # 5
 asd5 = False
-asd5 = True
+# asd5 = True
 if asd5:
     plt.figure(100)
 
     t0, tn = 0, 1000
-    n = 10000
+    N = 1000
+    n = N
 
-    c = 100
+    c = 40
     wc = w
-    wh = 0.1
-    wfs = np.linspace(wc-wh, wc+wh, c+1)
+    wh = 0.075
+    wfs = np.linspace(-1, 1, c+1)**5
+    wfs = wh * wfs + wc
     wmax = []
     Almax = []
     for k in [0.1, 0.05, 0.01]:
         print(k)
         Al = []
         for wfi in wfs:
+            n = N / k * 0.5
             wf = wfi
             x_, y_ = model(init, right_force_firc)
             Al.append(max(abs( y_[0][-min(n//4, 100) : -1] )))
@@ -169,9 +199,11 @@ if asd5:
 
     plt.plot([w,w], [min(Al), max(Al)], '--')
     
-    plt.plot(wmax, Almax, 'o--')
+    # plt.plot(wmax, Almax, 'o--')
 
     plt.title("Зависимость амплитуды от частоты вынуждающих колебаний")
     plt.legend(["k = 0.1", "k = 0.05", "k = 0.01"])
 
+
+plt.savefig("./sem6-matmodelling/3 pendulum/figure.pdf")
 plt.show()
