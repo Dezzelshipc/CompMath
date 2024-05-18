@@ -35,9 +35,5 @@ g = 9.8
 L = 1
 w = np.sqrt( g / L )
 
-k = 0.01
-Af = 1
-wf = 0.5
-
 init = [np.pi/100, 0]
 x_, y_ = model(init, right)

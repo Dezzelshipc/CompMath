@@ -24,8 +24,8 @@ def TDMA(a,b,c,f):
 
 
 def u0(x):
-    # return np.exp(- (x - x0)**2 / d**2)
-    return np.where(1 < x, np.where(x < x0, 1, 0), 0)
+    return np.exp(- (x - x0)**2 / d**2)
+    # return np.where(1 < x, np.where(x < x0, 1, 0), 0)
     
     x_m = (1+x0)/2
     kx = 1/(x_m - 1)
@@ -48,7 +48,7 @@ l = 100
 d = 1
 x0 = 10*d
 
-dx = 1
+dx = 0.1
 dt = 0.01
 
 n = int(l // dx)
@@ -118,7 +118,7 @@ def upstream(uu):
 u_all = [explicit(u), implicit(u), upstream(u)]
 # u_all.append(explicit2(u))
 
-u = u_all[2] # change here
+u = u_all[1] # change here
 
 s_all = [ np.sum(u_c, axis=1) for u_c in u_all ]
 s_all = [ (s - s[0])/s[0] for s in s_all ]

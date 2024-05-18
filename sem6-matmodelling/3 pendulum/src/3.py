@@ -112,11 +112,13 @@ asd3 = False
 # asd3 = True
 if asd3:
     tn = 25
+    wf = w/2
     x_, y_ = model(init, right_force)
     plt.figure(70)
     plt.xlabel("t")
     plt.ylabel("a")
     plt.plot(x_, y_[0])
+    plt.plot(x_, Af * np.sin(wf * x_))
 
     # plt.figure(71)
     # plt.xlabel("a")
@@ -125,7 +127,7 @@ if asd3:
 
 
 asd4 = False
-asd4 = True
+# asd4 = True
 if asd4:
     wf = 0.5
     ne = n//4
@@ -162,7 +164,7 @@ if asd4:
 
 # 5
 asd5 = False
-# asd5 = True
+asd5 = True
 if asd5:
     plt.figure(100)
 
@@ -177,6 +179,7 @@ if asd5:
     wfs = wh * wfs + wc
     wmax = []
     Almax = []
+    cdel = w
     for k in [0.1, 0.05, 0.01]:
         print(k)
         Al = []
@@ -190,14 +193,14 @@ if asd5:
 
         Almax.append(max(Al))
         wmax.append(wfs[Al.argmax()])
-        plt.plot(wfs, Al, 'o-', markersize=3)
+        plt.plot(wfs/cdel, Al, 'o-', markersize=3)
 
     plt.xlabel("w")
     plt.ylabel("A")
 
     Al = np.array(Al)
 
-    plt.plot([w,w], [min(Al), max(Al)], '--')
+    plt.plot([w/cdel,w/cdel], [min(Al), max(Al)], '--')
     
     # plt.plot(wmax, Almax, 'o--')
 
