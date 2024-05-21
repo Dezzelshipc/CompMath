@@ -64,7 +64,7 @@ def plotp(tl, xls, n1, n2):
     plt.xlabel(f"x{n1+1}")
     plt.ylabel(f"x{n2+1}")
     st_point = static_point(n1, n2)
-    plt.plot(st_point[n1], st_point[n2], 'o')
+    plt.plot(st_point[n1], st_point[n2], 'ok')
 
     leg = [np.array(st_point)]
     for xl in xls:
@@ -81,11 +81,11 @@ def plotp3(tl, xls):
     ax.set_ylabel('x2')
     ax.set_zlabel('x3')
 
-    # ax.plot(*static_point(0), 'o')
-    # ax.plot(*static_point(1), 'o')
-    ax.plot(*static_point(2), 'o')
-    # ax.plot(*static_point(3), 'o')
-    # ax.plot(*static_point(4), 'o')
+    ax.plot(*static_point(0), 'ok')
+    ax.plot(*static_point(1), 'or')
+    ax.plot(*static_point(2), 'og')
+    ax.plot(*static_point(3), 'om')
+    # ax.plot(*static_point(4), 'om')
 
     ax.legend(["x(0)", "x(1)", "x(2)", "x(3)", "x(4)"])
 
@@ -104,14 +104,13 @@ a, b = 0, 3
 n = 10000
 h = (b-a)/n
 
-# x0s = [
-#     [10, 10, 10],
-#     [0, 10, 10],
-#     [10, 0, 10],
-#     [10, 10, 1],
-#     [5, 9, 11]
-# ]
-
+x0s = [
+    [10, 10, 10],
+    [0, 60, 10],
+    [10, 0, 10],
+    [10, 10, 20],
+    [5, 9, 11]
+]
 
 # x0s = [
 #     [0, 100, 40],
@@ -121,21 +120,28 @@ h = (b-a)/n
 #     [0, 20, 50]
 # ]
 
+# x0s = [
+#     [10, 0, 20],
+#     [10, 0, 10],
+#     [5, 0, 5],
+#     [4, 0, 2],
+#     [15, 0, 6]
+# ]
 
-x0s = [
-    [100, 0, 40],
-    [50, 0, 30],
-    [50, 0, 50],
-    [30, 0, 20],
-    [20, 0, 50]
-]
+# x0s = [
+#     [10, 20, 0],
+#     [10, 10, 0],
+#     [5,  5, 0],
+#     [4,  2, 0],
+#     [15, 6, 0],
+# ]
 
 
 tl, xls = sol_many(right, x0s, a, b, h)
 
-# plotp(tl, xls, 0, 1)
+plotp(tl, xls, 0, 1)
 plotp(tl, xls, 0, 2)
-# plotp(tl, xls, 1, 2)
+plotp(tl, xls, 1, 2)
 
 plotp3(tl, xls)
 

@@ -112,6 +112,7 @@ plotp(tl, xl, 1, 2)
 
 plotp3(tl, xl)
 
+print(x0:=static_point(4))
 a2 = k12 * a12**2 * x0[0] * x0[1] + k13 * a13**2 * x0[0]*x0[2] + k23 * a23 ** 2 * x0[1] * x0[2]
 print(f"{a2=}")
 a3 = x0[0] * x0[1] * x0[2] * a12 * a13* a23 * (k13- k12 * k23)
