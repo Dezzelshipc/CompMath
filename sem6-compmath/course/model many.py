@@ -58,64 +58,85 @@ def right(t, x):
     ])
 
 
-def plot3(tl, xl):
-    plt.figure(0)
-    plt.plot(tl, xl[0])
-    plt.plot(tl, xl[1])
-    plt.plot(tl, xl[2])
-
-    plt.legend(["x1", "x2", "x3"])
     
-def plotp(tl, xl, n1, n2):
+def plotp(tl, xls, n1, n2):
     plt.figure(f"{n1}{n2}")
-    plt.plot(xl[n1], xl[n2], 'o-', markevery=[0])
     plt.xlabel(f"x{n1+1}")
     plt.ylabel(f"x{n2+1}")
     st_point = static_point(n1, n2)
     plt.plot(st_point[n1], st_point[n2], 'o')
+
+    leg = [np.array(st_point)]
+    for xl in xls:
+        plt.plot(xl[n1], xl[n2], 'o-', markevery=[0])
+        leg.append(xl[:, 0])
+
+    plt.legend([f"{pt}" for pt in leg])
     
     
-def plotp3(tl, xl):
+def plotp3(tl, xls):
     ax = plt.figure("123").add_subplot(projection='3d')
     
     ax.set_xlabel('x1')
     ax.set_ylabel('x2')
     ax.set_zlabel('x3')
 
-    ax.plot(*static_point(0), 'o')
-    ax.plot(*static_point(1), 'o')
+    # ax.plot(*static_point(0), 'o')
+    # ax.plot(*static_point(1), 'o')
     ax.plot(*static_point(2), 'o')
-    ax.plot(*static_point(3), 'o')
+    # ax.plot(*static_point(3), 'o')
     # ax.plot(*static_point(4), 'o')
 
     ax.legend(["x(0)", "x(1)", "x(2)", "x(3)", "x(4)"])
 
-    
-    ax.plot(xl[0], xl[1], xl[2], 'o-', markevery=[0])
+    for xl in xls:
+        ax.plot(xl[0], xl[1], xl[2], 'o-', markevery=[0])
 
-a, b = 0, 10
+def sol_many(function, y0s: list, a: float, b: float, h: float):
+    sols = []
+    for y0 in y0s:
+        tl, xl = runge_kutta(right, y0, a, b, h)
+        sols.append(xl.T)
+
+    return tl, np.array(sols)
+
+a, b = 0, 3
 n = 10000
 h = (b-a)/n
 
-x0 = np.array([10, 10, 1])
-# x0 = static_point()
-tl, xl = runge_kutta(right, x0, a, b, h)
-xl = xl.T
+# x0s = [
+#     [10, 10, 10],
+#     [0, 10, 10],
+#     [10, 0, 10],
+#     [10, 10, 1],
+#     [5, 9, 11]
+# ]
 
-print(x0)
 
-# plot3(tl, xl)
+# x0s = [
+#     [0, 100, 40],
+#     [0, 50, 30],
+#     [0, 50, 50],
+#     [0, 30, 20],
+#     [0, 20, 50]
+# ]
 
-plotp(tl, xl, 0, 1)
-plotp(tl, xl, 0, 2)
-plotp(tl, xl, 1, 2)
 
-plotp3(tl, xl)
+x0s = [
+    [100, 0, 40],
+    [50, 0, 30],
+    [50, 0, 50],
+    [30, 0, 20],
+    [20, 0, 50]
+]
 
-a2 = k12 * a12**2 * x0[0] * x0[1] + k13 * a13**2 * x0[0]*x0[2] + k23 * a23 ** 2 * x0[1] * x0[2]
-print(f"{a2=}")
-a3 = x0[0] * x0[1] * x0[2] * a12 * a13* a23 * (k13- k12 * k23)
-print(f"{a3=}")
 
+tl, xls = sol_many(right, x0s, a, b, h)
+
+# plotp(tl, xls, 0, 1)
+plotp(tl, xls, 0, 2)
+# plotp(tl, xls, 1, 2)
+
+plotp3(tl, xls)
 
 plt.show()

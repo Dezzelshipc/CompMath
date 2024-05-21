@@ -1,0 +1,188 @@
+\section{Анализ модели}
+    Найдём точки равновесия дифференциального уравнения.
+    \[
+        \dot{x} = 0 \Rightarrow f(x) = 0
+    \]
+
+    Т.е. нужно найти решения \( (x_1, x_2, x_3) \) системы уравнений:
+    \[
+        \left\{\begin{split}
+            & \xi_1 x_1 - \alpha_{12} x_1 x_2 - \alpha_{13} x_1 x_3 = 0, \\
+            & \xi_2 x_2 + k_{12} \alpha_{12} x_1 x_2 - \alpha_{23} x_2 x_3 = 0, \\
+            & -\xi_3 x_3 + k_{13} \alpha_{13} x_1 x_3 + k_{23} \alpha_{23} x_2 x_3 = 0. 
+        \end{split}\right.
+        \Rightarrow
+        \left\{\begin{split}
+            & x_1 (\xi_1 - \alpha_{12} x_2 - \alpha_{13} x_3) = 0, \\
+            & x_2 (\xi_2 + k_{12} \alpha_{12} x_1 - \alpha_{23} x_3) = 0, \\
+            & x_3 (-\xi_3 + k_{13} \alpha_{13} x_1 + k_{23} \alpha_{23} x_2) = 0. 
+        \end{split}\right.
+    \]
+
+    \begin{enumerate}
+        \item Если две любых переменных равны нулю, то в оставшейся строчке остаётся уравнение \( \xi_i x_i = 0, \) т.е. все переменные равны нулю. Получаем тривиальное решение \( x^{(0)} = (0,0,0) \).
+        \item Если \( x_1 = 0; x_2, x_3 \neq 0 \):
+            \[
+                \left\{\begin{split}
+                    & \xi_2 - \alpha_{23} x_3 = 0, \\
+                    & -\xi_3 + k_{23} \alpha_{23} x_2 = 0. 
+                \end{split}\right.
+                \Rightarrow
+                x^{(1)} = \left( 0,\, \frac{\xi_3}{k_{23} \alpha_{23}},\, \frac{\xi_2}{\alpha_{23}} \right)
+            \]
+        \item Если \( x_2 = 0; x_1, x_3 \neq 0 \):
+            \[
+                \left\{\begin{split}
+                    & \xi_1 - \alpha_{13} x_3 = 0, \\
+                    & -\xi_3 + k_{13} \alpha_{13} x_1 = 0. 
+                \end{split}\right.
+                \Rightarrow
+                x^{(2)} = \left( \frac{\xi_3}{k_{13} \alpha_{13}},\, 0,\, \frac{\xi_1}{\alpha_{13}} \right)
+            \]
+        \item Если \( x_3 = 0; x_1, x_2 \neq 0 \):
+            \[
+                \left\{\begin{split}
+                    & \xi_1 - \alpha_{12} x_2 = 0, \\
+                    & \xi_2 + k_{12} \alpha_{12} x_1 = 0. 
+                \end{split}\right.
+                \Rightarrow
+                x^{(3)} = \left( -\frac{\xi_2}{k_{12} \alpha_{12}},\, \frac{\xi_1}{\alpha_{12}},\, 0 \right)
+            \]
+        \item Если \( x_1, x_2, x_3 \neq 0 \):
+            \[
+                \left\{\begin{split}
+                    & \xi_1 - \alpha_{12} x_2 - \alpha_{13} x_3 = 0, \\
+                    & \xi_2 + k_{12} \alpha_{12} x_1 - \alpha_{23} x_3 = 0, \\
+                    & -\xi_3 + k_{13} \alpha_{13} x_1 + k_{23} \alpha_{23} x_2 = 0. 
+                \end{split}\right.
+            \]
+            Тогда решение \( x^{(4)} \):
+            \[
+                \left\{\begin{split}
+                    & x_1 = \frac{-\xi_1 \alpha_{23} k_{23} + \xi_2 k_{23} \alpha_{13} + \xi_3 \alpha_{12}}{\alpha_{12} \alpha_{13} (k_{13} - k_{12} k_{23})}, \\
+                    & x_2 = \frac{\xi_1}{\alpha_{12}} - \frac{\alpha_{13}}{\alpha_{12}} x_3
+                    = \frac{\xi_1 \alpha_{23} k_{13} - \xi_2 \alpha_{13} k_{13} - \xi_3 \alpha_{12} k_{12}}{\alpha_{12} \alpha_{23} (k_{13} - k_{12} k_{23})}, \\ 
+                    & x_3 = \frac{\xi_2}{\alpha_{23}} + \frac{k_{12} \alpha_{12}}{\alpha_{23}} x_1
+                    = \frac{-\xi_1 \alpha_{23} k_{12} k_{23} + \xi_2 \alpha_{13} k_{13} + \xi_3 \alpha_{12} k_{12}}{\alpha_{13} \alpha_{23} (k_{13} - k_{12} k_{23})}.
+                \end{split}\right.
+            \]
+    \end{enumerate}
+
+    Получили все точки. Для анализа устойчивости в этих точках воспользуемся методом первого приближения. Найдём матрицу Якоби:
+    \[
+        J = \frac{\partial f}{\partial x} = \left(\begin{matrix}
+            \xi_1 - \alpha_{12} x_2 - \alpha_{13} x_3 & -\alpha_{12} x_1 & -\alpha_{13} x_1 \\
+            k_{12} \alpha_{12} x_2 & \xi_2 + k_{12} \alpha_{12} x_1 - \alpha_{23} x_3 & -\alpha_{23} x_2 \\
+            k_{13} \alpha_{13} x_3 & k_{23} \alpha_{23} x_3  & -\xi_3 + k_{13} \alpha_{13} x_1 + k_{23} \alpha_{23} x_2
+        \end{matrix}\right)
+    \]
+
+    После чего подставляем значения точки равновесия и ищем собственные значения матрицы. 
+    \[
+        A = J \big|_{x^*}, \quad \det \left( \lambda I - A \right) = 0 \Rightarrow b_0 \lambda^3 + b_1 \lambda^2 + b_2 \lambda + b_3 = 0.
+    \]
+    Для того, чтобы точка была устойчивой, необходимо, чтобы \( \forall i \, \Rez \lambda_i < 0 \). Однако, напрямую решать кубическое уравнение может быть непросто, поэтому можно воспользоваться критерием Рауса-Гурвица. Для этого построим матрицу Гурвица: 
+    \[
+        \Delta = \left( \begin{matrix}
+            b_1 & b_3 & 0 \\
+            b_0 & b_2 & 0 \\
+            0   & b_1 & b_3
+        \end{matrix} \right)
+    \]
+    Если \( b_0 > 0\), то для устойчивости необходимо, чтобы все главные миноры матрицы \( \Delta \) были положительны.
+
+    \begin{enumerate}
+        \item \(
+            J \big|_{x^{(0)}} = \left(\begin{matrix}
+                \xi_1 & 0 & 0 \\
+                0 & \xi_2 & 0 \\
+                0 & 0  & -\xi_3
+            \end{matrix}\right)
+        \)
+
+        Откуда получаем собственные значения матрицы: 
+        \[
+            \lambda_1 = \xi_1 > 0, \quad \lambda_2 = \xi_2 > 0, \quad \lambda_1 = -\xi_3 < 0.
+        \]
+        Значит около начала координат решения будут расходиться по \( x_1, x_2 \) и сходиться по \( x_3 \).
+
+        \item \(
+            A = J \big|_{x^{(1)}} = \left(\begin{matrix}
+                \xi_1 - \alpha_{12} \frac{\xi_3}{k_{23} \alpha_{23}} - \alpha_{13} \frac{\xi_2}{\alpha_{23}} & 0 & 0 \\[10pt]
+                k_{12} \alpha_{12} \frac{\xi_3}{k_{23} \alpha_{23}} & 0 & -\alpha_{23} \frac{\xi_3}{k_{23} \alpha_{23}} \\[10pt]
+                k_{13} \alpha_{13} \frac{\xi_2}{\alpha_{23}} & k_{23} \alpha_{23} \frac{\xi_2}{\alpha_{23}}  & 0
+            \end{matrix}\right)
+        \)
+        \[
+            \det(\lambda I - A) = \left(\lambda - \left(\xi_1 - \frac{\xi_3 \alpha_{12} }{k_{23} \alpha_{23}} - \frac{\xi_2 \alpha_{13}}{\alpha_{23}} \right) \right)(\lambda^2 + \xi_2 \xi_3) = 0.
+        \]
+        \[
+            \lambda_1 = \xi_1 - \frac{\xi_3 \alpha_{12} }{k_{23} \alpha_{23}} - \frac{\xi_2 \alpha_{13}}{\alpha_{23}} , \quad \lambda_{2,3} = \pm i \sqrt{\xi_2 \xi_3}.
+        \]
+        Точка \( x^{(1)} \) -- неустойчивая. В плоскости \( x_1 = 0 \) точка будет являться центром (асимптотически неустойчивая точка), т.е. создавать вокруг себя циклы, а в некоторой близости от этой плоскости циклы будут двигаться в некотором направлении, в зависимости от констант.
+
+        \item \(
+            A = J \big|_{x^{(2)}} = \left(\begin{matrix}
+                0 & -\alpha_{12} \frac{\xi_3}{k_{13} \alpha_{13}} & -\alpha_{13} \frac{\xi_3}{k_{13} \alpha_{13}} \\[10pt]
+                0 & \xi_2 + k_{12} \alpha_{12} \frac{\xi_3}{k_{13} \alpha_{13}} - \alpha_{23}  \frac{\xi_1}{\alpha_{13}} & 0 \\[10pt]
+                k_{13} \alpha_{13} \frac{\xi_1}{\alpha_{13}} & k_{23} \alpha_{23} \frac{\xi_1}{\alpha_{13}}  & 0
+            \end{matrix}\right)
+        \)
+        \[
+            \det(\lambda I - A) = \left(\lambda - \left(\xi_2 + k_{12} \alpha_{12} \frac{\xi_3}{k_{13} \alpha_{13}} - \alpha_{23}  \frac{\xi_1}{\alpha_{13}} \right) \right)(\lambda^2 + \xi_1 \xi_3) = 0.
+        \]
+        \[
+            \lambda_1 = \xi_2 + k_{12} \alpha_{12} \frac{\xi_3}{k_{13} \alpha_{13}} - \alpha_{23}  \frac{\xi_1}{\alpha_{13}}, \quad \lambda_{2,3} = \pm i \sqrt{\xi_1 \xi_3}.
+        \]
+        Аналогично предыдущей точке, \( x^{(2)} \) -- неустойчивая и в плоскости \( x_2 = 0 \) является центром и будет создавать вокруг себя циклы.
+
+        \item \(
+            A = J \big|_{x^{(3)}} = \left(\begin{matrix}
+                0 & -\alpha_{12} \frac{-\xi_2}{k_{12} \alpha_{12}} & -\alpha_{13} \frac{-\xi_2}{k_{12} \alpha_{12}} \\[10pt]
+                k_{12} \alpha_{12} \frac{\xi_1}{\alpha_{12}} & 0 & -\alpha_{23} \frac{\xi_1}{\alpha_{12}} \\[10pt]
+                0 & 0 & -\xi_3 + k_{13} \alpha_{13} \frac{-\xi_2}{k_{12} \alpha_{12}} + k_{23} \alpha_{23} \frac{\xi_1}{\alpha_{12}}
+            \end{matrix}\right)
+        \)
+        \[
+            \det(\lambda I - A) = \left(\lambda - \left(-\xi_3 + k_{13} \alpha_{13} \frac{-\xi_2}{k_{12} \alpha_{12}} + k_{23} \alpha_{23} \frac{\xi_1}{\alpha_{12}} \right) \right)(\lambda^2 - \xi_1 \xi_2) = 0.
+        \]
+        \[
+            \lambda_1 = -\xi_3 + k_{13} \alpha_{13} \frac{-\xi_2}{k_{12} \alpha_{12}} + k_{23} \alpha_{23} \frac{\xi_1}{\alpha_{12}}, \quad \lambda_{2,3} = \pm \sqrt{\xi_1 \xi_2}.
+        \]
+        Точка \( x^{(3)} \) -- неустойчивая, но в плоскости \( x_3 = 0 \) является седлом по некоторым двум направлениям.
+
+        \item \(
+            A = J \big|_{x^{(4)}} = \left(\begin{matrix}
+                0 & -\alpha_{12} x_1 & -\alpha_{13} x_1 \\
+                k_{12} \alpha_{12} x_2 & 0 & -\alpha_{23} x_2 \\
+                k_{13} \alpha_{13} x_3 & k_{23} \alpha_{23} x_3 & 0
+            \end{matrix}\right)
+        \)
+        \[
+            \det(\lambda I - A) = \lambda^3 - \lambda (k_{12} \alpha_{12}^2 x_1 x_2 + k_{13} \alpha_{13}^2 x_1 x_3 + k_{23} \alpha_{23}^2 x_2 x_3) +
+        \]
+        \[
+            + x_1 x_2 x_3 \alpha_{12} \alpha_{13} \alpha_{23} (k_{12} k_{23} - k_{13}) = 0
+        \]
+        Явное решение данного уравнения будет непростым, поэтому воспользуемся критерием Рауса-Гурвица.
+        \[
+            b_0 = 1, \quad b_1 = 0, \quad b_2 = -(k_{12} \alpha_{12}^2 x_1 x_2 + k_{13} \alpha_{13}^2 x_1 x_3 + k_{23} \alpha_{23}^2 x_2 x_3),
+        \]
+        \[
+            b_3 = x_1 x_2 x_3 \alpha_{12} \alpha_{13} \alpha_{23} (k_{12} k_{23} - k_{13}).
+        \]
+        Матрица Гурвица и главные миноры:
+        \[
+            \Delta = \left( \begin{matrix}
+                0 & b_3 & 0 \\
+                1 & b_2 & 0 \\
+                0   & 0 & b_3
+            \end{matrix} \right)
+            \Rightarrow 
+            \left\{ \begin{split}
+                & \Delta_1 = 0, \\
+                & \Delta_2 = -b_3, \\
+                & \Delta_3 = b_3 \cdot \Delta_2 = -b_3^2 \leq 0.
+            \end{split} \right.
+        \]
+    \end{enumerate}
