@@ -93,6 +93,49 @@ def plotp3(tl, xl):
     
     ax.plot(xl[0], xl[1], xl[2], 'o-', markevery=[0])
 
+def plotvec(n1, n2, lin1, lin2):
+    plt.figure(f"vec{n1}{n2}")
+    plt.xlabel(f"x{n1+1}")
+    plt.ylabel(f"x{n2+1}")
+    plt.plot(*static_point(n1, n2), 'o')
+
+
+    grid = np.meshgrid(lin1, lin2)
+    if 0 not in (n1, n2):
+        vec_grid = right(0, [0, grid[0], grid[1]])
+    elif 1 not in (n1, n2):
+        vec_grid = right(0, [grid[0], 0, grid[1]])
+    elif 2 not in (n1, n2):
+        vec_grid = right(0, [grid[0], grid[1], 0])
+
+    print([len(v) for v in grid])
+    print([len(v) for v in vec_grid])
+
+    plt.quiver(grid[0], grid[1], vec_grid[n1], vec_grid[n2], length=0.01, color = 'black')
+
+
+def plotvec3(linx, liny, linz):
+    ax = plt.figure("vector field").add_subplot(projection='3d')
+    ax.set_xlabel('x1')
+    ax.set_ylabel('x2')
+    ax.set_zlabel('x3')
+
+    grid = np.meshgrid(linx, liny, linz)
+    vec_grid = right(0, grid)
+
+    ax.quiver(*grid, *vec_grid, length=0.01, color = 'black')
+
+    # ax.plot(*static_point(0), 'o')
+    # ax.plot(*static_point(1), 'o')
+    ax.plot(*static_point(2), 'o')
+    # ax.plot(*static_point(3), 'o')
+
+    # ax.set_xlim(-0.1, 12)
+    # ax.set_ylim(-0.1, 20)
+    # ax.set_zlim(-3, 3)
+
+
+
 a, b = 0, 10
 n = 10000
 h = (b-a)/n
@@ -106,17 +149,21 @@ print(x0)
 
 # plot3(tl, xl)
 
-plotp(tl, xl, 0, 1)
-plotp(tl, xl, 0, 2)
-plotp(tl, xl, 1, 2)
+# plotp(tl, xl, 0, 1)
+# plotp(tl, xl, 0, 2)
+# plotp(tl, xl, 1, 2)
 
-plotp3(tl, xl)
+# plotp3(tl, xl)
 
-print(x0:=static_point(4))
-a2 = k12 * a12**2 * x0[0] * x0[1] + k13 * a13**2 * x0[0]*x0[2] + k23 * a23 ** 2 * x0[1] * x0[2]
-print(f"{a2=}")
-a3 = x0[0] * x0[1] * x0[2] * a12 * a13* a23 * (k13- k12 * k23)
-print(f"{a3=}")
+
+# plotvec(1, 2, np.linspace(0.01, 50, 21), np.linspace(0.01, 50, 21))
+plotvec3(np.linspace(0.01, 20, 21), 0, np.linspace(0.01, 20, 21))
+
+# print(x0:=static_point(4))
+# a2 = k12 * a12**2 * x0[0] * x0[1] + k13 * a13**2 * x0[0]*x0[2] + k23 * a23 ** 2 * x0[1] * x0[2]
+# print(f"{a2=}")
+# a3 = x0[0] * x0[1] * x0[2] * a12 * a13* a23 * (k13- k12 * k23)
+# print(f"{a3=}")
 
 
 plt.show()
