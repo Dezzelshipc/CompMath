@@ -1,0 +1,35 @@
+\section*{Задание 3}
+    Разложить в ряд Фурье функцию \( f(x) = \cos x - e^x \) по системе собственных функций \( \{ 1, \cos(\varphi n x), \sin(\varphi n x) \}, n = 1,\dots,\infty \) задачи Штурма-Лиувилля.
+
+    Ряд Фурье имеет вид 
+    \[
+        f(x) = A_0 + \sum_{n=1}^{\infty} \left( A_n \cos(nx) + B_n \sin(nx) \right).
+    \]
+
+    Найдём коэффициенты:
+    \[
+        A_0 = \frac{1}{2\pi} \int_{0}^{2\pi} f(x) dx = \frac{1}{2\pi} \int_{0}^{2\pi} \left( \cos x - e^x \right) dx = \frac{1}{2\pi} \left( \sin x - e^x \right) \big|_0^{2\pi} = \frac{1 - e^{2\pi}}{2\pi},
+    \]
+
+    \[
+        A_n = \frac{1}{\pi} \int_{0}^{2\pi} f(x) \cos(nx) dx = \frac{1}{\pi} \int_{0}^{2\pi} \left( \cos x - e^x \right) \cos(nx) dx =
+    \]
+    \[
+        = \frac{1}{\pi} \left( \frac{n \sin(2\pi n)}{n^2 - 1} + \frac{1 - e^{2\pi} \left( n \sin(2\pi n) + \cos(2\pi n)\right)}{n^2+1}\right) = \frac{1 - e^{2\pi}}{\pi (n^2 + 1)}, n > 1.
+    \]
+    \[
+        A_1 = \frac{1}{\pi} \int_{0}^{2\pi} \left( \cos x - e^x \right) \cos(x) dx = \frac{1}{\pi} \left( \pi + \frac{1 - e^{2\pi}}{2} \right)= 1 + \frac{1 - e^{2\pi}}{2\pi}
+    \]
+
+    \[
+        B_n = \frac{1}{\pi} \int_{0}^{2\pi} f(x) \sin(nx) dx = \frac{1}{\pi} \int_{0}^{2\pi} \left( \cos x - e^x \right) \sin(nx) dx =
+    \]
+    \[
+        = \frac{1}{\pi} \left( \frac{2n \sin^2(2\pi n)}{n^2 - 1} + \frac{e^{2\pi} \left(n \cos(2\pi n) - \sin(2\pi n)\right) - n}{n^2+1}\right) = \frac{n\left(e^{2\pi} - 1\right)}{\pi (n^2 + 1)}, n > 1.
+    \]
+    \[
+        B_1 = \frac{1}{\pi} \int_{0}^{2\pi} \left( \cos x - e^x \right) \sin(x) dx = \frac{1}{\pi} \left( \frac{e^{2\pi} - 1}{2} \right) = \frac{e^{2\pi} - 1}{2\pi}
+    \]
+
+    \textit{Ответ:} \( f(x) = \frac{1 - e^{2\pi}}{2\pi} + \left( 1 + \frac{1 - e^{2\pi}}{2\pi} \right)\cos(x) + \left( \frac{e^{2\pi} - 1}{2\pi} \right) \sin(x) + \) \\
+    \( + \sum_{n=2}^{\infty} \left( \frac{1 - e^{2\pi}}{\pi (n^2 + 1)} \cos(nx) + \frac{n\left(e^{2\pi} - 1\right)}{\pi (n^2 + 1)} \sin(nx) \right)  \).
