@@ -1,0 +1,35 @@
+\section{Математическая модель}
+    Мы изучаем перемещение тела по по вращающемуся диску. Примем за тело материальную точку с массой \( m \), а угловую скорость диска -- \( \Omega \). Трением будем пренебрегать.
+
+    Поскольку система является неинерциальной, то на тело действует сила инерции:
+    \[
+        \overrightarrow{F_i} = m \frac{d \overrightarrow{V}}{dt},
+    \]
+    где \( \overrightarrow{V} \) -- вектор скорости.
+
+    Во вращающейся системе отсчёта наблюдателю кажется, что тела движутся по изогнутой траектории. Такой эффект называется эффектом Кориолиса. Сила Кориолиса равна:
+    \[
+        \overrightarrow{F_k} = m \frac{d \overrightarrow{V}}{dt},
+    \]
+    но в общем случае сила Кориолиса \( \overrightarrow{F_k} \perp \overrightarrow{V} \) и равна:
+    \[
+        \overrightarrow{F_k} = - 2 m \left[ \overrightarrow{\Omega} \times \overrightarrow{V} \right].
+    \]
+    Приравнивая формулы имеем:
+    \[
+        m \frac{d \overrightarrow{V}}{dt} = - 2 m \left[ \overrightarrow{\Omega} \times \overrightarrow{V} \right].
+    \]
+    Преобразовывая, мы получаем систему линейных дифференциальных уравнений:
+    \[
+        \left\{ \begin{split}
+            & \ddot{x} = 2 \Omega \dot{y}, \\
+            & \ddot{y} = -2\Omega \dot{x}.
+        \end{split} \right.
+    \]
+    Уравнения второго порядка, значит нужно 2 начальных условия для каждого -- положение и скорость:
+    \[
+        \left\{\begin{split}
+            & x(0) = x_0, & \dot{x}(0) = x_1, \\
+            & y(0) = y_0, & \dot{y}(0) = y_1.
+        \end{split}\right.
+    \]

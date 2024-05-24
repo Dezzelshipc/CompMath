@@ -34,6 +34,7 @@ def f(x):
 def phi(x, k):
     # return x**(k+1) / (k+1) - x**(k+2) / (k+2) if k > 0 else (1- np.log(3)) * x**2 + (2*np.log(3) - 1) * x
     return x**(k+1) / (k+1) - x**(k+2) / (k+2) if k > 0 else x
+    # return x**k * (1 - x)  if k > 0 else (1- np.log(3)) * x**2 + (2*np.log(3) - 1) * x
 
 
 def L(x, ff):
@@ -51,7 +52,7 @@ def u(x, c):
 
 
 a, b = 0, 1
-n = 20
+n = 10
 
 matrix = np.zeros((n-1,n-1))
 values = np.zeros(n-1)
@@ -75,15 +76,15 @@ c = np.linalg.solve(matrix, values)
 c = np.append([1], c)
 
 print(c)
-num = 1000
+num = 10000
 x = np.linspace(a, b, num+1)
 
 uu = u(x, c)
 plt.plot(x, uu, 'r')
 
 plt.plot(x, exact(x), 'b--')
-
 plt.legend(["Решение", "Точное"])
+plt.grid()
 
 plt.figure(123)
 udiff = abs( exact(x) - uu )

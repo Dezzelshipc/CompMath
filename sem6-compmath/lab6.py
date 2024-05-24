@@ -17,6 +17,7 @@ def Q(x):
 def F(x):
     return (2 - 2*x**2)/(x**2 + x + 1)**2
 
+
 def p(x):
     integ = sc.integrate.quad(P, 0, x)[0]
     return np.exp(integ)
@@ -81,14 +82,15 @@ c = np.linalg.solve(matrix, values)
 c = np.append([1], c)
 
 print(c)
-num = 1000
+num = 10000
 x = np.linspace(a, b, num+1)
 
 uu = u(x, c)
-plt.plot(x, uu)
+plt.plot(x, uu, 'r')
 
-plt.plot(x, exact(x), '--')
+plt.plot(x, exact(x), 'b--')
 plt.legend(["Решение", "Точное"])
+plt.grid()
 
 plt.figure(123)
 udiff = abs( exact(x) - uu )
