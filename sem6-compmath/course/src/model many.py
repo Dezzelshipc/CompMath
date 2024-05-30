@@ -18,9 +18,9 @@ def runge_kutta(function, y0: float, a: float, b: float, h: float):
     return x_a, np.array(y_a)
 
 
-ksi1, ksi2, ksi3 = 10, 8, 6
-a12, a13, a23 = 6, 2, 0.5
-k12, k13, k23 = 4, 1, 0.5
+ksi1, ksi2, ksi3 = 10, 0, 0
+a12, a13, a23 = 6, 2, 4
+k12, k13, k23 = 4, 1, 5
 
 def static_point(num: int, num2 = None):
     match (num, num2):

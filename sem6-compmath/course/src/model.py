@@ -18,7 +18,7 @@ def runge_kutta(function, y0: float, a: float, b: float, h: float):
     return x_a, np.array(y_a)
 
 
-ksi1, ksi2, ksi3 = 10, 8, 6
+ksi1, ksi2, ksi3 = 10, 0, 0
 a12, a13, a23 = 6, 2, 0.5
 k12, k13, k23 = 4, 1, 0.5
 
@@ -157,7 +157,7 @@ print(x0)
 
 
 # plotvec(1, 2, np.linspace(0.01, 50, 21), np.linspace(0.01, 50, 21))
-plotvec3(np.linspace(0.01, 20, 21), 0, np.linspace(0.01, 20, 21))
+plotvec3(0, np.linspace(0.01, 40, 21), np.linspace(0.01, 40, 21))
 
 # print(x0:=static_point(4))
 # a2 = k12 * a12**2 * x0[0] * x0[1] + k13 * a13**2 * x0[0]*x0[2] + k23 * a23 ** 2 * x0[1] * x0[2]

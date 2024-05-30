@@ -33,8 +33,9 @@ def f(x):
 
 def phi(x, k):
     # return x**(k+1) / (k+1) - x**(k+2) / (k+2) if k > 0 else (1- np.log(3)) * x**2 + (2*np.log(3) - 1) * x
-    return x**(k+1) / (k+1) - x**(k+2) / (k+2) if k > 0 else x
-    # return x**k * (1 - x)  if k > 0 else (1- np.log(3)) * x**2 + (2*np.log(3) - 1) * x
+    # return x**(k+1) / (k+1) - x**(k+2) / (k+2) if k > 0 else x
+    return x**k * (1 - x)  if k > 0 else (1- np.log(3)) * x**2 + (2*np.log(3) - 1) * x
+    # return x**k * (1 - x)  if k > 0 else x
 
 
 def L(x, ff):
@@ -52,7 +53,7 @@ def u(x, c):
 
 
 a, b = 0, 1
-n = 10
+n = 20
 
 matrix = np.zeros((n-1,n-1))
 values = np.zeros(n-1)

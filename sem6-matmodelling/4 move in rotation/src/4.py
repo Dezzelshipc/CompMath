@@ -19,30 +19,56 @@ def runge_kutta(function, y0: float, a: float, b: float, h: float):
 
 def right(t, x):
     return np.array([
-        x[2], # u
-        x[3], # v
-        2 * w * x[3], # du
-        -2* w * x[2], # dv
+        x[2], # u, dx
+        x[3], # v, dy
+        2 * w * x[3], # du, ddx
+        -2* w * x[2], # dv, ddy
     ])
 
 
-t0, tn = 0, 10
-n = 1000
+t0, tn = 0, 5
+n = 100000
     
-w = 1
 
-def model(init):
-    t, x = runge_kutta(right, init, t0, tn, (tn-t0)/n)
-    x = x.T
+def model(inits):
+    conserv = []
+    for x0 in inits:
+        t, x = runge_kutta(right, x0, t0, tn, (tn-t0)/n)
+        x = x.T
 
-    plt.plot(x[0] , x[1], marker='o', markevery=[0])
+        conv = x[2]**2 + x[3]**2 - x0[2]**2 - x0[3]**2
+        conserv.append(conv)
 
-model([5,3,4,4])
-model([5,3,5,5])
-model([5,3,1,1])
-model([5,3,-1,-1])
+        plt.plot(x[0] , x[1], marker='o', markevery=[0])
 
-plt.grid(True)
-plt.axhline(y=0, color='k')
+    plt.grid(True)
+    plt.axhline(y=0, color='k')
+    plt.legend(list(map(list, np.round(inits, 3))), loc='upper right')
+    ax = plt.gca()
+    ax.set_aspect('equal', adjustable='datalim')
+
+
+    plt.figure("convers")
+    for c in conserv:
+        plt.plot(t, c)
+        
+    plt.grid(True)
+    plt.axhline(y=0, color='k')
+
+    
+PI = np.pi
+
+w = 10
+x0s = [
+    [5,3,4,4],
+    [5,3,5,5],
+    [5,3,1,1],
+    [5,3,PI/4, PI/4]
+]
+
+
+
+model(x0s)
+
 # plt.axvline(x=0, color='k')
 plt.show()
