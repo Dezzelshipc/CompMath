@@ -1,0 +1,399 @@
+\documentclass[14pt, a1paper, fleqn]{extarticle}
+
+\usepackage{style/style}
+% \usepackage{style/titlepage}
+
+\everymath{\displaystyle}
+
+\hypersetup{
+    colorlinks=true,
+    urlcolor=blue
+}
+\renewcommand{\arraystretch}{1.5}
+\setlength{\tabcolsep}{4pt}
+
+
+\DeclareMathOperator{\D}{\partial}
+\DeclareMathOperator{\Ln}{Ln}
+\DeclareMathOperator{\Imz}{Im}
+\DeclareMathOperator{\Rez}{Re}
+\DeclareMathOperator{\sign}{sign}
+
+
+
+\begin{document}
+    \section{Одно распределение}
+    \begin{center}
+        \begin{tabular}{|p{6cm}|p{8cm}|p{3cm}|p{3cm}|p{9cm}|p{10cm}|p{14cm}|}
+            \hline
+            Название & Предпосылки & \( H_0 \) & \( H_1 \) & Статистика & Выводы & Python (numpy, scipy.stats) \\
+            \hline
+            Гипотеза о матожидании 
+            & \begin{enumerate}
+             \item \( X \sim N(\mu, \sigma^2) \)
+             \item \( \sigma^2 \) - известно 
+            \end{enumerate} 
+            & \( \mu = \mu_0 \) 
+            & \( \mu \neq \mu_0 \) 
+            & \( z_p = \frac{\overline{X} - \mu_0}{\sigma / \sqrt{n}} \sim N(0, 1) \) 
+            & Не отвергаем на уровне значимости \( \alpha \), если 
+            \begin{enumerate}
+                \item \( z_p \in \left( -z_{1-\frac{\alpha}{2}}, z_{1-\frac{\alpha}{2}} \right) \),
+                \item \( \mu_0 \in \left( \overline{X}-z_{1-\frac{\alpha}{2}}\frac{\sigma}{\sqrt{n}}, \overline{X}+z_{1-\frac{\alpha}{2}}\frac{\sigma}{\sqrt{n}} \right) \)
+                \item \( \text{p-value} > \alpha \)
+            \end{enumerate} 
+            & \begin{enumerate}
+                \item \( z_{1-\frac{\alpha}{2}} = \text{norm.ppf}(q=1 - \alpha/2) \),
+                \item \( \text{p-value} = 1 - 2 \cdot \text{norm.cdf}(\text{abs}(z_p)) \)
+            \end{enumerate} \\
+            \hline
+            Гипотеза о матожидании 
+            & \begin{enumerate}
+             \item \( X \sim N(\mu, \sigma^2) \)
+             \item \( \sigma^2 \) - неизвестно 
+            \end{enumerate} 
+            & \( \mu = \mu_0 \) 
+            & \( \mu \neq \mu_0 \) 
+            & \( t_p = t^{(n-1)} = \frac{\overline{X} - \mu_0}{ S_0 / \sqrt{n}} \sim T_{n-1} \) 
+            & Не отвергаем на уровне значимости \( \alpha \), если 
+            \begin{enumerate}
+                \item \( t_p \in \left( -t^{(n-1)}_{1-\frac{\alpha}{2}}, t^{(n-1)}_{1-\frac{\alpha}{2}} \right) \),
+                \item \( \mu_0 \in \left( \overline{X}-t^{(n-1)}_{1-\frac{\alpha}{2}}\frac{S_0}{\sqrt{n}}, \overline{X}+t^{(n-1)}_{1-\frac{\alpha}{2}}\frac{S_0}{\sqrt{n}} \right) \)
+                \item \( \text{p-value} > \alpha \)
+            \end{enumerate} 
+            & \begin{enumerate}
+                \item \( S_0^2 = \text{np.var}(x, ddof=1) ~~ \left( S_0 = \text{np.std}(x, ddof=1) \right) \)
+                \item \( t^{(n-1)}_{1-\frac{\alpha}{2}} = \text{t.ppf}(df=n-1, q=1 - \alpha/2) \),
+                \item \( \text{p-value} = 1 - 2 \cdot \text{t.cdf}(\text{abs}(t_p), df=n-1) \)
+            \end{enumerate} \\
+            \hline
+            Гипотеза о дисперсии 
+            & \begin{enumerate}
+             \item \( X \sim N(\mu, \sigma^2) \)
+             \item \( \mu \) - неизвестно 
+            \end{enumerate} 
+            & \( \sigma^2 = \sigma^2_0 \) 
+            & \( \sigma^2 \neq \sigma^2_0 \) 
+            & \( C_p = C^{(n-1)} = \frac{S_0^2 (n-1)}{ \sigma_0^2 } \sim \chi^2_{n-1} \) 
+            & Не отвергаем на уровне значимости \( \alpha \), если 
+            \begin{enumerate}
+                \item \( C_p \in \left( C^{(n-1)}_{\frac{\alpha}{2}}, C^{(n-1)}_{1-\frac{\alpha}{2}} \right) \),
+                \item \( \sigma_0^2 \in \left( \frac{(n-1) S_0^2}{C^{(n-1)}_{1-\frac{\alpha}{2}}}, \frac{(n-1) S_0^2}{C^{(n-1)}_{\frac{\alpha}{2}}} \right) \)
+                \item \( \text{p-value} > \alpha \)
+            \end{enumerate} 
+            & \begin{enumerate}
+                \item \( S_0^2 = \text{np.var}(x, ddof=1) \)
+                \item \( C^{(n-1)}_{\frac{\alpha}{2}} = \text{chi2.ppf}(df=n-1, q=\alpha/2) \),
+                \item \( C^{(n-1)}_{1-\frac{\alpha}{2}} = \text{chi2.ppf}(df=n-1, q=1 - \alpha/2) \),
+                \item \( \text{p-value} = 2 \cdot \text{chi2.cdf}(C_p, df=n-1) \)
+            \end{enumerate} \\
+            \hline
+            Гипотеза о дисперсии 
+            & \begin{enumerate}
+             \item \( X \sim N(\mu, \sigma^2) \)
+             \item \( \mu \) - известно 
+            \end{enumerate} 
+            & \( \sigma^2 = \sigma^2_0 \) 
+            & \( \sigma^2 \neq \sigma^2_0 \) 
+            & \( C_p = C^{(n)} = \frac{\sum_{i=1}^{n} \left( x_i - \mu \right)^2 }{ \sigma_0^2 } \sim \chi^2_{n} \) 
+            & Не отвергаем на уровне значимости \( \alpha \), если 
+            \begin{enumerate}
+                \item \( C_p \in \left( C^{(n)}_{\frac{\alpha}{2}}, C^{(n)}_{1-\frac{\alpha}{2}} \right) \),
+                \item \( \sigma_0^2 \in \left( \frac{\sum_{i=1}^{n} \left( x_i - \mu \right)^2}{C^{(n-1)}_{1-\frac{\alpha}{2}}}, \frac{\sum_{i=1}^{n} \left( x_i - \mu \right)^2}{C^{(n-1)}_{\frac{\alpha}{2}}} \right) \)
+                \item \( \text{p-value} > \alpha \)
+            \end{enumerate} 
+            & \begin{enumerate}
+                \item \( C^{(n-1)}_{\frac{\alpha}{2}} = \text{chi2.ppf}(df=n-1, q=\alpha/2) \),
+                \item \( C^{(n-1)}_{1-\frac{\alpha}{2}} = \text{chi2.ppf}(df=n-1, q=1 - \alpha/2) \),
+                \item \( \text{p-value} = 2 \cdot \text{chi2.cdf}(C_p, df=n-1) \)
+            \end{enumerate} \\
+            \hline
+            Асимптотическая гипотеза о матожидании 
+            & \begin{enumerate}
+             \item \( X \sim \mathcal{F} \)
+             \item \( D(x) = \sigma^2 \) - известно 
+             \item \( n \to \infty ~ (n \gg 0) \)
+            \end{enumerate} 
+            & \( \mu = \mu_0 \) 
+            & \( \mu \neq \mu_0 \) 
+            & \( z_p = \frac{\overline{X} - \mu_0}{\sigma / \sqrt{n}} \xrightarrow[n \to \infty]{d} N(0, 1) \) 
+            & Не отвергаем на уровне значимости \( \alpha \), если 
+            \begin{enumerate}
+                \item \( z_p \in \left( -z_{1-\frac{\alpha}{2}}, z_{1-\frac{\alpha}{2}} \right) \),
+                \item \( \mu_0 \in \left( \overline{X}-z_{1-\frac{\alpha}{2}}\frac{\sigma}{\sqrt{n}}, \overline{X}+z_{1-\frac{\alpha}{2}}\frac{\sigma}{\sqrt{n}} \right) \)
+                \item \( \text{p-value} > \alpha \)
+            \end{enumerate} 
+            & \begin{enumerate}
+                \item \( z_{1-\frac{\alpha}{2}} = \text{norm.ppf}(q=1 - \alpha/2) \),
+                \item \( \text{p-value} = 1 - 2 \cdot \text{norm.cdf}(\text{abs}(z_p)) \)
+            \end{enumerate} \\
+            \hline
+            Асимптотическая гипотеза о матожидании 
+            & \begin{enumerate}
+             \item \( X \sim \mathcal{F} \)
+             \item \( D(x) = \sigma^2 \) - неизвестно 
+             \item \( n \to \infty ~ (n \gg 0) \)
+            \end{enumerate} 
+            & \( \mu = \mu_0 \) 
+            & \( \mu \neq \mu_0 \) 
+            & \( z_p = \frac{\overline{X} - \mu_0}{S_0 / \sqrt{n}} \xrightarrow[n \to \infty]{d} N(0, 1) \) 
+            & Не отвергаем на уровне значимости \( \alpha \), если 
+            \begin{enumerate}
+                \item \( z_p \in \left( -z_{1-\frac{\alpha}{2}}, z_{1-\frac{\alpha}{2}} \right) \),
+                \item \( \mu_0 \in \left( \overline{X}-z_{1-\frac{\alpha}{2}}\frac{S_0}{\sqrt{n}}, \overline{X}+z_{1-\frac{\alpha}{2}}\frac{S_0}{\sqrt{n}} \right) \)
+                \item \( \text{p-value} > \alpha \)
+            \end{enumerate} 
+            & \begin{enumerate}
+                \item \( S_0^2 = \text{np.var}(x, ddof=1) \)
+                \item \( z_{1-\frac{\alpha}{2}} = \text{norm.ppf}(q=1 - \alpha/2) \),
+                \item \( \text{p-value} = 1 - 2 \cdot \text{norm.cdf}(\text{abs}(z_p)) \)
+            \end{enumerate} \\
+            \hline
+            Bootstrap
+            & \begin{enumerate}
+             \item \( X \sim \mathcal{F} \)
+             \item \( n \) - небольшое
+            \end{enumerate} 
+            & \(  \mu = \mu_0 \) \newline 
+            или \newline
+             \( \sigma^2 = \sigma^2_0 \)
+            & \(  \mu \neq \mu_0 \) \newline или \newline \( \sigma^2 \neq \sigma^2_0 \)
+            & Генерируем много выборок из данной одинаковой длины. Считаем для каждой них нужную статистику \( \left( \overline{X_i} ~ \text{или} ~ \hat{\sigma_i} \right) \). Считаем квавнтили \( q_{\frac{\alpha}{2}}, q_{1-\frac{\alpha}{2}} \) для выборки этих статистик.
+            & Не отвергаем на уровне значимости \( \alpha \), если 
+            \begin{enumerate}
+                \item \( 
+                    \mu_0 ~ (\sigma^2_0) \in \left( q_{\frac{\alpha}{2}}, q_{1-\frac{\alpha}{2}} \right) \)
+            \end{enumerate} 
+            & \begin{enumerate}
+                \item \href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.bootstrap.html}{scipy.stats.bootstrap}
+                \item \href{https://numpy.org/doc/stable/reference/random/generated/numpy.random.choice.html}{numpy.random.choice}
+            \end{enumerate} \\
+            \hline
+        \end{tabular}
+    \end{center}
+
+
+    \section{Два распределения}
+    \begin{center}
+        \begin{tabular}{|p{6cm}|p{8cm}|p{3cm}|p{3cm}|p{9cm}|p{10cm}|p{14cm}|}
+            \hline
+            Название & Предпосылки & \( H_0 \) & \( H_1 \) & Статистика & Выводы & Python (numpy, scipy.stats) \\
+            \hline
+            Гипотеза о разности матожиданий связанных пар 
+            & \begin{enumerate}
+             \item \( X \sim N(\mu_x, \sigma^2_x) \)
+             \item \( Y \sim N(\mu_y, \sigma^2_y) \)
+             \item \( n = n_x = n_y \)
+             \item \( \sigma^2_x, \sigma^2_y \) -- известно 
+            \end{enumerate} 
+            & \( \mu_x - \mu_y = \mu_0 \) 
+            & \( \mu_x - \mu_y \neq \mu_0 \) 
+            & \( \Delta = X - Y \), \newline 
+            \( z_p = \frac{\overline{\Delta} - \mu_0}{D( \overline{\Delta})} \sim N(0, 1) \), \newline 
+            \( z_p = \frac{\overline{X} - \overline{Y} - (\mu_x - \mu_y)}{ \sqrt{\frac{\sigma_x^2 + \sigma_y^2}{n}} } \sim N(0, 1) \) 
+            & Не отвергаем на уровне значимости \( \alpha \), если 
+            \begin{enumerate}
+                \item \( z_p \in \left( -z_{1-\frac{\alpha}{2}}, z_{1-\frac{\alpha}{2}} \right) \),
+                \item \( \mu_0 \in \left( \overline{\Delta}-z_{1-\frac{\alpha}{2}} D( \overline{\Delta}), \overline{\Delta}+z_{1-\frac{\alpha}{2}} D( \overline{\Delta}) \right) \)
+                \item \( \text{p-value} > \alpha \)
+            \end{enumerate} 
+            & \begin{enumerate}
+                \item \( z_{1-\frac{\alpha}{2}} = \text{norm.ppf}(q=1 - \alpha/2) \),
+                \item \( \text{p-value} = 1 - 2 \cdot \text{norm.cdf}(\text{abs}(z_p)) \)
+            \end{enumerate} \\
+            \hline
+            Гипотеза о разности матожиданий связанных пар 
+            & \begin{enumerate}
+             \item \( X \sim N(\mu_x, \sigma^2_x) \)
+             \item \( Y \sim N(\mu_y, \sigma^2_y) \)
+             \item \( n = n_x = n_y \)
+             \item \( \sigma^2_x, \sigma^2_y \) -- неизвестно 
+            \end{enumerate} 
+            & \( \mu_x - \mu_y = \mu_0 \) 
+            & \( \mu_x - \mu_y \neq \mu_0 \) 
+            & \( \Delta = X - Y \), \newline 
+            \( z_p = \frac{\overline{\Delta} - \mu_0}{S_0(\Delta) / \sqrt{n}} \sim N(0, 1) \)
+            & Не отвергаем на уровне значимости \( \alpha \), если 
+            \begin{enumerate}
+                \item \( z_p \in \left( -z_{1-\frac{\alpha}{2}}, z_{1-\frac{\alpha}{2}} \right) \),
+                \item \( \mu_0 \in \left( \overline{\Delta}-z_{1-\frac{\alpha}{2}} \frac{S_0(\Delta)}{ \sqrt{n}}, \overline{\Delta}+z_{1-\frac{\alpha}{2}} \frac{S_0(\Delta)}{ \sqrt{n}} \right) \)
+                \item \( \text{p-value} > \alpha \)
+            \end{enumerate} 
+            & \begin{enumerate}
+                \item \( z_{1-\frac{\alpha}{2}} = \text{norm.ppf}(q=1 - \alpha/2) \),
+                \item \( \text{p-value} = 1 - 2 \cdot \text{norm.cdf}(\text{abs}(z_p)) \)
+            \end{enumerate} \\
+            \hline
+            Гипотеза о разности матожиданий
+            & \begin{enumerate}
+             \item \( X \sim N(\mu_x, \sigma^2_x) \)
+             \item \( Y \sim N(\mu_y, \sigma^2_y) \)
+             \item \( n_x \neq n_y \)
+             \item \( \sigma^2_x, \sigma^2_y \) -- известно 
+            \end{enumerate} 
+            & \( \mu_x - \mu_y = \mu_0 \) 
+            & \( \mu_x - \mu_y \neq \mu_0 \) 
+            & \( z_p = \frac{\overline{X} - \overline{Y} - (\mu_x - \mu_y)}{ \sqrt{\frac{\sigma_x^2}{n_x} + \frac{\sigma_y^2}{n_y}} } \sim N(0, 1) \) 
+            & Не отвергаем на уровне значимости \( \alpha \), если 
+            \begin{enumerate}
+                \item \( z_p \in \left( -z_{1-\frac{\alpha}{2}}, z_{1-\frac{\alpha}{2}} \right) \),
+                \item \( (\mu_x - \mu_y) \in \left( \overline{X} - \overline{Y} \pm z_{1-\frac{\alpha}{2}} \sqrt{\frac{\sigma_x^2}{n_x} + \frac{\sigma_y^2}{n_y}} \right) \)
+                \item \( \text{p-value} > \alpha \)
+            \end{enumerate} 
+            & \begin{enumerate}
+                \item \( z_{1-\frac{\alpha}{2}} = \text{norm.ppf}(q=1 - \alpha/2) \),
+                \item \( \text{p-value} = 1 - 2 \cdot \text{norm.cdf}(\text{abs}(z_p)) \)
+            \end{enumerate} \\
+            \hline
+        \end{tabular}
+    \end{center}
+
+    
+    \begin{center}
+        \begin{tabular}{|p{6cm}|p{8cm}|p{3cm}|p{3cm}|p{9cm}|p{10cm}|p{14cm}|}
+            \hline
+            Название & Предпосылки & \( H_0 \) & \( H_1 \) & Статистика & Выводы & Python (numpy, scipy.stats) \\
+            \hline
+            Гипотеза о разности матожиданий
+            & \begin{enumerate}
+             \item \( X \sim N(\mu_x, \sigma^2) \)
+             \item \( Y \sim N(\mu_y, \sigma^2) \)
+             \item \( n_x \neq n_y \)
+             \item \( \sigma^2 = \sigma^2_x = \sigma^2_y \) -- неизвестно 
+            \end{enumerate} 
+            & \( \mu_x - \mu_y = \mu_0 \) 
+            & \( \mu_x - \mu_y \neq \mu_0 \) 
+            & \( \widehat{\sigma^2} = \frac{S_0^2 (X) (n_x - 1) + S_0^2 (Y) (n_y - 1)}{n_x + n_y - 2} \)
+            \newline
+            \( t_p = \frac{\overline{X} - \overline{Y} - (\mu_x - \mu_y)}{ \widehat{\sigma} \sqrt{\frac{1}{n_x} + \frac{1}{n_y}} } \sim T_{n_x+n_y-2} \) 
+            & Не отвергаем на уровне значимости \( \alpha \), если 
+            \begin{enumerate}
+                \item \( t_p \in \left( -t^{(n_x+n_y-2)}_{1-\frac{\alpha}{2}}, t^{(n_x+n_y-2)}_{1-\frac{\alpha}{2}} \right) \),
+                \item \( (\mu_x - \mu_y) \in \left( \overline{X} - \overline{Y} \pm t^{(n_x+n_y-2)}_{1-\frac{\alpha}{2}} \hat{ \sigma } \right) \)
+                \item \( \text{p-value} > \alpha \)
+            \end{enumerate} 
+            & \begin{enumerate}
+                \item \( t_{1-\frac{\alpha}{2}} = \text{t.ppf}(q=1 - \alpha/2 ,df = n_x+n_y-2) \),
+                \item \( \text{p-value} = 1 - 2 \cdot \text{t.cdf}(\text{abs}(t_p), df=n_x+n_y-2) \)
+                \item \href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ttest_ind.html}{scipy.stats.ttest\_ind}
+            \end{enumerate} \\
+            \hline
+            Гипотеза о \textit{равенстве} матожиданий. Тест Уэлча
+            & \begin{enumerate}
+             \item \( X \sim N(\mu_x, \sigma_x^2) \)
+             \item \( Y \sim N(\mu_y, \sigma_y^2) \)
+             \item \( n_x \neq n_y \)
+             \item \( \sigma^2_x, \sigma^2_y \) -- неизвестно 
+            \end{enumerate} 
+            & \( \mu_x - \mu_y = 0 \) 
+            & \( \mu_x - \mu_y \neq 0 \) 
+            & \( t_p = \frac{\overline{X} - \overline{Y}}{ \sqrt{ \dfrac{\widehat{\sigma_x^2}}{n_x} + \dfrac{\widehat{\sigma_y^2}}{n_y} } } \sim T_{\widehat{d}} \) 
+            \newline
+            \( \widehat{d} = \frac{ \left( \dfrac{\widehat{\sigma_x^2}}{n_x} + \dfrac{\widehat{\sigma_y^2}}{n_y}\right)^2 }{\dfrac{\widehat{\sigma}_x^4}{n^2_x(n_x-1)} + \dfrac{\widehat{\sigma}_y^4}{n^2_y(n_y-1)}} \)
+            & Не отвергаем на уровне значимости \( \alpha \), если 
+            \begin{enumerate}
+                \item \( t_p \in \left( -t^{(\widehat{d})}_{1-\frac{\alpha}{2}}, t^{(\widehat{d})}_{1-\frac{\alpha}{2}} \right) \),
+                \item \( 0 \in \left( \overline{X} - \overline{Y} \pm t^{(\widehat{d})}_{1-\frac{\alpha}{2}} \sqrt{ \dfrac{\widehat{\sigma_x^2}}{n_x} + \dfrac{\widehat{\sigma_y^2}}{n_y} } \right) \)
+                \item \( \text{p-value} > \alpha \)
+            \end{enumerate} 
+            & \begin{enumerate}
+                \item \( t_{1-\frac{\alpha}{2}} = \text{t.ppf}(q=1 - \alpha/2 ,df = d) \),
+                \item \( \text{p-value} = 1 - 2 \cdot \text{t.cdf}(\text{abs}(t_p), df = d) \)
+                \item \href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ttest_ind.html}{scipy.stats.ttest\_ind(equal\_var=Flase)}
+            \end{enumerate} \\
+
+            \hline
+            Гипотеза об отношении дисперсий
+            & \begin{enumerate}
+             \item \( X \sim N(\mu_x, \sigma_x^2) \)
+             \item \( Y \sim N(\mu_y, \sigma_y^2) \)
+             \item \( n_x \neq n_y \)
+             \item \( \sigma^2_x, \sigma^2_y \) -- неизвестно 
+            \end{enumerate} 
+            & \( \frac{\sigma_x^2}{\sigma_y^2} = 1 \) 
+            & \( \frac{\sigma_x^2}{\sigma_y^2} \neq 1 \) 
+            & \( f_p = \frac{\widehat{\sigma^2_x}}{\widehat{\sigma^2_y}} \sim F_{n_x-1, n_y-1} \)
+            & Не отвергаем на уровне значимости \( \alpha \), если 
+            \begin{enumerate}
+                \item \( f_p \in \left( f^{(n_x-1, n_y-1)}_{\frac{\alpha}{2}}, f^{(n_x-1, n_y-1)}_{1-\frac{\alpha}{2}} \right) \),
+                \item \( \text{p-value} > \alpha \)
+            \end{enumerate} 
+            & \begin{enumerate}
+                \item \( f^{(n_x-1, n_y-1)}_{\frac{\alpha}{2}} = \text{f.ppf}(dfn=n_x-1, dfd = n_y-1, q=a/2) \),
+                \item \( f^{(n_x-1, n_y-1)}_{1-\frac{\alpha}{2}} = \text{f.ppf}(dfn=n_x-1, dfd = n_y-1, q=1-a/2) \),
+            \end{enumerate} \\
+            \hline
+        \end{tabular}
+    \end{center}
+
+    \section{Критерии согласия и однородности}
+    \begin{center}
+        \begin{tabular}{|p{6cm}|p{8cm}|p{3cm}|p{3cm}|p{9cm}|p{10cm}|p{14cm}|}
+            \hline
+            Название & Предпосылки & \( H_0 \) & \( H_1 \) & Статистика & Выводы & Python (numpy, scipy.stats) \\
+            \hline
+            Критерий Пирса (\( \chi^2 \))
+            & \begin{enumerate}
+             \item \( X \sim \mathcal{F}_x \)
+             \item \( \mathcal{F}_0 \) -- дискретное.
+            \end{enumerate} 
+            & \( \mathcal{F}_x = \mathcal{F}_0 \) 
+            & \( \mathcal{F}_x \neq \mathcal{F}_0 \) 
+            & Для каждого значения \( a_i \) имеем частоту/количество (\( \nu_i \)) в данной выборке  и теоретическую вероятность \( p_i \). 
+            \newline
+            \( \rho = \sum_{i=1}^{k} \frac{ \left( \nu_i - n p_i \right)^2 }{n p_i} \xrightarrow[n \to \infty]{H_0} \chi^2_{k-1}\)
+            & Не отвергаем на уровне значимости \( \alpha \), если 
+            \begin{enumerate}
+                \item \( \text{p-value} > \alpha \)
+            \end{enumerate} 
+            & \begin{enumerate}
+                \item \( \text{p-value} = 2 \cdot \text{chi2.cdf}(\rho, df=n-1) \)
+            \end{enumerate} \\
+            \hline
+            Критерий Колмогорова
+            & \begin{enumerate}
+             \item \( X \sim \mathcal{F}_x \)
+             \item \( \mathcal{F}_0 \) -- непрерывное.
+            \end{enumerate} 
+            & \( \mathcal{F}_x = \mathcal{F}_0 \) 
+            & \( \mathcal{F}_x \neq \mathcal{F}_0 \) 
+            & \( \widehat{F}_n (x) \) -- эмпирическая функция распределения, \( F_0(x) \) -- функция распределения \( \mathcal{F}_0 \).
+            \newline
+            \( D_n = \sup_x \left| \widehat{F}_n (x) - F_0 (x) \right| \),
+            \newline
+            \( k_p = \sqrt{n} D_n \xrightarrow[n \to \infty]{d} \eta \sim \mathcal{K}(y) \) -- функция распределения Колмогорова.
+            & Не отвергаем на уровне значимости \( \alpha \), если 
+            \begin{enumerate}
+                \item \( k_p \leq K_{1-\alpha} \),
+                \item \( \text{p-value} > \alpha \)
+            \end{enumerate} 
+            & \begin{enumerate}
+                \item \href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ksone.html}{scipy.stats.ksone}
+                \item \href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ks_1samp.html}{scipy.stats.ks\_1samp}
+            \end{enumerate} \\
+            \hline
+            Критерий Колмогорова-Смирнова
+            & \begin{enumerate}
+             \item \( X \sim \mathcal{F}_x \)
+             \item \( Y \sim \mathcal{F}_y \)
+            \end{enumerate} 
+            & \( \mathcal{F}_x = \mathcal{F}_y \) 
+            & \( \mathcal{F}_x \neq \mathcal{F}_y \) 
+            & \( \widehat{F}_{n_x} (x), \widehat{F}_{n_y} (x) \) -- эмпирические функцит распределения.
+            \newline
+            \( ks_p = \sqrt{\frac{n_x n_y}{n_x + n_y}} \sup_x \left| \widehat{F}_{n_x} (x) - \widehat{F}_{n_y} (x) \right|\) 
+            \( ks_p \xrightarrow[n_x, n_y \to \infty]{d} \eta \sim \mathcal{K}(y) \) -- функция распределения Колмогорова.
+            & Не отвергаем на уровне значимости \( \alpha \), если 
+            \begin{enumerate}
+                \item \( ks_p \leq K_{1-\alpha} \),
+                \item \( \text{p-value} > \alpha \)
+            \end{enumerate} 
+            & \begin{enumerate}
+                \item \href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ksone.html}{scipy.stats.ksone}
+                \item \href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ks_2samp.html}{scipy.stats.ks\_2samp}
+            \end{enumerate} \\
+            \hline
+        \end{tabular}
+    \end{center}
+
+\end{document}

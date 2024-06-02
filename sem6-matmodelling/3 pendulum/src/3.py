@@ -127,7 +127,7 @@ if asd3:
 
 
 asd4 = False
-# asd4 = True
+asd4 = True
 if asd4:
     wf = 0.5
     ne = n//4
@@ -150,21 +150,21 @@ if asd4:
     # for i in range(n-1):
     #     plt.plot(y_[0][i:i+2], y_[1][i:i+2])
 
-    # plt.plot(x_[:ne], y_[0][:ne])
-    # plt.plot(x_[ne:], y_[0][ne:])
-    # plt.xlabel("t")
-    # plt.ylabel("a")
+    plt.plot(x_[:ne], y_[0][:ne])
+    plt.plot(x_[ne:], y_[0][ne:])
+    plt.xlabel("t")
+    plt.ylabel("a")
 
     
-    plt.plot(y_[0][:ne], y_[1][:ne], marker='o', markevery=[0])
-    plt.plot(y_[0][ne:], y_[1][ne:])
-    plt.xlabel("a")
-    plt.ylabel("a'")
+    # plt.plot(y_[0][:ne], y_[1][:ne], marker='o', markevery=[0])
+    # plt.plot(y_[0][ne:], y_[1][ne:])
+    # plt.xlabel("a")
+    # plt.ylabel("a'")
 
 
 # 5
 asd5 = False
-asd5 = True
+# asd5 = True
 if asd5:
     plt.figure(100)
 
@@ -208,5 +208,5 @@ if asd5:
     plt.legend(["k = 0.1", "k = 0.05", "k = 0.01"])
 
 
-plt.savefig("./sem6-matmodelling/3 pendulum/figure.pdf")
+# plt.savefig("./sem6-matmodelling/3 pendulum/figure.pdf")
 plt.show()

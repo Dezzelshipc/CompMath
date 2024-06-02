@@ -7,27 +7,19 @@ import sympy as sy
 # var 25
 def exact(x):
     return np.log(x**2 + x + 1)
-    # return 0.934 - 0.988 * x**2 + 0.054 * x**4
-    # return x + np.exp(1) / (np.exp(2) - 1) * (np.exp(-x) - np.exp(x))
-    # return np.sin(x) - np.cos(x)
+    # return np.sqrt(x+1) * np.log(x+1)
 
 def p(x):
     return 1 / (x**2 + x + 1)
-    # return 1
-    # return 0
-    # return -1
+    # return 2*sy.sqrt(x+1)/(x+1) 
 
 def q(x):
     return 0
-    # return (1+x**2)
-    # return -1
-    # return 1
+    # return -1/(sy.sqrt(x+1) * (x+1))
 
 def f(x):
     return (2 - 2*x**2)/(x**2 + x + 1)**2
-    # return -1
-    # return -x
-    # return -(np.sin(x)+np.cos(x))
+    # return 2/(x+1) - sy.log(x+1)/(4*sy.sqrt(n+1)*(x+1))
 
 
 
@@ -36,6 +28,14 @@ def phi(x, k):
     # return x**(k+1) / (k+1) - x**(k+2) / (k+2) if k > 0 else x
     return x**k * (1 - x)  if k > 0 else (1- np.log(3)) * x**2 + (2*np.log(3) - 1) * x
     # return x**k * (1 - x)  if k > 0 else x
+    # return x**k * (1 - x)  if k > 0 else  np.sqrt(2)*sy.log(x + 1)
+
+def phi1(x, k):
+    # return x**(k+1) / (k+1) - x**(k+2) / (k+2) if k > 0 else (1- np.log(3)) * x**2 + (2*np.log(3) - 1) * x
+    # return x**(k+1) / (k+1) - x**(k+2) / (k+2) if k > 0 else x
+    return x**k * (1 - x)  if k > 0 else (1- np.log(3)) * x**2 + (2*np.log(3) - 1) * x
+    # return x**k * (1 - x)  if k > 0 else x
+    # return x**k * (1 - x)  if k > 0 else  np.sqrt(2)*np.log(x + 1)
 
 
 def L(x, ff):
@@ -49,7 +49,7 @@ def L(x, ff):
 
 
 def u(x, c):
-    return sum(c[i] * phi(x, i) for i in range(len(c)))
+    return sum(c[i] * phi1(x, i) for i in range(len(c)))
 
 
 a, b = 0, 1

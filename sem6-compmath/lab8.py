@@ -49,10 +49,10 @@ def u(x, c):
 
 a, b = 0, 1
 ua, ub = exact(a), exact(b)
-n = 49
+n = 9
 
 xl, h = np.linspace(a, b, n+2, retstep=True)
-print(xl)
+# print(xl)
 
 matrix = np.zeros((n,n))
 values = np.zeros(n)
@@ -108,11 +108,11 @@ for i in range(1, n+1):
     values[i-1] = ( intv1[0] - intv2[0] ) / h
 
     
-print(matrix)
-print(values)
+# print(matrix)
+# print(values)
 c = np.linalg.solve(matrix, values)
 
-print(c)
+# print(c)
 num = 10000
 x = np.linspace(a, b, num+1)
 
@@ -122,6 +122,7 @@ plt.plot(x, uu, 'r')
 plt.plot(x, exact(x), 'b--')
 plt.legend(["Решение", "Точное"])
 plt.grid()
+plt.plot(xl, [0]*len(xl), 'o')
 
 plt.figure(123)
 udiff = abs( exact(x) - uu )
