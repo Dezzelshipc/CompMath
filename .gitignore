@@ -8,3 +8,4 @@
 *.toc
 *.xdv
 */__pycache__
+/.venv

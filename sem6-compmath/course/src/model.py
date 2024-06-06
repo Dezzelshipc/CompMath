@@ -18,20 +18,21 @@ def runge_kutta(function, y0: float, a: float, b: float, h: float):
     return x_a, np.array(y_a)
 
 
-ksi1, ksi2, ksi3 = 10, 0, 0
+ksi1, ksi2, ksi3 = 10, 8, 6
 a12, a13, a23 = 6, 2, 0.5
 k12, k13, k23 = 4, 1, 0.5
 
-def static_point(num: int, num2 = None):
+
+def static_point(num: int, num2=None):
     match (num, num2):
         case (0, None):
-            return [0,0,0]
+            return [0, 0, 0]
         case (1, None) | (1, 2) | (2, 1):
-            return [0, ksi3 / (k23 * a23), ksi2/a23]
+            return [0, ksi3 / (k23 * a23), ksi2 / a23]
         case (2, None) | (0, 2) | (2, 0):
-            return [ksi3 / (k13 * a13), 0, ksi1/a13]
+            return [ksi3 / (k13 * a13), 0, ksi1 / a13]
         case (3, None) | (0, 1) | (1, 0):
-            return [-ksi2 / (k12 * a12), ksi1/a12, 0]
+            return [-ksi2 / (k12 * a12), ksi1 / a12, 0]
         case (4, None):
             ld = k13 - k12 * k23
             if ld != 0:
@@ -45,16 +46,23 @@ def static_point(num: int, num2 = None):
                 return np.array([
                     (a23 * x3 - ksi2) / (a12 * k12),
                     (-a13 * x3 + ksi1) / a12,
-                    x3,              
+                    x3,
                 ])
 
+
+def right1(t, x):
+    return np.array([
+        (ksi1 - a12 * x[1] - a13 * x[2]) * x[0],
+        (ksi2 + k12 * a12 * x[0] - a23 * x[2]) * x[1],
+        (-ksi3 + k13 * a13 * x[0] + k23 * a23 * x[1]) * x[2]
+    ])
 
 
 def right(t, x):
     return np.array([
-        ( ksi1 - a12 * x[1] - a13 * x[2] ) * x[0],
-        ( ksi2 + k12 * a12 * x[0] - a23 * x[2] ) * x[1],
-        (-ksi3 + k13 * a13 * x[0] + k23 * a23 * x[1] ) * x[2]
+        ((-1 * x[0] + 10) * x[0] - 2 * x[1] * x[0] - 3 * x[2] * x[0]),
+        ((1 * x[0] - 5) * x[1] - 1 * x[2] * x[1]),
+        ((1 * x[0] - 3) * x[2] + (1 * x[1] - 4) * x[2])
     ])
 
 
@@ -65,19 +73,20 @@ def plot3(tl, xl):
     plt.plot(tl, xl[2])
 
     plt.legend(["x1", "x2", "x3"])
-    
+
+
 def plotp(tl, xl, n1, n2):
     plt.figure(f"{n1}{n2}")
     plt.plot(xl[n1], xl[n2], 'o-', markevery=[0])
-    plt.xlabel(f"x{n1+1}")
-    plt.ylabel(f"x{n2+1}")
+    plt.xlabel(f"x{n1 + 1}")
+    plt.ylabel(f"x{n2 + 1}")
     st_point = static_point(n1, n2)
     plt.plot(st_point[n1], st_point[n2], 'o')
-    
-    
+
+
 def plotp3(tl, xl):
     ax = plt.figure("123").add_subplot(projection='3d')
-    
+
     ax.set_xlabel('x1')
     ax.set_ylabel('x2')
     ax.set_zlabel('x3')
@@ -90,15 +99,14 @@ def plotp3(tl, xl):
 
     ax.legend(["x(0)", "x(1)", "x(2)", "x(3)", "x(4)"])
 
-    
     ax.plot(xl[0], xl[1], xl[2], 'o-', markevery=[0])
+
 
 def plotvec(n1, n2, lin1, lin2):
     plt.figure(f"vec{n1}{n2}")
-    plt.xlabel(f"x{n1+1}")
-    plt.ylabel(f"x{n2+1}")
-    plt.plot(*static_point(n1, n2), 'o')
-
+    plt.xlabel(f"x{n1 + 1}")
+    plt.ylabel(f"x{n2 + 1}")
+    # plt.plot(*static_point(n1, n2), 'o')
 
     grid = np.meshgrid(lin1, lin2)
     if 0 not in (n1, n2):
@@ -108,10 +116,16 @@ def plotvec(n1, n2, lin1, lin2):
     elif 2 not in (n1, n2):
         vec_grid = right(0, [grid[0], grid[1], 0])
 
-    print([len(v) for v in grid])
-    print([len(v) for v in vec_grid])
+    # print([len(v) for v in grid])
+    # print([len(v) for v in vec_grid])
 
-    plt.quiver(grid[0], grid[1], vec_grid[n1], vec_grid[n2], length=0.01, color = 'black')
+    # st_point = static_point(n1, n2)
+    # plt.plot(st_point[n1], st_point[n2], 'o')
+
+    plt.streamplot(grid[0], grid[1], vec_grid[n1], vec_grid[n2], color='black', broken_streamlines=False, density=0.5)
+    
+    plt.streamplot(grid[0], grid[1], vec_grid[n1], vec_grid[n2], color='black', broken_streamlines=False, start_points=[[10,0.01]])
+
 
 
 def plotvec3(linx, liny, linz):
@@ -123,7 +137,7 @@ def plotvec3(linx, liny, linz):
     grid = np.meshgrid(linx, liny, linz)
     vec_grid = right(0, grid)
 
-    ax.quiver(*grid, *vec_grid, length=0.01, color = 'black')
+    ax.quiver(*grid, *vec_grid, length=0.01, color='black')
 
     # ax.plot(*static_point(0), 'o')
     # ax.plot(*static_point(1), 'o')
@@ -135,17 +149,16 @@ def plotvec3(linx, liny, linz):
     # ax.set_zlim(-3, 3)
 
 
-
 a, b = 0, 10
 n = 10000
-h = (b-a)/n
+h = (b - a) / n
 
 x0 = np.array([10, 10, 1])
 # x0 = static_point()
-tl, xl = runge_kutta(right, x0, a, b, h)
-xl = xl.T
+# tl, xl = runge_kutta(right, x0, a, b, h)
+# xl = xl.T
 
-print(x0)
+# print(x0)
 
 # plot3(tl, xl)
 
@@ -155,9 +168,12 @@ print(x0)
 
 # plotp3(tl, xl)
 
+l1 = np.linspace(0, 20, 100)
 
-# plotvec(1, 2, np.linspace(0.01, 50, 21), np.linspace(0.01, 50, 21))
-plotvec3(0, np.linspace(0.01, 40, 21), np.linspace(0.01, 40, 21))
+plotvec(0, 1, l1, l1)
+plotvec(0, 2, l1, l1)
+plotvec(1, 2, l1, l1)
+# plotvec3(np.linspace(0.01, 40, 21), np.linspace(0.01, 40, 21), 5)
 
 # print(x0:=static_point(4))
 # a2 = k12 * a12**2 * x0[0] * x0[1] + k13 * a13**2 * x0[0]*x0[2] + k23 * a23 ** 2 * x0[1] * x0[2]

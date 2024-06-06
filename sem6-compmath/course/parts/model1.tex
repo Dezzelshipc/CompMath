@@ -1,22 +1,22 @@
  \subsection{Математическая модель}
     \[
         \left\{\begin{split}
-            & \dot{x_1} = \xi_1(x_1) - V_{12}(x_1)x_2 - V_{13}(x_1)x_3, \\
-            & \dot{x_2} = \xi_2(x_2) + k_{12} V_{12}(x_1)x_2 - V_{23}(x_2)x_3, \\
-            & \dot{x_3} = -\xi_3(x_3) + k_{13} V_{13}(x_1)x_3 + k_{23} V_{23}(x_2)x_3. 
+            & \dot{x_1} = \varepsilon_1(x_1) - V_{12}(x_1)x_2 - V_{13}(x_1)x_3, \\
+            & \dot{x_2} = \varepsilon_2(x_2) + k_{12} V_{12}(x_1)x_2 - V_{23}(x_2)x_3, \\
+            & \dot{x_3} = -\varepsilon_3(x_3) + k_{13} V_{13}(x_1)x_3 + k_{23} V_{23}(x_2)x_3. 
         \end{split}\right.
     \]
     
     Имеем автономную систему \( \dot{x} = f(x) \), где \( k_{ij} > 0 \).
 
     Примем функции в системе за линейные функции: 
-    \[ \xi_i(x_j) = \xi_i \cdot x_j, V_{ij}(x_k) = \alpha_{ij} \cdot x_k, \quad \xi_i, \alpha_{ij} > 0 \]
+    \[ \varepsilon_i(x_j) = \varepsilon_i \cdot x_j, V_{ij}(x_k) = \alpha_{ij} \cdot x_k, \quad \varepsilon_i, \alpha_{ij} > 0 \]
 
     Тогда получим систему:
     \[
         \left\{\begin{split}
-            & \dot{x_1} = \xi_1 x_1 - \alpha_{12} x_1 x_2 - \alpha_{13} x_1 x_3, \\
-            & \dot{x_2} = \xi_2 x_2 + k_{12} \alpha_{12} x_1 x_2 - \alpha_{23} x_2 x_3, \\
-            & \dot{x_3} = -\xi_3 x_3 + k_{13} \alpha_{13} x_1 x_3 + k_{23} \alpha_{23} x_2 x_3. 
+            & \dot{x_1} = \varepsilon_1 x_1 - \alpha_{12} x_1 x_2 - \alpha_{13} x_1 x_3, \\
+            & \dot{x_2} = \varepsilon_2 x_2 + k_{12} \alpha_{12} x_1 x_2 - \alpha_{23} x_2 x_3, \\
+            & \dot{x_3} = -\varepsilon_3 x_3 + k_{13} \alpha_{13} x_1 x_3 + k_{23} \alpha_{23} x_2 x_3. 
         \end{split}\right.
     \]
