@@ -2,6 +2,7 @@ import numpy as np
 from numpy import pi as PI
 import matplotlib.pyplot as plt
 
+raise NotImplementedError("Разностный метод не работает!")
 
 def c0(x, y):
     return np.arctan( (y - 0.5) / 0.1 )

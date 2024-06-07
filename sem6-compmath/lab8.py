@@ -55,7 +55,7 @@ def u(x, c):
 
 a, b = 0, 1
 ua, ub = exact(a), exact(b)
-n = 9
+n = 30
 
 xl, h = np.linspace(a, b, n + 2, retstep=True)
 # print(xl)
@@ -93,7 +93,7 @@ for i in range(1, n + 1):
 
 # print(matrix)
 # print(values)
-c = np.linalg.solve(matrix, values)
+c = np.linalg.solve(matrix.T, values)
 
 print(c)
 num = 10000

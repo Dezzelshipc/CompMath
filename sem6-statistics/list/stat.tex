@@ -326,13 +326,13 @@
         \end{tabular}
     \end{center}
 
-    \section{Критерии согласия и однородности}
+    \section{Критерии сравнения}
     \begin{center}
         \begin{tabular}{|p{6cm}|p{8cm}|p{3cm}|p{3cm}|p{9cm}|p{10cm}|p{14cm}|}
             \hline
             Название & Предпосылки & \( H_0 \) & \( H_1 \) & Статистика & Выводы & Python (numpy, scipy.stats) \\
             \hline
-            Критерий Пирса (\( \chi^2 \))
+            Критерий Пирсона (\( \chi^2 \)) о согласии
             & \begin{enumerate}
              \item \( X \sim \mathcal{F}_x \)
              \item \( \mathcal{F}_0 \) -- дискретное.
@@ -350,7 +350,7 @@
                 \item \( \text{p-value} = 2 \cdot \text{chi2.cdf}(\rho, df=n-1) \)
             \end{enumerate} \\
             \hline
-            Критерий Колмогорова
+            Критерий Колмогорова о согласии
             & \begin{enumerate}
              \item \( X \sim \mathcal{F}_x \)
              \item \( \mathcal{F}_0 \) -- непрерывное.
@@ -370,9 +370,10 @@
             & \begin{enumerate}
                 \item \href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ksone.html}{scipy.stats.ksone}
                 \item \href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ks_1samp.html}{scipy.stats.ks\_1samp}
+                \item \href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kstest.html}{scipy.stats.kstest}
             \end{enumerate} \\
             \hline
-            Критерий Колмогорова-Смирнова
+            Критерий Колмогорова-Смирнова об однородности
             & \begin{enumerate}
              \item \( X \sim \mathcal{F}_x \)
              \item \( Y \sim \mathcal{F}_y \)
@@ -391,6 +392,44 @@
             & \begin{enumerate}
                 \item \href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ksone.html}{scipy.stats.ksone}
                 \item \href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ks_2samp.html}{scipy.stats.ks\_2samp}
+            \end{enumerate} \\
+            \hline
+            Критерий Пирсона (\( \chi^2 \)) о независимости
+            & Объекты имеют пары из категорий \( (x_i, y_i) \). Всего \( X \) имеет \( s \) категорий, \( Y \) имеет \( k \) категорий.
+            & \( X, Y \) - независимые
+            & \( X, Y \) - зависимые 
+            & \( \nu_{ij} \) - частоты пары категорий \( (a_{i}, b{j}) \sim (X,  Y) \).
+            \newline
+            \( n_{i \cdot} = \sum_{j=1}^{k} \nu_{ij}, ~ n_{\cdot j} = \sum_{i=1}^{s} \nu_{ij} \).
+            \newline
+            \( \gamma = \sum_{i=1}^{s} \sum_{j=1}^{k} \frac{\left( \nu_{ij} - \frac{n_{i \cdot} n_{\cdot j}}{n} \right)^2}{\frac{n_{i \cdot} n_{\cdot j}}{n}} \sim \chi^2_{(s-1)(k-1)} \)
+            & Не отвергаем на уровне значимости \( \alpha \), если 
+            \begin{enumerate}
+                \item \( \gamma \in (0,  C^{(s-1)(k-1)}_{1-\alpha}) \),
+                \item \( \text{p-value} > \alpha \)
+            \end{enumerate} 
+            & \begin{enumerate}
+                \item \href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.contingency.crosstab.html}{scipy.stats.contingency.crosstab}
+                \item \href{https://pandas.pydata.org/docs/reference/api/pandas.crosstab.html}{pandas.crosstab}
+                \item \href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.chi2_contingency.html}{scipy.stats.chi2\_contingency} (correction = False)
+            \end{enumerate} \\
+            \hline
+            Коэффициент корреляции Спирмена
+            & Объекты имеют пары из порядковых (ранговых) переменных \( (r_i, k_i) \).
+            & \( X, Y \) - независимые
+            & \( X, Y \) - зависимые 
+            & \( S = \sum_{i=1}^{n} (r_i - k_i)^2 \in \left[ 0, \frac{n^3 - n}{3} \right]\)
+            \newline
+            \( \rho = 1 - \frac{6S}{n^3-n} \in [-1, 1] \)
+            \newline
+            \( \rho_p = \sqrt{n-1} \rho \xrightarrow[H_0]{n \to \infty} N(0, 1) \)
+            & Не отвергаем на уровне значимости \( \alpha \), если 
+            \begin{enumerate}
+                \item \( \rho_p \in \left( -z_{1-\frac{\alpha}{2}}, z_{1-\frac{\alpha}{2}} \right) \),
+                \item \( \text{p-value} > \alpha \)
+            \end{enumerate} 
+            & \begin{enumerate}
+                \item \href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.spearmanr.html}{scipy.stats.spearmanr}
             \end{enumerate} \\
             \hline
         \end{tabular}

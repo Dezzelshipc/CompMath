@@ -1,0 +1,100 @@
+\RequirePackage{amsmath}
+\RequirePackage{amssymb}
+\RequirePackage{geometry}
+\RequirePackage{graphicx}
+\RequirePackage{float}
+\RequirePackage[hidelinks]{hyperref}
+\RequirePackage{listings}
+\RequirePackage{color}
+\RequirePackage{datetime2}
+\RequirePackage[center]{caption}
+
+\RequirePackage{polyglossia}
+\RequirePackage{xecyr}
+
+\setdefaultlanguage{russian}
+\setotherlanguage{english}
+
+\setmainfont{Times New Roman} 
+\newfontfamily{\cyrillicfont}{Times New Roman}
+\newfontfamily{\dejavu}{DejaVu Sans Mono}
+
+\SetLanguageKeys{russian}{indentfirst=true}
+
+\parindent 1.25cm
+\linespread{1.5}
+
+\geometry{left=2.5cm}
+\geometry{right=1.5cm}
+\geometry{top=2cm}
+\geometry{bottom=2cm}
+
+
+\renewcommand{\lstlistingname}{Листинг}
+
+\newcommand{\monthname}[1]{
+	\ifcase#1
+	\or
+	января%
+	\or
+	февраля%
+	\or
+	марта%
+	\or
+	апреля%
+	\or
+	мая%
+	\or
+	июня%
+	\or
+	июля%
+	\or
+	августа%
+	\or
+	сентября%
+	\or
+	октября%
+	\or
+	ноября%
+	\or
+	декабря%
+	\fi
+}
+
+\usepackage{color}
+\definecolor{darkred}{rgb}{0.6,0.0,0.0}
+\definecolor{darkgreen}{rgb}{0,0.50,0}
+\definecolor{lightblue}{rgb}{0.0,0.42,0.91}
+\definecolor{orange}{rgb}{0.99,0.48,0.13}
+\definecolor{grass}{rgb}{0.18,0.80,0.18}
+\definecolor{pink}{rgb}{0.97,0.15,0.45}
+
+% listings
+\usepackage{listings}
+
+% General Setting of listings
+\lstset{
+  aboveskip=1em,
+  breaklines=true,
+  abovecaptionskip=-6pt,
+  captionpos=b,
+  escapeinside={\%*}{*)},
+  frame=single,
+  numbers=left,
+  numberstyle=\tiny,
+}
+% 0. Basic Color Theme
+\lstdefinestyle{colored}{ %
+  basicstyle=\ttfamily,
+  backgroundcolor=\color{white},
+  commentstyle=\color{green}\itshape,
+  keywordstyle=\color{blue}\bfseries\itshape,
+  keywordstyle=[2]\color{blue}\bfseries,
+  keywordstyle=[3]\color{orange},
+  stringstyle=\color{red},
+  morekeywords={self},
+  morekeywords=[2]{__init__},
+  morekeywords=[3]{@staticmethod},
+}
+
+\delimitershortfall=-1pt

@@ -53,7 +53,7 @@ def u(x, c):
 
 
 a, b = 0, 1
-n = 20
+n = 15
 
 matrix = np.zeros((n-1,n-1))
 values = np.zeros(n-1)
@@ -73,7 +73,7 @@ for i in range(1, n):
     
 # print(matrix)
 # print(values)
-c = np.linalg.solve(matrix, values)
+c = np.linalg.solve(matrix.T, values)
 c = np.append([1], c)
 
 print(c)

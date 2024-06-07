@@ -27,6 +27,7 @@ def f(x):
     # return (2 - np.log(x+1) / (4 * np.sqrt(x+1))) / (x+1)
     # return -1
 
+
 def bs(t, i, d):
     if d == 0:
         return np.where(tl[i] <= t, np.where(t < tl[i + 1], 1, 0), 0)
@@ -40,16 +41,16 @@ def u(x, c):
 
 
 a, b = 0, 1
-# a0, b0, c0 = 1, 0, exact(0)
-# a1, b1, c1 = 1, 0, 0
+# a0, b0, c0 = 1, 0, exact(a)
+# a1, b1, c1 = 1, 0, exact(b)
 
 a0, b0, c0 = 1, 0, 0
 a1, b1, c1 = 0, 1, 1
 
-n = 100
+n = 10
 tl, h = np.linspace(a, b, n + 1, retstep=True)
 tl = np.append(tl, [b + h, b + 2 * h, b + 3 * h, a - 3 * h, a - 2 * h, a - h])
-# print(tl)
+print(tl, h)
 
 A = np.zeros(n + 1)
 D = np.zeros(n + 1)
@@ -78,10 +79,12 @@ F[0] -= Fm1 * A[0] / Am1
 A[-1] -= An1 * D[-1] / Dn1
 C[-1] -= Cn1 * D[-1] / Dn1
 F[-1] -= Fn1 * D[-1] / Dn1
+# print(A,D,C,F)
+
 
 M = np.diag(A[1:], -1) + np.diag(C) + np.diag(D[:-1], 1)
 # print(M)
-# print(F, h)
+# print(F)
 
 const = np.linalg.solve(M, F)
 
@@ -89,9 +92,10 @@ bm1 = (Fm1 - const[0] * Cm1 - const[1] * Dm1) / Am1
 bn1 = (Fn1 - const[-1] * Cn1 - const[-2] * An1) / Dn1
 const = np.append(const, [bn1, bm1])
 
+print(const)
 
-# asd = u(0, const)
-xl = np.linspace(a - 3*h, b + 3 * h, 1000)
+N = 10000
+xl = np.linspace(a - h * 3, b + h * 3, N)
 uu = u(xl, const)
 ex = exact(xl)
 
@@ -103,7 +107,7 @@ for i in range(-1, n + 2):
     plt.plot(xl, const[i] * bs(xl, i - 2, 3))
 
 plt.figure(2)
-xl1 = np.linspace(a, b, 1000)
+xl1 = np.linspace(a, b, N)
 plt.plot(xl, abs(u(xl1, const) - exact(xl1)))
 
 plt.show()
