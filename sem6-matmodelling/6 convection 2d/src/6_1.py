@@ -7,6 +7,7 @@ from matplotlib.animation import FuncAnimation
 from scipy import interpolate
 from multiprocessing import Pool
 
+print(Warning("Вычисления могут быть очень долгими при больших делениях времени (nt) и количестве точек (cp)"))
 
 def runge_kutta(function, y0: float | list, linsp):
     num = len(linsp)
@@ -76,9 +77,17 @@ if __name__ == "__main__":
     nt = 200
     tl, dt = np.linspace(0, 0.4, nt + 1, retstep=True)
 
-    cp = 20000
+    cp = 2000
 
-    points = np.random.rand(cp, 2)
+    # points = np.random.rand(cp, 2)
+
+    points = np.zeros((cp, 2))
+    points[:-2,0] = np.linspace(0, 1, cp-2)
+    points[:-2,1] = 0.5
+    points[-1] = [0.,0.]
+    points[-2] = [1.,1.]
+    print(points)
+
     values = c0(points[:, 0], points[:, 1])
 
     c = np.zeros((nt + 1, cp, 2))
@@ -98,7 +107,7 @@ if __name__ == "__main__":
 
     show_step = max(nt // 20, 1)
     print(f"{show_step=}")
-    show = 3
+    show = 2
 
     if show == 1:
         grid_y, grid_x = np.mgrid[0:1:500j, 0:1:500j]
@@ -132,7 +141,7 @@ if __name__ == "__main__":
 
         def update_save(ti):
             update(ti)
-            plt.savefig(f"./saved_imgs/p{ti}.pdf")
+            # plt.savefig(f"./p{ti}.pdf")
 
         plt.colorbar()
         ani = FuncAnimation(fig, update_save, frames=len(grids), repeat=False)
@@ -155,14 +164,24 @@ if __name__ == "__main__":
             plt.scatter(scatters[ti, :, 0], scatters[ti, :, 1], c=values)
             ax.set_title(f"Момент времени: {np.round(tl[ti * show_step], 3)}")
 
+        def update_save(ti):
+            update(ti)
+            plt.savefig(f"./line{ti}.pdf")
+
+        plt.colorbar()
 
         ax.set_xlim(0, 1)
         ax.set_ylim(0, 1)
-        ani = FuncAnimation(fig, update, frames=len(scatters), interval=10)
+        # ani = FuncAnimation(fig, update, frames=len(scatters), interval=10)
+        ani = FuncAnimation(fig, update_save, frames=len(scatters), repeat=False)
     elif show == 3:
         grid_y, grid_x = np.mgrid[0:1:20j, 0:1:20j]
         plt.streamplot(grid_x, grid_y, u(grid_x, grid_y), v(grid_x, grid_y), broken_streamlines=False, density=0.5)
-        plt.savefig(f"./streamplot.pdf")
+        # plt.savefig(f"./streamplot.pdf")
+    elif show == 4:
+        grid_y, grid_x = np.mgrid[0:1:21j, 0:1:21j]
+        plt.quiver(grid_x, grid_y, u(grid_x, grid_y), v(grid_x, grid_y))
+        # plt.savefig(f"./quiver.pdf")
 
     plt.tight_layout(pad=1.03)
     plt.show()
