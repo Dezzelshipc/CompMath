@@ -5,65 +5,71 @@
     \[
         J = \left(
             \begin{matrix}
-                \varepsilon'(x_1) x_1 + \varepsilon(x_1) - V'_{12}(x_1) x_2 - V'_{13} (x_1) x_3 & -V_{12} (x_1) & -V_{13} (x_1) \\
-                K'_{12} (x_1) x_2 & K_{12}(x_1) - V'_{23} (x_2) x_3 & -V_{23}(x_2) \\
-                K'_{13} (x_1) x_3 & K'_{23} (x_2) x_3 & K_{23} (x_2)
+                -2 \varepsilon x_1 + \delta - v_{12} x_2 - v_{13} x_3 & -v_{12}  x_1  & -v_{13} x_1 \\
+                k_{12} x_2 & \left( k_{12} x_1 - m_{12} \right) - v_{23} x_3 & -v_{23} x_2 \\
+                k_{13} x_3 & k_{23} x_3 & k_{13} x_1 - m_{13} + k_{23} x_2 - m_{23}
             \end{matrix}
         \right)
     \]
 
     Нужно найти решения \( (x_1, x_2, x_3) \) системы уравнений:
     \[
-        \dot{x} = 0 
-        \Rightarrow 
-        f(x) = 0
-        \Rightarrow
         \left\{\begin{split}
-            & \varepsilon(x_1)x_1 - V_{12}(x_1)x_2 - V_{13}(x_1)x_3 = 0, \\
-            & K_{12}(x_1)x_2 - V_{23}(x_2)x_3 = 0, \\
-            & K_{13}(x_1)x_3 + K_{23}(x_2)x_3 = 0. 
+            & \left( -\varepsilon x_1 + \delta \right)x_1 - v_{12} x_1 x_2 - v_{13} x_1 x_3 = 0, \\
+            & \left( k_{12} x_1 - m_{12} \right)x_2 - v_{23} x_2 x_3 = 0, \\
+            & \left( k_{13} x_1 - m_{13} \right)x_3 + \left( k_{23} x_2 - m_{23} \right)x_3 = 0. 
+        \end{split}\right.
+    \]
+    Для удобства вынесем общие множители:
+    \[
+        \left\{\begin{split}
+            & \left( -\varepsilon x_1 + \delta - v_{12} x_2 - v_{13} x_3\right)x_1 = 0, \\
+            & \left( k_{12} x_1 - m_{12} - v_{23} x_3 \right)x_2 = 0, \\
+            & \left( k_{13} x_1 - m_{13} + k_{23} x_2 - m_{23} \right)x_3  = 0. 
         \end{split}\right.
     \]
 
     \begin{enumerate}
         \item Если \( x_2 = x_3 = 0 \), то остаётся уравнение 
-        \[ \varepsilon (x_1) x_1 = 0. \] 
-        Получаем тривиальное решение \( x^{(0)} = (0,0,0) \) и \( x^{(1)} = (\bar{x}_1, 0, 0) \).
+        \[ ( -\varepsilon x_1 + \delta ) x_1 = 0. \] 
+        Получаем тривиальное решение \( x^{(0)} = (0,0,0) \) и \( x^{(1)} = \left(\frac{\delta}{\varepsilon}, 0, 0 \right) \).
         \begin{enumerate}
             \item \( J \big|_{x^{(0)}} = \left(
                 \begin{matrix}
-                    \varepsilon(0) & 0 & 0 \\
-                    0 & K_{12}(0)  & 0 \\
-                    0 & 0 & K_{23} (0)
+                    \delta & 0 & 0 \\
+                    0 & -m_{12}  & 0 \\
+                    0 & 0 & -m_{23} (0)
                 \end{matrix}
             \right) \)
 
             \[
-                \lambda_1 = \varepsilon(0) > 0, ~
-                \lambda_2 = K_{12} (0) < 0, ~
-                \lambda_3 = K_{23} (0) < 0. 
+                \lambda_1 = \delta> 0, ~
+                \lambda_2 = -m_{12} < 0, ~
+                \lambda_3 = -m_{23} < 0.
             \]
 
             Значит, в плоскостях \( x_2 = 0 \) и \( x_3 = 0 \) начало координат является седлом и направление \( x_1 \) -- неустойчивое. В плоскости \( x_1 = 0 \) точка является устойчивым узлом.
 
             \item \( J \big|_{x^{(1)}} = \left(
                 \begin{matrix}
-                    \varepsilon'(\bar{x}_1) \bar{x}_1 & -V_{12} (\bar{x}_1) & -V_{13} (\bar{x}_1) \\
-                    0 & K_{12}(\bar{x}_1) & 0 \\
-                    0 & 0 & K_{23} (0)
+                    -\delta & -v_{12} \frac{\delta}{\varepsilon} & -v_{13} \frac{\delta}{\varepsilon} \\
+                    0 & k_{12} \frac{\delta}{\varepsilon} - m_{12} & 0 \\
+                    0 & 0 & k_{13} \frac{\delta}{\varepsilon} -m_{13} - m_{23}
                 \end{matrix}
             \right) \)
 
             \[
-                \lambda_1 = \varepsilon'(\bar{x}_1) \bar{x}_1 < 0, ~
-                \lambda_2 = K_{12} (\bar{x}_1), ~
-                \lambda_3 = K_{23} (0) < 0. 
+                \lambda_1 = -\delta < 0, ~
+                \lambda_2 = k_{12} \frac{\delta}{\varepsilon} - m_{12}, ~
+                \lambda_3 = k_{13} \frac{\delta}{\varepsilon} -m_{13} - m_{23}. 
             \]
 
-            В зависимости от нахождения корня функции \( K_{12} \) данная точка может быть:
+            В зависимости от значений \( \lambda_2, \lambda_3 \) данная точка может быть:
             \begin{enumerate}
-                \item Устойчивым узлом, если \( K_{12} (\bar{x}_1) \leq 0 \),
-                \item Устойчивым узлом в плоскости \( x_2 = 0 \) и седлом в плоскости \( x_3 = 0 \), если \( K_{12} (\bar{x}_1) > 0 \),
+                \item Устойчивым узлом, если \( \lambda_2, \lambda_3 < 0 \),
+                \item Устойчивым узлом в плоскости \( x_2 = 0 \) и седлом в плоскости \( x_3 = 0 \), если \( \lambda_2 > 0, \lambda_3 < 0 \),
+                \item Устойчивым узлом в плоскости \( x_3 = 0 \) и седлом в плоскости \( x_2 = 0 \), если \( \lambda_2 < 0, \lambda_3 > 0 \),
+                \item Седлом в плоскостях \( x_2 = 0, ~ x_3 = 0 \), если \( \lambda_2, \lambda_3 > 0 \)
             \end{enumerate}
             
             
@@ -71,41 +77,41 @@
 
 
         \item Если \( x_1 = x_2 = 0 \), то в третьей строчке получем
-        \[ K_{13}(0)x_3 + K_{23}(0)x_3 = 0. \]
+        \[ \left( -m_{13} -m_{23} \right) x_3 = 0. \]
         Поскольку \( x_3 > 0\), то данное равенство не может быть выполнено.
 
 
         \item Если \( x_1 = x_3 = 0 \), то во второй строчке получем
-        \[ K_{12}(0)x_2 = 0. \]
+        \[ -m_{12} x_2 = 0. \]
         Поскольку \( x_2 > 0 \), то равенство не может быть выполнено.
 
 
         \item Если \( x_1 = 0; x_2, x_3 > 0 \):
             \[
                 \left\{\begin{split}
-                    & K_{12}(0)x_2 - V_{23}(x_2)x_3 = 0, \\
-                    & K_{13}(0)x_3 + K_{23}(x_2)x_3 = 0. 
+                    & \left( -m_{12} - v_{23} x_3 \right) x_2 = 0, \\
+                    & \left( -m_{13} + k_{23} x_2 - m_{23} \right) x_3 = 0. 
                 \end{split}\right.
                 \Rightarrow
                 \left\{\begin{split}
-                    & x_3 = \frac{ K_{12}(0)x_2 }{ V_{23}(x_2) } < 0, \\
-                    & x_2 =K^{-1}_{23} ( -K_{13}(0) ). 
+                    & x_3 = \frac{ m_{12} }{ -v_{23} } < 0, \\
+                    & x_2 = \frac{m_{13} + m_{23}}{k_{23}} . 
                 \end{split}\right.
             \]
-            Поскольку функции \( K_{ij} (x_i) \) при \( x_i > 0 \) монотонно возрастающие, то можно найти обратные к ним. Однако, получили противоречие, т.к. \( K_{12}(0) < 0, V_{ij} > 0\), значит эта точка будет находиться вне исследуемой области.
+            Эта точка будет находиться вне исследуемой области.
         \item Если \( x_2 = 0; x_1, x_3 > 0 \):
             \[
                 \left\{\begin{split}
-                    & \varepsilon(x_1)x_1 - V_{13}(x_1)x_3 = 0, \\
-                    & K_{13}(x_1)x_3 + K_{23}(0)x_3 = 0. 
+                    & \left( -\varepsilon x_1 + \delta - v_{13} x_3 \right)x_1 = 0, \\
+                    & \left( k_{13} x_1 -m_{13} - m_{23} \right)x_3 = 0. 
                 \end{split}\right.
                 \Rightarrow
                 \left\{\begin{split}
-                    & x_3 = \frac{ \varepsilon(x_1)x_1 }{ V_{13}(x_1) }, \\
-                    & x_1 = K^{-1}_{13} \left( - K_{23}(0) \right). 
+                    & x_3 = \frac{ \varepsilon x_1 - \delta }{ -v_{13} }, \\
+                    & x_1 = \frac{m_{13} + m_{23}}{k_{13}}. 
                 \end{split}\right.
             \]
-            Поскольку \( K_{ij}: [0, \infty] \rightarrow [-a, \infty] \), то  \( K^{-1}_{ij}: [-a, \infty] \rightarrow [0, \infty] \), значит \( x_1 > 0 \). В исследуемой области данная точка будет находиться, если \( x_1 \leq \bar{x}_1 \).
+            В исследуемой области данная точка будет находиться, если \( x_1 \leq \frac{\delta}{\varepsilon} \). FFF
             \[
                 J \big|_{x^{(2)}} = \left(
                     \begin{matrix}
@@ -118,16 +124,16 @@
         \item Если \( x_3 = 0; x_1, x_2 > 0 \):
             \[
                 \left\{\begin{split}
-                    & \varepsilon(x_1)x_1 - V_{12}(x_1)x_2 = 0, \\
-                    & K_{12}(x_1)x_2 = 0. 
+                    & \left( -\varepsilon x_1 + \delta - v_{12} x_2 \right)x_1 = 0, \\
+                    & ( k_{12} x_1 -m _{12} ) x_2 = 0. 
                 \end{split}\right.
                 \Rightarrow
                 \left\{\begin{split}
-                    & x_2 = \frac{ \varepsilon(x_1)x_1 }{ V_{12}(x_1) }, \\
-                    & x_1 = K^{-1}_{12}( 0 ). 
+                    & x_2 = \frac{ \varepsilon x_1 - \delta }{ -v_{12} }, \\
+                    & x_1 = \frac{m_{12}}{k_{12}}. 
                 \end{split}\right.
             \]
-            В исследуемой области данная точка будет находиться, если \( x_1 \leq \bar{x}_1 \).
+            В исследуемой области данная точка будет находиться, если \( x_1 \leq \frac{\delta}{\varepsilon}  \). FFF
             \[
                 J\big|_{x^{(3)}} = \left(
                     \begin{matrix}
@@ -140,9 +146,9 @@
         \item Если \( x_1, x_2, x_3 > 0 \):
             \[
                 \left\{\begin{split}
-                    & \varepsilon(x_1)x_1 - V_{12}(x_1)x_2 - V_{13}(x_1)x_3 = 0, \\
-                    & K_{12}(x_1)x_2 - V_{23}(x_2)x_3 = 0, \\
-                    & K_{13}(x_1)x_3 + K_{23}(x_2)x_3 = 0. 
+                    & -\varepsilon x_1 + \delta - v_{12} x_2 - v_{13} x_3 = 0, \\
+                    & k_{12} x_1 - m_{12} - v_{23} x_3 = 0, \\
+                    & k_{13} x_1 - m_{13} + k_{23} x_2 - m_{23} = 0. 
                 \end{split}\right.
             \]
 
