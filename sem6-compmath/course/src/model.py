@@ -50,7 +50,7 @@ def static_point(num: int, num2=None):
                 ])
 
 
-def right1(t, x):
+def right(t, x):
     return np.array([
         (ksi1 - a12 * x[1] - a13 * x[2]) * x[0],
         (ksi2 + k12 * a12 * x[0] - a23 * x[2]) * x[1],
@@ -58,7 +58,7 @@ def right1(t, x):
     ])
 
 
-def right(t, x):
+def right1(t, x):
     return np.array([
         ((-1 * x[0] + 10) * x[0] - 2 * x[1] * x[0] - 3 * x[2] * x[0]),
         ((1 * x[0] - 5) * x[1] - 1 * x[2] * x[1]),
@@ -119,12 +119,12 @@ def plotvec(n1, n2, lin1, lin2):
     # print([len(v) for v in grid])
     # print([len(v) for v in vec_grid])
 
-    # st_point = static_point(n1, n2)
-    # plt.plot(st_point[n1], st_point[n2], 'o')
+    st_point = static_point(n1, n2)
+    plt.plot(st_point[n1], st_point[n2], 'o')
 
-    plt.streamplot(grid[0], grid[1], vec_grid[n1], vec_grid[n2], color='black', broken_streamlines=False, density=0.5)
+    plt.streamplot(grid[0], grid[1], vec_grid[n1], vec_grid[n2], color='black', broken_streamlines=False, density=2)
     
-    plt.streamplot(grid[0], grid[1], vec_grid[n1], vec_grid[n2], color='black', broken_streamlines=False, start_points=[[10,0.01]])
+    # plt.streamplot(grid[0], grid[1], vec_grid[n1], vec_grid[n2], color='black', broken_streamlines=False, start_points=[[10,0.01]])
 
 
 
@@ -168,7 +168,7 @@ x0 = np.array([10, 10, 1])
 
 # plotp3(tl, xl)
 
-l1 = np.linspace(0, 20, 100)
+l1 = np.linspace(-5, 5, 100)
 
 plotvec(0, 1, l1, l1)
 plotvec(0, 2, l1, l1)

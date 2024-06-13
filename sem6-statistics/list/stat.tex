@@ -22,6 +22,18 @@
 
 
 \begin{document}
+    \begin{center}
+        \Huge\textbf{Сводная таблица по математической статистике}
+    \end{center}
+
+    \normalsize \vspace*{-1em} Python для всех пунктов: \vspace*{-0.5em}
+    \begin{enumerate}
+        \item Двусторонний тест: \( \text{\hyperref[pv]{p-value}} = 2 \cdot \min\left\{ \text{r.cdf}(v_p), 1 - \text{r.cdf}(v_p) \right\} \), где r -- распределение статистики, \(v_p\) -- значение расчётной статистики. \label{pv}
+        \item \( \overline{X} = \text{np.mean}(x) \)
+        \item \( S_0 = \text{np.std}(x, ddof=1), ~ S_0^2 = \text{np.var}(x, ddof=1) \)
+    \end{enumerate}
+    \vspace*{-2em}
+
     \section{Одно распределение}
     \begin{center}
         \begin{tabular}{|p{6cm}|p{8cm}|p{3cm}|p{3cm}|p{9cm}|p{10cm}|p{14cm}|}
@@ -44,7 +56,7 @@
             \end{enumerate} 
             & \begin{enumerate}
                 \item \( z_{1-\frac{\alpha}{2}} = \text{norm.ppf}(q=1 - \alpha/2) \),
-                \item \( \text{p-value} = 1 - 2 \cdot \text{norm.cdf}(\text{abs}(z_p)) \)
+                \item \( \text{p-value} = 2 \cdot \left( 1 -  \text{norm.cdf}(\text{abs}(z_p)) \right) \)
             \end{enumerate} \\
             \hline
             Гипотеза о матожидании 
@@ -62,9 +74,8 @@
                 \item \( \text{p-value} > \alpha \)
             \end{enumerate} 
             & \begin{enumerate}
-                \item \( S_0^2 = \text{np.var}(x, ddof=1) ~~ \left( S_0 = \text{np.std}(x, ddof=1) \right) \)
                 \item \( t^{(n-1)}_{1-\frac{\alpha}{2}} = \text{t.ppf}(df=n-1, q=1 - \alpha/2) \),
-                \item \( \text{p-value} = 1 - 2 \cdot \text{t.cdf}(\text{abs}(t_p), df=n-1) \)
+                \item \( \text{p-value} = 2 \cdot \left( 1 - \text{t.cdf}(\text{abs}(t_p), df=n-1) \right) \)
             \end{enumerate} \\
             \hline
             Гипотеза о дисперсии 
@@ -82,10 +93,9 @@
                 \item \( \text{p-value} > \alpha \)
             \end{enumerate} 
             & \begin{enumerate}
-                \item \( S_0^2 = \text{np.var}(x, ddof=1) \)
                 \item \( C^{(n-1)}_{\frac{\alpha}{2}} = \text{chi2.ppf}(df=n-1, q=\alpha/2) \),
                 \item \( C^{(n-1)}_{1-\frac{\alpha}{2}} = \text{chi2.ppf}(df=n-1, q=1 - \alpha/2) \),
-                \item \( \text{p-value} = 2 \cdot \text{chi2.cdf}(C_p, df=n-1) \)
+                \item \hyperref[pv]{p-value}
             \end{enumerate} \\
             \hline
             Гипотеза о дисперсии 
@@ -105,7 +115,7 @@
             & \begin{enumerate}
                 \item \( C^{(n-1)}_{\frac{\alpha}{2}} = \text{chi2.ppf}(df=n-1, q=\alpha/2) \),
                 \item \( C^{(n-1)}_{1-\frac{\alpha}{2}} = \text{chi2.ppf}(df=n-1, q=1 - \alpha/2) \),
-                \item \( \text{p-value} = 2 \cdot \text{chi2.cdf}(C_p, df=n-1) \)
+                \item \hyperref[pv]{p-value}
             \end{enumerate} \\
             \hline
             Асимптотическая гипотеза о матожидании 
@@ -125,7 +135,7 @@
             \end{enumerate} 
             & \begin{enumerate}
                 \item \( z_{1-\frac{\alpha}{2}} = \text{norm.ppf}(q=1 - \alpha/2) \),
-                \item \( \text{p-value} = 1 - 2 \cdot \text{norm.cdf}(\text{abs}(z_p)) \)
+                \item \( \text{p-value} = 2 \cdot \left( 1 -  \text{norm.cdf}(\text{abs}(z_p)) \right) \)
             \end{enumerate} \\
             \hline
             Асимптотическая гипотеза о матожидании 
@@ -144,9 +154,8 @@
                 \item \( \text{p-value} > \alpha \)
             \end{enumerate} 
             & \begin{enumerate}
-                \item \( S_0^2 = \text{np.var}(x, ddof=1) \)
                 \item \( z_{1-\frac{\alpha}{2}} = \text{norm.ppf}(q=1 - \alpha/2) \),
-                \item \( \text{p-value} = 1 - 2 \cdot \text{norm.cdf}(\text{abs}(z_p)) \)
+                \item \( \text{p-value} = 2 \cdot \left( 1 -  \text{norm.cdf}(\text{abs}(z_p)) \right) \)
             \end{enumerate} \\
             \hline
             Bootstrap
@@ -158,7 +167,7 @@
             или \newline
              \( \sigma^2 = \sigma^2_0 \)
             & \(  \mu \neq \mu_0 \) \newline или \newline \( \sigma^2 \neq \sigma^2_0 \)
-            & Генерируем много выборок из данной одинаковой длины. Считаем для каждой них нужную статистику \( \left( \overline{X_i} ~ \text{или} ~ \hat{\sigma_i} \right) \). Считаем квантили \( q_{\frac{\alpha}{2}}, q_{1-\frac{\alpha}{2}} \) для выборки этих статистик.
+            & Генерируем много выборок из данной одинаковой длины. Считаем для каждой них нужную статистику \( \left( \overline{X_i} ~ \text{или} ~ \widehat{\sigma}_i^2 \right) \). Считаем квантили \( q_{\frac{\alpha}{2}}, q_{1-\frac{\alpha}{2}} \) для выборки этих статистик.
             & Не отвергаем на уровне значимости \( \alpha \), если 
             \begin{enumerate}
                 \item \( 
@@ -197,10 +206,7 @@
                 \item \( \mu_0 \in \left( \overline{\Delta}-z_{1-\frac{\alpha}{2}} D( \overline{\Delta}), \overline{\Delta}+z_{1-\frac{\alpha}{2}} D( \overline{\Delta}) \right) \)
                 \item \( \text{p-value} > \alpha \)
             \end{enumerate} 
-            & \begin{enumerate}
-                \item \( z_{1-\frac{\alpha}{2}} = \text{norm.ppf}(q=1 - \alpha/2) \),
-                \item \( \text{p-value} = 1 - 2 \cdot \text{norm.cdf}(\text{abs}(z_p)) \)
-            \end{enumerate} \\
+            & См. аналогичное выше, \hyperref[pv]{p-value} \\
             \hline
             Гипотеза о разности матожиданий связанных пар 
             & \begin{enumerate}
@@ -212,17 +218,14 @@
             & \( \mu_x - \mu_y = \mu_0 \) 
             & \( \mu_x - \mu_y \neq \mu_0 \) 
             & \( \Delta = X - Y \), \newline 
-            \( z_p = \frac{\overline{\Delta} - \mu_0}{S_0(\Delta) / \sqrt{n}} \sim T_{n-1} \)
+            \( t_p = \frac{\overline{\Delta} - \mu_0}{S_0(\Delta) / \sqrt{n}} \sim T_{n-1} \)
             & Не отвергаем на уровне значимости \( \alpha \), если 
             \begin{enumerate}
-                \item \( z_p \in \left( -z_{1-\frac{\alpha}{2}}, z_{1-\frac{\alpha}{2}} \right) \),
-                \item \( \mu_0 \in \left( \overline{\Delta}-z_{1-\frac{\alpha}{2}} \frac{S_0(\Delta)}{ \sqrt{n}}, \overline{\Delta}+z_{1-\frac{\alpha}{2}} \frac{S_0(\Delta)}{ \sqrt{n}} \right) \)
+                \item \( t_p \in \left( -t^{(n-1)}_{1-\frac{\alpha}{2}}, t^{(n-1)}_{1-\frac{\alpha}{2}} \right) \),
+                \item \( \mu_0 \in \left( \overline{\Delta}\pm t^{(n-1)}_{1-\frac{\alpha}{2}} \frac{S_0(\Delta)}{ \sqrt{n}} \right) \)
                 \item \( \text{p-value} > \alpha \)
             \end{enumerate} 
-            & \begin{enumerate}
-                \item \( z_{1-\frac{\alpha}{2}} = \text{norm.ppf}(q=1 - \alpha/2) \),
-                \item \( \text{p-value} = 1 - 2 \cdot \text{norm.cdf}(\text{abs}(z_p)) \)
-            \end{enumerate} \\
+            & См. аналогичное выше, \hyperref[pv]{p-value} \\
             \hline
             Гипотеза о разности матожиданий
             & \begin{enumerate}
@@ -240,10 +243,7 @@
                 \item \( (\mu_x - \mu_y) \in \left( \overline{X} - \overline{Y} \pm z_{1-\frac{\alpha}{2}} \sqrt{\frac{\sigma_x^2}{n_x} + \frac{\sigma_y^2}{n_y}} \right) \)
                 \item \( \text{p-value} > \alpha \)
             \end{enumerate} 
-            & \begin{enumerate}
-                \item \( z_{1-\frac{\alpha}{2}} = \text{norm.ppf}(q=1 - \alpha/2) \),
-                \item \( \text{p-value} = 1 - 2 \cdot \text{norm.cdf}(\text{abs}(z_p)) \)
-            \end{enumerate} \\
+            & См. аналогичное выше, \hyperref[pv]{p-value} \\
             \hline
         \end{tabular}
     \end{center}
@@ -263,7 +263,7 @@
             \end{enumerate} 
             & \( \mu_x - \mu_y = \mu_0 \) 
             & \( \mu_x - \mu_y \neq \mu_0 \) 
-            & \( \widehat{\sigma^2} = \frac{S_0^2 (X) (n_x - 1) + S_0^2 (Y) (n_y - 1)}{n_x + n_y - 2} \)
+            & \( \widehat{\sigma}^2 = \frac{S_0^2 (X) (n_x - 1) + S_0^2 (Y) (n_y - 1)}{n_x + n_y - 2} \)
             \newline
             \( t_p = \frac{\overline{X} - \overline{Y} - (\mu_x - \mu_y)}{ \widehat{\sigma} \sqrt{\frac{1}{n_x} + \frac{1}{n_y}} } \sim T_{n_x+n_y-2} \) 
             & Не отвергаем на уровне значимости \( \alpha \), если 
@@ -273,8 +273,8 @@
                 \item \( \text{p-value} > \alpha \)
             \end{enumerate} 
             & \begin{enumerate}
-                \item \( t_{1-\frac{\alpha}{2}} = \text{t.ppf}(q=1 - \alpha/2 ,df = n_x+n_y-2) \),
-                \item \( \text{p-value} = 1 - 2 \cdot \text{t.cdf}(\text{abs}(t_p), df=n_x+n_y-2) \)
+                \item \( t_{1-\frac{\alpha}{2}}^{(n_x+n_y-2)} = \text{t.ppf}(q=1 - \alpha/2 ,df = n_x+n_y-2) \),
+                \item \( \text{p-value} = 2 \cdot \left( 1 - \text{t.cdf}(\text{abs}(t_p), df=n_x+n_y-2) \right) \),
                 \item \href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ttest_ind.html}{scipy.stats.ttest\_ind}
             \end{enumerate} \\
             \hline
@@ -298,7 +298,7 @@
             \end{enumerate} 
             & \begin{enumerate}
                 \item \( t_{1-\frac{\alpha}{2}} = \text{t.ppf}(q=1 - \alpha/2 ,df = d) \),
-                \item \( \text{p-value} = 1 - 2 \cdot \text{t.cdf}(\text{abs}(t_p), df = d) \)
+                \item \( \text{p-value} = 2 \cdot \left( 1 - \text{t.cdf}(\text{abs}(t_p), df=d) \right) \)
                 \item \href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ttest_ind.html}{scipy.stats.ttest\_ind(equal\_var=Flase)}
             \end{enumerate} \\
 
@@ -321,6 +321,7 @@
             & \begin{enumerate}
                 \item \( f^{(n_x-1, n_y-1)}_{\frac{\alpha}{2}} = \text{f.ppf}(dfn=n_x-1, dfd = n_y-1, q=a/2) \),
                 \item \( f^{(n_x-1, n_y-1)}_{1-\frac{\alpha}{2}} = \text{f.ppf}(dfn=n_x-1, dfd = n_y-1, q=1-a/2) \),
+                \item \hyperref[pv]{p-value}
             \end{enumerate} \\
             \hline
         \end{tabular}
@@ -398,11 +399,12 @@
             & Объекты имеют пары из категорий \( (x_i, y_i) \). Всего \( X \) имеет \( s \) категорий, \( Y \) имеет \( k \) категорий.
             & \( X, Y \) - независимые
             & \( X, Y \) - зависимые 
-            & \( \nu_{ij} \) - частоты пары категорий \( (a_{i}, b{j}) \sim (X,  Y) \).
+            & \( \nu_{ij} \) - частоты пары категорий \( (a_{i}, b_{j}) \sim (X,  Y) \).
             \newline
-            \( n_{i \cdot} = \sum_{j=1}^{k} \nu_{ij}, ~ n_{\cdot j} = \sum_{i=1}^{s} \nu_{ij} \).
+            \( n_{i \bullet} = \sum_{j=1}^{k} \nu_{ij}, ~ n_{\bullet j} = \sum_{i=1}^{s} \nu_{ij} \)
             \newline
-            \( \gamma = \sum_{i=1}^{s} \sum_{j=1}^{k} \frac{\left( \nu_{ij} - \frac{n_{i \cdot} n_{\cdot j}}{n} \right)^2}{\frac{n_{i \cdot} n_{\cdot j}}{n}} \sim \chi^2_{(s-1)(k-1)} \)
+            \( \gamma = \sum_{i=1}^{s} \sum_{j=1}^{k} \frac{\left( \nu_{ij} - \dfrac{n_{i \bullet} n_{\bullet j}}{n} \right)^2}{\dfrac{n_{i \bullet} n_{\bullet j}}{n}} \sim \chi^2_{(s-1)(k-1)} \)
+
             & Не отвергаем на уровне значимости \( \alpha \), если 
             \begin{enumerate}
                 \item \( \gamma \in (0,  C^{(s-1)(k-1)}_{1-\alpha}) \),
@@ -430,9 +432,12 @@
             \end{enumerate} 
             & \begin{enumerate}
                 \item \href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.spearmanr.html}{scipy.stats.spearmanr}
+                \item \hyperref[pv]{p-value}
             \end{enumerate} \\
             \hline
         \end{tabular}
     \end{center}
+
+    Красный текст -- ссылка в этом документе. Синий текст -- ссылка на страницу в интернете.
 
 \end{document}
