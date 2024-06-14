@@ -63,6 +63,12 @@
                 \lambda_2 = k_{12} \frac{\delta}{\varepsilon} - m_{12}, ~
                 \lambda_3 = k_{13} \frac{\delta}{\varepsilon} -m_{13} - m_{23}. 
             \]
+            Откуда имеем:
+            \[
+                \lambda_2 < 0 \Leftrightarrow \frac{\delta}{\varepsilon} < \frac{m_{12}}{k_{12}},
+                \quad
+                \lambda_3 < 0 \Leftrightarrow \frac{\delta}{\varepsilon} < \frac{m_{13} + m_{23}}{k_{13}}
+            \]
 
             В зависимости от значений \( \lambda_2, \lambda_3 \) данная точка может быть:
             \begin{enumerate}
@@ -111,16 +117,25 @@
                     & x_1 = \frac{m_{13} + m_{23}}{k_{13}}. 
                 \end{split}\right.
             \]
-            В исследуемой области данная точка будет находиться, если \( x_1 \leq \frac{\delta}{\varepsilon} \). FFF
+            В исследуемой области данная точка будет находиться, если \( x_1 \leq \frac{\delta}{\varepsilon} \).
             \[
                 J \big|_{x^{(2)}} = \left(
                     \begin{matrix}
-                        \varepsilon'(x_1) x_1 + \varepsilon(x_1) - V'_{13} (x_1) x_3 & -V_{12} (x_1) & -V_{13} (x_1) \\
-                        0 & K_{12}(x_1) - V'_{23} (0) x_3 & 0 \\
-                        K'_{13} (x_1) x_3 & K'_{23} (0) x_3 & K_{23} (0)
+                        -\varepsilon x_1 & -v_{12}  x_1  & -v_{13} x_1 \\
+                        0 & \left( k_{12} x_1 - m_{12} \right) - v_{23} x_3 & 0 \\
+                        k_{13} x_3 & k_{23} x_3 & 0
                     \end{matrix}
                 \right)
             \]
+            FFF
+            % \[
+            %     \lambda_1 = \varepsilon \frac{m_{13} + m_{23}}{k_{13}} > 0, ~ 
+            %     \lambda_2 = \left( k_{12} \frac{m_{13} + m_{23}}{k_{13}} - m_{12} \right) - v_{23} \frac{ \varepsilon x_1 - \delta }{ -v_{13} }, ~ 
+            %     \lambda_3 = 0
+            % \]
+
+            % где-то будут линии FFF
+
         \item Если \( x_3 = 0; x_1, x_2 > 0 \):
             \[
                 \left\{\begin{split}
@@ -137,9 +152,9 @@
             \[
                 J\big|_{x^{(3)}} = \left(
                     \begin{matrix}
-                        \varepsilon'(x_1) x_1 + \varepsilon(x_1) - V'_{12}(x_1) x_2 & -V_{12} (x_1) & -V_{13} (x_1) \\
-                        K'_{12} (x_1) x_2 & 0 & -V_{23}(x_2) \\
-                        0 & 0 & K_{23} (x_2)
+                        -\varepsilon x_1 & -v_{12}  x_1  & -v_{13} x_1 \\
+                        k_{12} x_2 & 0 & -v_{23} x_2 \\
+                        0 & 0 & k_{13} x_1 - m_{13} + k_{23} x_2 - m_{23}
                     \end{matrix}
                 \right)
             \]
@@ -152,7 +167,23 @@
                 \end{split}\right.
             \]
 
-            {x1: (-delt*k23*v23 - k23*m12*v13 + m13*v12*v23 + m23*v12*v23)/(-eps1*k23*v23 - k12*k23*v13 + k13*v12*v23), x2: (delt*k13*v23 - eps1*m13*v23 - eps1*m23*v23 - k12*m13*v13 - k12*m23*v13 + k13*m12*v13)/(-eps1*k23*v23 - k12*k23*v13 + k13*v12*v23), x3: (-delt*k12*k23 + eps1*k23*m12 + k12*m13*v12 + k12*m23*v12 - k13*m12*v12)/(-eps1*k23*v23 - k12*k23*v13 + k13*v12*v23)} 
+            \[
+                \left\{\begin{split}
+                    & x_1 = \frac{-\delta k_{23} v_{23} - k_{23} m_{12} v_{13} + m_{13} v_{12} v_{23} + m_{23} v_{12} v_{23}}{-\varepsilon k_{23} v_{23} - k_{12} k_{23} v_{13} + k_{13} v_{12} v_{23}}, \\
+                    & x_2 = \frac{\delta k_{13} v_{23} - \varepsilon m_{13} v_{23} - \varepsilon m_{23} v_{23} - k_{12} m_{13} v_{13} - k_{12} m_{23} v_{13} + k_{13} m_{12} v_{13}}{-\varepsilon k_{23} v_{23} - k_{12} k_{23} v_{13} + k_{13} v_{12} v_{23}}, \\
+                    & x_3 = \frac{-\delta k_{12} k_{23} + \varepsilon k_{23} m_{12} + k_{12} m_{13} v_{12} + k_{12} m_{23} v_{12} - k_{13} m_{12} v_{12}}{-\varepsilon k_{23} v_{23} - k_{12} k_{23} v_{13} + k_{13} v_{12} v_{23}}
+                \end{split}\right.
+            \]
+
+            \[
+                J = \left(
+                    \begin{matrix}
+                        -2 \varepsilon x_1 + \delta - v_{12} x_2 - v_{13} x_3 & -v_{12}  x_1  & -v_{13} x_1 \\
+                        k_{12} x_2 & \left( k_{12} x_1 - m_{12} \right) - v_{23} x_3 & -v_{23} x_2 \\
+                        k_{13} x_3 & k_{23} x_3 & k_{13} x_1 - m_{13} + k_{23} x_2 - m_{23}
+                    \end{matrix}
+                \right)
+            \]
 
 
     \end{enumerate}
