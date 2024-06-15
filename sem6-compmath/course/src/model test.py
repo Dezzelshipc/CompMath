@@ -86,19 +86,27 @@ x = (x1,x2,x3)
 m = sy.Matrix([
     ((-eps1 * x[0] + delt) - v12 * x[1] - v13 * x[2]) ,
     ((k12 * x[0] - m12) - v23 * x[2]) ,
-    ((k13 * x[0] - m13) + (k23 * x[1] - m23) ) 
+    ((k13 * x[0] - m13) + (k23 * x[1] - m23) )
 ])
 
     
 x = sy.solve(m,x1, x2, x3 )
 sy.pprint(x)
+x = list(x.values())
+print(x)
+
+m = sy.Matrix([
+    [(-2*eps1 * x[0] + delt) - v12 * x[1] - v13 * x[2],  - v12 * x[1], - v13 * x[2]],
+    [k12 * x[1], (k12 * x[0] - m12) - v23 * x[2], -v23 * x[1]],
+    [k13 * x[2], k23 * x[2], (k13 * x[0] - m13) + (k23 * x[1] - m23)]
+])
 
 # eig = m.eigenvects()
 # for v in eig:
 #     print(v)
 #     print()
     
-# lam = sy.symbols('lambda')
-# p = m.charpoly(lam)
-# print(p.as_expr(), '\n') 
-# print(sy.factor(p.as_expr()))
+lam = sy.symbols('lambda')
+p = m.charpoly(lam)
+print(p.as_expr(), '\n') 
+print(sy.simplify( sy.factor(p.as_expr())))

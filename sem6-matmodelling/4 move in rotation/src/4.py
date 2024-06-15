@@ -28,7 +28,7 @@ def right(t, x):
 
 t0, tn = 0, 5
 n = 100000
-    
+
 
 def model(inits):
     conserv = []
@@ -36,7 +36,7 @@ def model(inits):
         t, x = runge_kutta(right, x0, t0, tn, (tn-t0)/n)
         x = x.T
 
-        conv = x[2]**2 + x[3]**2 - x0[2]**2 - x0[3]**2
+        conv = ( x[2]**2 + x[3]**2 - x0[2]**2 - x0[3]**2 )/(x0[2]**2 + x0[3]**2)
         conserv.append(conv)
 
         plt.plot(x[0] , x[1], marker='o', markevery=[0])
@@ -52,15 +52,14 @@ def model(inits):
     for c in conserv:
         plt.plot(t, c)
         
+    plt.legend(list(map(list, np.round(inits, 3))), loc='upper right')
     plt.grid(True)
     plt.axhline(y=0, color='k')
 
-    
-PI = np.pi
 
-w = 10
+w = 1
 x0s = [
-    [5,3,4,4],
+    [5,3,0,6],
     [5,3,5,5],
     [5,3,1,1],
     [5,3,-3,3],
