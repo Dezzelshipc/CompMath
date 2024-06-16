@@ -77,36 +77,57 @@ x1, x2, x3 = sy.symbols('x1 x2 x3')
 # ])
 
 x = (x1,x2,x3)
-# m = sy.Matrix([
-#     ((-1 * x[0] + 10) * x[0] - 2 * x[1] * x[0] - 3 * x[2] * x[0]),
-#     ((1 * x[0] - 5) * x[1] - 1 * x[2] * x[1]),
-#     ((1 * x[0] - 3) * x[2] + (1 * x[1] - 4) * x[2])
-# ])
-
 m = sy.Matrix([
-    ((-eps1 * x[0] + delt) - v12 * x[1] - v13 * x[2]) ,
-    ((k12 * x[0] - m12) - v23 * x[2]) ,
-    ((k13 * x[0] - m13) + (k23 * x[1] - m23) )
+    ((-1 * x[0] + 10) * x[0] - 2 * x[1] * x[0] - 3 * x[2] * x[0]),
+    ((1 * x[0] - 5) * x[1] - 1 * x[2] * x[1]),
+    ((1 * x[0] - 3) * x[2] + (1 * x[1] - 4) * x[2])
 ])
+
+# m = sy.Matrix([
+#     ((-eps1 * x[0] + delt) - v12 * x[1] - v13 * x[2]) ,
+#     ((k12 * x[0] - m12) - v23 * x[2]) ,
+#     ((k13 * x[0] - m13) + (k23 * x[1] - m23) )
+# ])
 
     
 x = sy.solve(m,x1, x2, x3 )
 sy.pprint(x)
-x = list(x.values())
+x = x[3]
 print(x)
 
+# m = sy.Matrix([
+#     [(-2*eps1 * x[0] + delt) - v12 * x[1] - v13 * x[2],  - v12 * x[0], - v13 * x[0]],
+#     [k12 * x[1], (k12 * x[0] - m12) - v23 * x[2], -v23 * x[1]],
+#     [k13 * x[2], k23 * x[2], (k13 * x[0] - m13) + (k23 * x[1] - m23)]
+# ])
+
+# m = sy.Matrix([
+#     [(-eps1 * x[0] ),  - v12 * x[0], - v13 * x[0]],
+#     [0, (k12 * x[0] - m12) - v23 * x[2], 0],
+#     [k13 * x[2], k23 * x[2], 0]
+# ])
+
+
+
+# m = sy.Matrix([
+#     [(-eps1 * x[0] ),  - v12 * x[0], - v13 * x[0]],
+#     [k12 * x[1], 0, -v23 * x[1]],
+#     [k13 * x[2], k23 * x[2], 0]
+# ])
+
 m = sy.Matrix([
-    [(-2*eps1 * x[0] + delt) - v12 * x[1] - v13 * x[2],  - v12 * x[1], - v13 * x[2]],
-    [k12 * x[1], (k12 * x[0] - m12) - v23 * x[2], -v23 * x[1]],
-    [k13 * x[2], k23 * x[2], (k13 * x[0] - m13) + (k23 * x[1] - m23)]
+    [(-1 * x[0] ),  - 2 * x[0], - 3 * x[0]],
+    [1 * x[1], 0, -1 * x[1]],
+    [1 * x[2], 1 * x[2], 0]
 ])
 
-# eig = m.eigenvects()
-# for v in eig:
-#     print(v)
-#     print()
-    
-lam = sy.symbols('lambda')
-p = m.charpoly(lam)
-print(p.as_expr(), '\n') 
-print(sy.simplify( sy.factor(p.as_expr())))
+eig = m.eigenvals()
+for v in eig:
+    print(v.evalf())
+    print(v)
+    print()
+
+# lam = sy.symbols('lambda')
+# p = m.charpoly(lam)
+# print(p.as_expr(), '\n') 
+# print(sy.factor(p.as_expr()))

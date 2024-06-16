@@ -70,8 +70,6 @@ def plotp(tl, xls, n1, n2):
     plt.figure(f"{n1}{n2}")
     plt.xlabel(f"x{n1 + 1}")
     plt.ylabel(f"x{n2 + 1}")
-    # st_point = static_point(n1, n2)
-    # plt.plot(st_point[n1], st_point[n2], 'ok')
 
     leg = [] #[np.array(st_point)]
     for xl in xls:
@@ -79,6 +77,9 @@ def plotp(tl, xls, n1, n2):
         leg.append(xl[:, 0])
 
     plt.legend([f"{pt}" for pt in leg])
+
+    st_point = (11/2, 3/2, 1/2) #static_point(n1, n2)
+    plt.plot(st_point[n1], st_point[n2], 'ok')
 
 
 def plotp3(tl, xls):
@@ -98,6 +99,8 @@ def plotp3(tl, xls):
 
     for xl in xls:
         ax.plot(xl[0], xl[1], xl[2], 'o-', markevery=[0])
+    
+    ax.plot(11/2, 3/2, 1/2, 'ko')
 
 
 def sol_many(function, y0s: list, a: float, b: float, h: float):
@@ -109,8 +112,8 @@ def sol_many(function, y0s: list, a: float, b: float, h: float):
     return tl, np.array(sols)
 
 
-a, b = 0, 10
-n = 10000
+a, b = 0, 100
+n = 100000
 h = (b - a) / n
 
 # x0s = [
@@ -122,16 +125,51 @@ h = (b - a) / n
 # ]
 
 
+# x0s = [
+#     [10, 10, 10],
+#     [0, 6, 1],
+#     [1, 0, 1],
+#     [1, 1, 2],
+#     [5, 5, 5],
+#     [11, 0, 0],
+#     [11, 0, 1],
+#     [10, 1, 0],
+#     [3, 10, 0]
+# ]
+
+#11/2 3/2 1/2
+# x0s = [
+#     [11/2, 3/2, 1],
+#     [11/2, 3/2, 1/4],
+#     [11/2, 1, 1/2],
+#     [11/2, 2, 1/2],
+#     [5, 3/2, 1/2],
+#     [6, 3/2, 1/2],
+#     [5, 1, 1/4],
+#     [6, 2, 1]
+# ]
+
+# x0s = [
+#     [10, 10, 10],
+#     [1, 10, 10],
+#     [10, 1, 10],
+#     [10, 10, 1],
+#     [1, 1, 10],
+#     [1, 10, 1],
+#     [10, 1, 1],
+#     [1, 1, 1],
+#     [10, 0.01, 0.01]
+# ]
+
 x0s = [
-    [10, 10, 10],
-    [0, 6, 1],
-    [1, 0, 1],
-    [1, 1, 2],
-    [5, 5, 5],
-    [11, 0, 0],
-    [11, 0, 1],
-    [10, 1, 0],
-    [3, 10, 0]
+    [100, 100, 100],
+    [1, 100, 100],
+    [100, 1, 100],
+    [100, 100, 1],
+    [1, 1, 100],
+    [1, 100, 1],
+    [100, 1, 1],
+    [1, 1, 1]
 ]
 
 # x0s = [

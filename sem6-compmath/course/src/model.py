@@ -1,6 +1,7 @@
 import numpy as np
 import math
 import matplotlib.pyplot as plt
+import sympy as sy
 
 
 def runge_kutta(function, y0: float, a: float, b: float, h: float):
@@ -50,7 +51,7 @@ def static_point(num: int, num2=None):
                 ])
 
 
-def right(t, x):
+def right1(t, x):
     return np.array([
         (ksi1 - a12 * x[1] - a13 * x[2]) * x[0],
         (ksi2 + k12 * a12 * x[0] - a23 * x[2]) * x[1],
@@ -58,7 +59,7 @@ def right(t, x):
     ])
 
 
-def right1(t, x):
+def right(t, x):
     return np.array([
         ((-1 * x[0] + 10) * x[0] - 2 * x[1] * x[0] - 3 * x[2] * x[0]),
         ((1 * x[0] - 5) * x[1] - 1 * x[2] * x[1]),
@@ -108,24 +109,34 @@ def plotvec(n1, n2, lin1, lin2):
     plt.ylabel(f"x{n2 + 1}")
     # plt.plot(*static_point(n1, n2), 'o')
 
-    grid = np.meshgrid(lin1, lin2)
-    if 0 not in (n1, n2):
-        vec_grid = right(0, [0, grid[0], grid[1]])
-    elif 1 not in (n1, n2):
-        vec_grid = right(0, [grid[0], 0, grid[1]])
-    elif 2 not in (n1, n2):
-        vec_grid = right(0, [grid[0], grid[1], 0])
-
-    # print([len(v) for v in grid])
-    # print([len(v) for v in vec_grid])
-
-    st_point = static_point(n1, n2)
-    plt.plot(st_point[n1], st_point[n2], 'o')
-
-    plt.streamplot(grid[0], grid[1], vec_grid[n1], vec_grid[n2], color='black', broken_streamlines=False, density=2)
+    stat = filter(lambda x: x[0]>= 0 and x[1]>=0 and x[2]>=0, statics)
     
-    # plt.streamplot(grid[0], grid[1], vec_grid[n1], vec_grid[n2], color='black', broken_streamlines=False, start_points=[[10,0.01]])
+    grid = np.meshgrid(lin1, lin2)
 
+    x1e = 0
+    x2e = 0
+    x3e = 0
+    if 0 not in (n1, n2):
+        vec_grid = right(0, [x1e, grid[0], grid[1]])
+        stat = filter(lambda x: x[0] == x1e, stat)
+
+    elif 1 not in (n1, n2):
+        vec_grid = right(0, [grid[0], x2e, grid[1]])
+        stat = filter(lambda x: x[1] == x2e, stat)
+
+
+    elif 2 not in (n1, n2):
+        vec_grid = right(0, [grid[0], grid[1], x3e])
+        stat = filter(lambda x: x[2] == x3e, stat)
+
+    plt.streamplot(grid[0], grid[1], vec_grid[n1], vec_grid[n2], color='black', broken_streamlines=False, density=0.5)
+    
+    plt.streamplot(grid[0], grid[1], vec_grid[n1], vec_grid[n2], color='black', broken_streamlines=False, start_points=[[10,0.01]])
+
+    stat = list(stat)
+    for st_point in stat:
+        print(st_point)
+        plt.plot(st_point[n1], st_point[n2], 'o')
 
 
 def plotvec3(linx, liny, linz):
@@ -149,6 +160,16 @@ def plotvec3(linx, liny, linz):
     # ax.set_zlim(-3, 3)
 
 
+    
+x1, x2, x3 = sy.symbols('x1 x2 x3')
+x = (x1,x2,x3)
+
+m = right(0, x)
+
+statics = sy.solve(m,x1, x2, x3)
+print(statics)
+
+
 a, b = 0, 10
 n = 10000
 h = (b - a) / n
@@ -168,7 +189,7 @@ x0 = np.array([10, 10, 1])
 
 # plotp3(tl, xl)
 
-l1 = np.linspace(-5, 5, 100)
+l1 = np.linspace(0, 20, 100)
 
 plotvec(0, 1, l1, l1)
 plotvec(0, 2, l1, l1)
