@@ -7,5 +7,8 @@
 *.synctex.*
 *.toc
 *.xdv
-*/__pycache__
+**/__pycache__
 /.venv
+**/manim/*
+!**/manim/*.py
+!**/manim/*.cfg
