@@ -1,6 +1,6 @@
 import numpy as np
 import math
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import sympy as sy
 
 
@@ -78,9 +78,9 @@ x1, x2, x3 = sy.symbols('x1 x2 x3')
 
 x = (x1,x2,x3)
 m = sy.Matrix([
-    ((-1 * x[0] + 10) * x[0] - 2 * x[1] * x[0] - 3 * x[2] * x[0]),
-    ((1 * x[0] - 5) * x[1] - 1 * x[2] * x[1]),
-    ((1 * x[0] - 3) * x[2] + (1 * x[1] - 4) * x[2])
+       ((-1 * x[0] + 10) * x[0] - 2 * x[1] * x[0] - 3 * x[2] * x[0]),
+        ((-3 * x[1] + 9) * x[1] + (1 * x[0] - 5) * x[1] - 1 * x[2] * x[1]),
+        ((1 * x[0] - 3) * x[2] + (1 * x[1] - 4) * x[2]),
 ])
 
 # m = sy.Matrix([
@@ -92,6 +92,7 @@ m = sy.Matrix([
     
 x = sy.solve(m,x1, x2, x3 )
 sy.pprint(x)
+print(x)
 x = x[3]
 print(x)
 
@@ -117,14 +118,14 @@ print(x)
 
 m = sy.Matrix([
     [(-1 * x[0] ),  - 2 * x[0], - 3 * x[0]],
-    [1 * x[1], 0, -1 * x[1]],
+    [1 * x[1], -3 * x[1], -1 * x[1]],
     [1 * x[2], 1 * x[2], 0]
 ])
 
 eig = m.eigenvals()
 for v in eig:
     print(v.evalf())
-    print(v)
+    # print(v)
     print()
 
 # lam = sy.symbols('lambda')
