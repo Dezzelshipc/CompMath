@@ -12,3 +12,4 @@
 **/manim/*
 !**/manim/*.py
 !**/manim/*.cfg
+!**/manim/assets

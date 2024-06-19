@@ -5,6 +5,20 @@ import numpy as np
 # config.quality = "low_quality"
 config.quality = "high_quality"
 
+class Intro(Slide):
+    def construct(self):
+         
+        self.wait()
+        self.next_slide()
+
+        logo = SVGMobject("assets/logo").scale(1.5)
+        self.play(Write(logo), run_time=4)
+        self.next_slide()
+
+        self.play(LaggedStart( ApplyWave(logo), Circumscribe(logo, Circle), lag_ratio=0.25))
+
+        self.next_slide()
+
 class Present(Slide):
     def construct(self):
 
