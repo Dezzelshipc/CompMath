@@ -9,10 +9,6 @@ config.quality = "example_quality"
 
 class Intro(Slide):
     def construct(self):
-        self.add(Tex("авы",
-        #  tex_template=TexTemplateLibrary.default
-         )
-         )
         t1 = Tex("1").to_corner(DL).set_opacity(0.1)
         self.add(t1)
          
@@ -212,7 +208,7 @@ class LV2D1(Slide, MovingCameraScene):
         def right_x1(x):
             x= x*10
             return np.array([
-                (-ksi2 - a23 * x[1]) * x[0],
+                (ksi2 - a23 * x[1]) * x[0] if x[0] < 100 else 0,
                 (-ksi3  + k23 * a23 * x[0]) * x[1],
                 0
             ])/50
@@ -220,7 +216,7 @@ class LV2D1(Slide, MovingCameraScene):
         def right_x2(x):
             x= x*2
             return np.array([
-                (ksi1 - a13 * x[1]) * x[0],
+                (ksi1 - a13 * x[1]) * x[0] if x[0] < 20 else 0,
                 (-ksi3 + k13 * a13 * x[0]) * x[1],
                 0
             ])/10
@@ -228,8 +224,8 @@ class LV2D1(Slide, MovingCameraScene):
         def right_x3(x):
             x = x*10
             return np.array([
-                (ksi1 - a12 * x[1]) * x[0],
-                (-ksi2 + k12 * a12 * x[0]) * x[1],
+                (ksi1 - a12 * x[1]) * x[0] if x[0] < 100 else 0,
+                (ksi2 + k12 * a12 * x[0]) * x[1],
                 0
             ])/100
         
@@ -282,7 +278,7 @@ class LV2D1(Slide, MovingCameraScene):
         dots_group += Dot(color=WHITE).move_to(axes.c2p(25,15,0))
 
         dots_group += Dot(color=PURE_GREEN).move_to(axes.c2p(0.1,0,0))
-        dots_group += Dot(color=PURE_BLUE).move_to(axes.c2p(0,10,0))
+        dots_group += Dot(color=PURE_BLUE).move_to(axes.c2p(0,50,0))
 
 
         self.play(Create(dots_group))
@@ -297,16 +293,17 @@ class LV2D1(Slide, MovingCameraScene):
             self.add(path)
             grp+=path
 
-        dots_group += grp
+        
+        for p in grp:
+            dots_group += p
+
         self.wait(6)
 
         self.next_slide()
         for dot in dots_group:
             dot.clear_updaters()
 
-        self.play(ShrinkToCenter(dots_group))
-
-        
+        self.play(ShrinkToCenter(dots_group))    
 
         vector_field2 = ArrowVectorField(
             right_x2,
@@ -340,8 +337,8 @@ class LV2D1(Slide, MovingCameraScene):
 
         dots_group += Dot(color=WHITE).move_to(axes2.c2p(2.5,5,0))
 
-        dots_group += Dot(color=PURE_GREEN).move_to(axes.c2p(0.1,0,0))
-        dots_group += Dot(color=PURE_BLUE).move_to(axes.c2p(0,10,0))
+        dots_group += Dot(color=PURE_GREEN).move_to(axes2.c2p(0.1,0,0))
+        dots_group += Dot(color=PURE_BLUE).move_to(axes2.c2p(0,10,0))
 
         self.play(Create(dots_group))
         self.next_slide()
@@ -355,16 +352,15 @@ class LV2D1(Slide, MovingCameraScene):
             self.add(path)
             grp+=path
 
-        dots_group += grp
+        for p in grp:
+            dots_group += p
+
         self.wait(6)
         self.next_slide()
-
-
         for dot in dots_group:
             dot.clear_updaters()
 
         self.play(ShrinkToCenter(dots_group))
-
         
 
         vector_field3 = ArrowVectorField(
@@ -393,13 +389,12 @@ class LV2D1(Slide, MovingCameraScene):
         self.next_slide()
 
         dots_group = VGroup()
-        dots_group += Dot(color=GREEN).move_to(axes.c2p(5,5,0))
-        dots_group += Dot(color=BLUE).move_to(axes.c2p(10,5,0))
-        dots_group += Dot(color=YELLOW).move_to(axes.c2p(15,5,0))
-        dots_group += Dot(color=PINK).move_to(axes.c2p(20,5,0))
-
-        dots_group += Dot(color=PURE_GREEN).move_to(axes.c2p(0.1,0,0))
-        dots_group += Dot(color=PURE_BLUE).move_to(axes.c2p(0,10,0))
+        dots_group += Dot(color=GREEN,      point= axes3.c2p(5,5,0))
+        dots_group += Dot(color=BLUE,       point= axes3.c2p(10,5,0))
+        dots_group += Dot(color=YELLOW,     point= axes3.c2p(15,5,0))
+        dots_group += Dot(color=PINK,       point= axes3.c2p(20,5,0))
+        dots_group += Dot(color=PURE_GREEN, point= axes3.c2p(10,0,0))
+        dots_group += Dot(color=PURE_BLUE,  point= axes3.c2p(0,10,0))
 
         self.play(Create(dots_group))
         self.next_slide()
@@ -412,8 +407,10 @@ class LV2D1(Slide, MovingCameraScene):
 
             self.add(path)
             grp+=path
+            
+        for p in grp:
+            dots_group += p
 
-        dots_group += grp
         self.wait(1)
         self.next_slide()
         for dot in dots_group:
@@ -461,7 +458,6 @@ class LV3D1(ThreeDSlide):
 
         vector_field = ArrowVectorField(
             right,
-            color=BLUE,
             three_dimensions=True,
             x_range=[-3,3,1],
             y_range=[-3,3,1],
@@ -525,7 +521,353 @@ class LV3D1(ThreeDSlide):
 
 
         self.next_slide()
+
+
+class LV2D2(Slide, MovingCameraScene):
+    def construct(self):
         
+        lv3 = MathTex(r"""\begin{cases}
+            \dot{x}_1 = 16 x_1 - 8 x_1 x_2 - 2 x_1 x_3 \\
+            \dot{x}_2 = 8 x_2 + 9 \cdot 8 x_1 x_2 - 0.5 x_2 x_3 \\
+            \dot{x}_3 = -4 x_3 + 3 \cdot 2 x_1 x_3 + 1 \cdot 0.5 x_2 x_3
+        \end{cases}""")
+
+        model_name = Text("Модель 2").to_edge(UP)
+
+        self.play(Write(lv3), Write(model_name))
+        self.next_slide()
+        self.play(Unwrite(lv3), Unwrite(model_name), run_time=1)
+
+
+        ksi1, ksi2, ksi3 = 16, 8, 4
+        a12, a13, a23 = 8, 2, 0.5
+        k12, k13, k23 = 9, 3, 1
+        def right_x1(x):
+            x= x*8
+            return np.array([
+                (ksi2 - a23 * x[1]) * x[0] if x[0] < 100 else 0,
+                (-ksi3  + k23 * a23 * x[0]) * x[1],
+                0
+            ])/40
+
+        def right_x2(x):
+            y= x.copy()
+            y[0]/=2
+            y[1] *=4
+            return np.array([
+                (ksi1 - a13 * y[1]) * y[0] if y[0] < 7 else 0,
+                (-ksi3 + k13 * a13 * y[0]) * y[1],
+                0
+            ])/10
+
+        def right_x3(x):
+            x = x*10
+            return np.array([
+                (ksi1 - a12 * x[1]) * x[0],
+                (ksi2 + k12 * a12 * x[0]) * x[1] if x[1] < 100 else 0,
+                0
+            ])/100
+        
+
+        self.camera.frame.save_state()
+
+        vector_field1 = ArrowVectorField(
+            right_x1,
+            x_range=[0,8,0.5],
+            y_range=[0,6,0.5],
+        )
+
+        axes = Axes(
+            x_range=[0,48,10],
+            y_range=[0,48,10],
+            x_length=6,
+            y_length=6,
+        ).add_coordinates()
+
+        ax_labels = axes.get_axis_labels(
+            x1l := MathTex("x_2"), x2l := MathTex("x_3")
+        )
+
+        SHIFT = -axes.c2p(0,0,0)
+
+        axes.shift(SHIFT)
+        ax_labels.shift(SHIFT)
+        ax_labels[0].shift(DOWN*0.7)
+        ax_labels[1].shift(LEFT*0.7)
+
+        self.camera.frame.shift(SHIFT)
+
+        x10t = MathTex("x_1 = 0").to_corner(UL).shift(SHIFT)
+        
+        self.play(Write(axes), Write(ax_labels), Write(x10t))
+        self.play(Write(vector_field1))
+        self.play(Indicate(x10t))
+        self.wait(1)
+        self.next_slide()
+
+        self.play(vector_field1.animate.set_opacity(0.5))
+
+
+        dots_group = VGroup()
+        dots_group += Dot(color=GREEN).move_to(axes.c2p(5,5,0))
+        dots_group += Dot(color=BLUE).move_to(axes.c2p(10,10,0))
+        dots_group += Dot(color=YELLOW).move_to(axes.c2p(10,4,0))
+        dots_group += Dot(color=PINK).move_to(axes.c2p(20,20,0))
+        # dots_group += Dot(color=ORANGE).move_to(axes.c2p(50,5,0))
+
+        dots_group += Dot(color=WHITE).move_to(axes.c2p(10,15,0))
+
+        dots_group += Dot(color=PURE_GREEN).move_to(axes.c2p(0.1,0,0))
+        dots_group += Dot(color=PURE_BLUE).move_to(axes.c2p(0,50,0))
+
+
+        self.play(Create(dots_group))
+        self.next_slide()
+
+        grp = VGroup()
+        for dot in dots_group:
+            path = TracedPath(dot.get_center, stroke_color=dot.color)
+            vector_field1.nudge(dot, 0, 60)
+            dot.add_updater(vector_field1.get_nudge_updater())
+
+            self.add(path)
+            grp+=path
+
+        
+        for p in grp:
+            dots_group += p
+
+        self.wait(8)
+
+        self.next_slide()
+        for dot in dots_group:
+            dot.clear_updaters()
+
+        self.play(ShrinkToCenter(dots_group))    
+
+        vector_field2 = ArrowVectorField(
+            right_x2,
+            x_range=[0,8,0.5],
+            y_range=[0,6,0.5],
+        ).set_opacity(0.5)
+        axes2 = Axes(
+            x_range=[0,3,0.5],
+            y_range=[0,24,4],
+            x_length=6,
+            y_length=6,
+        ).add_coordinates().shift(SHIFT)
+
+
+        x20t = MathTex("x_2 = 0").move_to(x10t)
+        
+        self.play(
+            TransformMatchingShapes(x10t, x20t), 
+            ReplacementTransform(vector_field1, vector_field2), 
+            ReplacementTransform(axes, axes2),
+            Transform(x1l, MathTex("x_1").move_to(x1l) ))
+        self.play(Indicate(x20t))
+
+        self.next_slide()
+
+        dots_group = VGroup()
+        dots_group += Dot(color=GREEN).move_to(axes2.c2p(1/2,1,0))
+        dots_group += Dot(color=BLUE).move_to(axes2.c2p(1/2,3,0))
+        dots_group += Dot(color=YELLOW).move_to(axes2.c2p(1/2,5,0))
+        dots_group += Dot(color=PINK).move_to(axes2.c2p(1/2,7,0))
+
+        dots_group += Dot(color=WHITE).move_to(axes2.c2p(2.5,5,0))
+
+        dots_group += Dot(color=PURE_GREEN).move_to(axes2.c2p(0.1,0,0))
+        dots_group += Dot(color=PURE_BLUE).move_to(axes2.c2p(0,20,0))
+
+        self.play(Create(dots_group))
+        self.next_slide()
+
+        grp = VGroup()
+        for dot in dots_group:
+            path = TracedPath(dot.get_center, stroke_color=dot.color)
+            vector_field2.nudge(dot, 0, 60)
+            dot.add_updater(vector_field2.get_nudge_updater())
+
+            self.add(path)
+            grp+=path
+
+        for p in grp:
+            dots_group += p
+
+        self.wait(8)
+        self.next_slide()
+        for dot in dots_group:
+            dot.clear_updaters()
+
+        self.play(ShrinkToCenter(dots_group))
+        
+
+        vector_field3 = ArrowVectorField(
+            right_x3,
+            x_range=[0,8,0.5],
+            y_range=[0,6,0.5],
+        ).set_opacity(0.5)
+        axes3 = Axes(
+            x_range=[0,60,10],
+            y_range=[0,60,10],
+            x_length=6,
+            y_length=6,
+        ).add_coordinates().shift(SHIFT)
+
+
+        x30t = MathTex("x_3 = 0").move_to(x10t)
+        
+
+        self.play(
+            TransformMatchingShapes(x20t, x30t), 
+            ReplacementTransform(vector_field2, vector_field3), 
+            ReplacementTransform(axes2, axes3),
+            Transform(x2l, MathTex("x_2").move_to(x2l)))
+        self.play(Indicate(x30t))
+
+        self.next_slide()
+
+        dots_group = VGroup()
+        dots_group += Dot(color=GREEN,      point= axes3.c2p(5,5,0))
+        dots_group += Dot(color=BLUE,       point= axes3.c2p(10,5,0))
+        dots_group += Dot(color=YELLOW,     point= axes3.c2p(15,5,0))
+        dots_group += Dot(color=PINK,       point= axes3.c2p(20,5,0))
+        dots_group += Dot(color=ORANGE,     point= axes3.c2p(7.5,0.1,0))
+
+
+        dots_group += Dot(color=PURE_GREEN, point= axes3.c2p(10,0,0))
+        dots_group += Dot(color=PURE_BLUE,  point= axes3.c2p(0,10,0))
+
+        self.play(Create(dots_group))
+        self.next_slide()
+
+        grp = VGroup()
+        for dot in dots_group:
+            path = TracedPath(dot.get_center, stroke_color=dot.color)
+            vector_field3.nudge(dot, 0, 120)
+            dot.add_updater(vector_field3.get_nudge_updater())
+
+            self.add(path)
+            grp+=path
+            
+        for p in grp:
+            dots_group += p
+
+        self.wait(1)
+        self.next_slide()
+        for dot in dots_group:
+            dot.clear_updaters()
+
+        
+        self.play(
+            FadeOut(x30t, shift=DOWN), 
+            FadeOut(vector_field3, scale=0.5), 
+            FadeOut(axes3, scale=0.5), 
+            FadeOut(ax_labels, scale=0.5), 
+            ShrinkToCenter(dots_group)
+        )
+
+        self.next_slide()
+
+
+class LV3D2(ThreeDSlide):
+    def construct(self):
+
+        ksi1, ksi2, ksi3 = 16, 8, 4
+        a12, a13, a23 = 8, 2, 0.5
+        k12, k13, k23 = 9, 3, 1
+        def right(x):
+            x=x + 3
+            x = x * 10
+            return np.array([
+                (ksi1 - a12 * x[1] - a13 * x[2]) * x[0],
+                (ksi2 + k12 * a12 * x[0] - a23 * x[2]) * x[1],
+                (-ksi3 + k13 * a13 * x[0] + k23 * a23 * x[1]) * x[2]
+            ])/70
+
+        axes = ThreeDAxes(
+            x_range=[0,60,10],
+            y_range=[0,60,10],
+            z_range=[0,60,10],
+            x_length=6,
+            y_length=6,
+            z_length=6
+        ).shift(IN * 3).add_coordinates()
+
+        ax_labels = axes.get_axis_labels(
+            MathTex("x_1"), MathTex("x_2"), MathTex("x_3")
+        )
+
+        vector_field = ArrowVectorField(
+            right,
+            three_dimensions=True,
+            x_range=[-3,3,1],
+            y_range=[-3,3,1],
+            z_range=[-3,3,1]
+        )
+
+        self.set_camera_orientation(phi=75*DEGREES, theta=30*DEGREES)
+        phi, theta, focal_distance, gamma, distance_to_origin = self.camera.get_value_trackers()
+
+        self.play(Write(axes), Write(ax_labels), Write(vector_field))
+
+        self.next_slide()
+
+        self.play(vector_field.animate.set_opacity(0.2))
+
+
+        dots_group = VGroup()
+        dots_group += Dot3D(color=GREEN)    .move_to(axes.c2p(5,5,5))
+        dots_group += Dot3D(color=BLUE)     .move_to(axes.c2p(10,10,10))
+        dots_group += Dot3D(color=YELLOW)   .move_to(axes.c2p(15,15,20))
+        dots_group += Dot3D(color=PINK)     .move_to(axes.c2p(5,9,11))
+
+        dots_group += Dot3D(color=ORANGE)    .move_to(axes.c2p(0,60,20))
+
+        dots_group += Dot3D(color=WHITE)    .move_to(axes.c2p(10,0,10))
+        dots_group += Dot3D(color=GREY)     .move_to(axes.c2p(5,0,5))
+
+        dots_group += Dot3D(color=PURPLE)   .move_to(axes.c2p(5,1,1))
+        dots_group += Dot3D(color=PURE_GREEN)   .move_to(axes.c2p(1,1,5))
+        dots_group += Dot3D(color=PURE_BLUE)   .move_to(axes.c2p(1,1,15))
+
+        self.play(Create(dots_group))
+        self.next_slide()
+
+
+        grp = VGroup()
+        for dot in dots_group:
+            path = TracedPath(dot.get_center, stroke_color=dot.color)
+            vector_field.nudge(dot, 0, 120)
+            dot.add_updater(vector_field.get_nudge_updater())
+
+            self.add(path)
+            grp+=path
+
+        for p in grp:
+            dots_group += p
+
+        self.wait(6)
+
+        self.next_slide()
+
+
+        self.play(theta.animate.set_value((360+30) * DEGREES), run_time=8, rate_func=rate_functions.smootherstep)
+        # self.wait()
+
+        self.next_slide()
+
+        for d in dots_group:
+            d.clear_updaters()
+
+        self.play(ShrinkToCenter(dots_group), Unwrite(axes), ShrinkToCenter(vector_field), Unwrite(ax_labels))
+        self.wait()
+
+
+        self.next_slide()
+
+
 
 class ModelK(Slide):
     def construct(self):
@@ -653,8 +995,6 @@ class K2D1(Slide, MovingCameraScene):
 
         vector_field1 = ArrowVectorField(
             right_x1,
-            # padding=0.01,
-            color=BLUE,
             x_range=[0,6,0.5],
             y_range=[0,6,0.5],
         )
@@ -727,8 +1067,6 @@ class K2D1(Slide, MovingCameraScene):
 
         vector_field2 = ArrowVectorField(
             right_x2,
-            # padding=0.01,
-            color=BLUE,
             x_range=[0,6,0.5],
             y_range=[0,6,0.5],
         ).set_opacity(0.5)
@@ -783,10 +1121,8 @@ class K2D1(Slide, MovingCameraScene):
         self.play(ShrinkToCenter(dots_group))
 
         
-
         vector_field3 = ArrowVectorField(
             right_x3,
-            color=BLUE,
             x_range=[0,6,0.5],
             y_range=[0,6,0.5],
         ).set_opacity(0.5)
@@ -797,7 +1133,7 @@ class K2D1(Slide, MovingCameraScene):
 
         self.play(
             TransformMatchingShapes(x20t, x30t), 
-            Transform(vector_field2, vector_field3),
+            ReplacementTransform(vector_field2, vector_field3),
             Transform(x2l, MathTex("x_2").move_to(x2l))
             )
         self.play(Indicate(x30t))
@@ -883,7 +1219,6 @@ class K3D1(ThreeDSlide):
 
         vector_field = ArrowVectorField(
             right,
-            color=BLUE,
             three_dimensions=True,
             x_range=[-2,4,1],
             y_range=[-2,4,1],
@@ -1302,7 +1637,6 @@ class K3D2(ThreeDSlide):
 
         vector_field = ArrowVectorField(
             right,
-            color=BLUE,
             three_dimensions=True,
             x_range=[-2,4,1],
             y_range=[-2,4,1],
@@ -1321,6 +1655,7 @@ class K3D2(ThreeDSlide):
 
         dots_group = VGroup()
         dots_group += Dot3D(color=PURE_RED).move_to(axes.c2p(10,0.1,0.1))
+        dots_group += Dot3D(color=PURE_RED).move_to(axes.c2p(0.1,4/3,0.1))
 
         dots_group += Dot3D(color=RED).move_to(axes.c2p(1,1,1))
         dots_group += Dot3D(color=GREEN).move_to(axes.c2p(10,1,1))
@@ -1349,7 +1684,7 @@ class K3D2(ThreeDSlide):
 
         phi, theta, focal_distance, gamma, distance_to_origin = self.camera.get_value_trackers()
         self.play(theta.animate.set_value((360-40) * DEGREES), run_time=10, rate_func=rate_functions.smootherstep)
-        self.wait(0.1)
+        # self.wait(0.1)
 
         self.next_slide()
 
@@ -1388,16 +1723,16 @@ class K3D2(ThreeDSlide):
         self.play(Flash(udot, line_length=0.04, run_time=1, flash_radius=0.03))
         self.next_slide()
         
-
+        # [47/11, 30/11, 1/11]
         x0s = [
-            ([11/2, 3/2, 1], RED),
-            ([11/2, 3/2, 1/4], GREEN),
-            ([11/2, 1, 1/2], BLUE),
-            ([11/2, 2, 1/2], YELLOW),
-            ([5, 3/2, 1/2], PINK),
-            ([6, 3/2, 1/2], PURPLE),
-            ([5, 1, 1/4], GREY),
-            ([6, 2, 1], ORANGE),
+            ([47/11, 30/11, 1/22], RED),
+            ([47/11, 30/11, 1/2], GREEN),
+            ([47/11, 2, 1/11], BLUE),
+            ([47/11, 35/11, 1/11], YELLOW),
+            ([40/11, 30/11, 1/11], PINK),
+            ([55/11, 30/11, 1/11], PURPLE),
+            ([5, 4, 1/2], GREY),
+            ([3, 1.5, 1/30], ORANGE),
         ]
 
         dots_group = VGroup()
@@ -1429,7 +1764,7 @@ class K3D2(ThreeDSlide):
 
         phi, theta, focal_distance, gamma, distance_to_origin = self.camera.get_value_trackers()
         self.play(
-            theta.animate.set_value((20) * DEGREES), 
+            theta.animate.set_value((-70) * DEGREES), 
             distance_to_origin.animate.set_value(12),
             focal_distance.animate.set_value(12),
             run_time=8, 

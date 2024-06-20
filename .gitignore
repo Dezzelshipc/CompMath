@@ -9,7 +9,8 @@
 *.xdv
 **/__pycache__
 /.venv
-**/manim/*
-!**/manim/*.py
-!**/manim/*.cfg
-!**/manim/assets
+
+**/manim/*_assets
+**/manim/media
+**/manim/slides
+**/manim/*.html
