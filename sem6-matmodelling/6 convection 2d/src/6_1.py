@@ -7,7 +7,7 @@ from matplotlib.animation import FuncAnimation
 from scipy import interpolate
 from multiprocessing import Pool
 
-print(Warning("Вычисления могут быть очень долгими при больших делениях времени (nt) и количестве точек (cp)"))
+
 
 def runge_kutta(function, y0: float | list, linsp):
     num = len(linsp)
@@ -52,7 +52,7 @@ def thread(point_i, points, tl):
 
 def calc_grid(c_ti, values, xi):
     print(f"start")
-    r = interpolate.griddata(c_ti, values, xi, method='cubic')
+    r = interpolate.griddata(c_ti, values, xi, method='linear')
     print(f"end")
     return r
 
@@ -73,20 +73,21 @@ def calc_grid_rbf(c_ti, values, xi):
 
 
 if __name__ == "__main__":
+    print(Warning("Вычисления могут быть очень долгими при больших делениях времени (nt) и количестве точек (cp)"))
 
     nt = 200
     tl, dt = np.linspace(0, 0.4, nt + 1, retstep=True)
 
-    cp = 2000
+    cp = 20000
 
-    # points = np.random.rand(cp, 2)
+    points = np.random.rand(cp, 2)
 
-    points = np.zeros((cp, 2))
-    points[:-2,0] = np.linspace(0, 1, cp-2)
-    points[:-2,1] = 0.5
-    points[-1] = [0.,0.]
-    points[-2] = [1.,1.]
-    print(points)
+    # points = np.zeros((cp, 2))
+    # points[:-2,0] = np.linspace(0, 1, cp-2)
+    # points[:-2,1] = 0.5
+    # points[-1] = [0.,0.]
+    # points[-2] = [1.,1.]
+    # print(points)
 
     values = c0(points[:, 0], points[:, 1])
 
@@ -107,24 +108,24 @@ if __name__ == "__main__":
 
     show_step = max(nt // 20, 1)
     print(f"{show_step=}")
-    show = 2
+    show = 1
 
     if show == 1:
         grid_y, grid_x = np.mgrid[0:1:500j, 0:1:500j]
-        with Pool() as p:
-            to_calc_grid = [
-                (
-                    c[ti],
-                    values,
-                    (grid_x, grid_y)
-                ) for ti in range(0, nt + 1, show_step)
-            ]
-            grids = p.starmap(calc_grid_rbf, to_calc_grid)
+        # with Pool() as p:
+        #     to_calc_grid = [
+        #         (
+        #             c[ti],
+        #             values,
+        #             (grid_x, grid_y)
+        #         ) for ti in range(0, nt + 1, show_step)
+        #     ]
+        #     grids = p.starmap(calc_grid_rbf, to_calc_grid)
 
-        # grids = []
-        # for ti in range(0, nt + 1, show_step):
-        #     print(f"\r{ti}", end="")
-        #     grids.append(calc_grid_rbf(c[ti], values, (grid_x, grid_y)))
+        grids = []
+        for ti in range(0, nt + 1, show_step):
+            print(f"\r{ti}", end="")
+            grids.append(calc_grid(c[ti], values, (grid_x, grid_y)))
 
         print("done calc grids")
 
@@ -139,14 +140,20 @@ if __name__ == "__main__":
             plt.imshow(grids[ti], extent=(0, 1, 0, 1), origin='lower')
             ax.set_title(f"Момент времени: {np.round(tl[ti * show_step], 3)}")
 
+
         def update_save(ti):
             update(ti)
-            # plt.savefig(f"./p{ti}.pdf")
+            # plt.savefig(f"./pr{ti}.pdf")
+
 
         plt.colorbar()
-        ani = FuncAnimation(fig, update_save, frames=len(grids), repeat=False)
-        # ani = FuncAnimation(fig, update, frames=len(grids), interval=100)
-    elif show == 2:
+        # ani = FuncAnimation(fig, update_save, frames=len(grids), repeat=False)
+        ani = FuncAnimation(fig, update, frames=len(grids), interval=100)
+        # ani.save("animation.mp4", dpi=100)
+        plt.tight_layout(pad=1.03)
+        plt.show()
+
+    if show == 2:
         fig, ax = plt.subplots()
         cm = matplotlib.colormaps['plasma']
 
@@ -164,9 +171,11 @@ if __name__ == "__main__":
             plt.scatter(scatters[ti, :, 0], scatters[ti, :, 1], c=values)
             ax.set_title(f"Момент времени: {np.round(tl[ti * show_step], 3)}")
 
+
         def update_save(ti):
             update(ti)
-            plt.savefig(f"./line{ti}.pdf")
+            plt.savefig(f"./sr{ti}.pdf")
+
 
         plt.colorbar()
 
@@ -174,14 +183,21 @@ if __name__ == "__main__":
         ax.set_ylim(0, 1)
         # ani = FuncAnimation(fig, update, frames=len(scatters), interval=10)
         ani = FuncAnimation(fig, update_save, frames=len(scatters), repeat=False)
-    elif show == 3:
+    if show == 3:
         grid_y, grid_x = np.mgrid[0:1:20j, 0:1:20j]
         plt.streamplot(grid_x, grid_y, u(grid_x, grid_y), v(grid_x, grid_y), broken_streamlines=False, density=0.5)
         # plt.savefig(f"./streamplot.pdf")
-    elif show == 4:
+    if show == 4:
         grid_y, grid_x = np.mgrid[0:1:21j, 0:1:21j]
         plt.quiver(grid_x, grid_y, u(grid_x, grid_y), v(grid_x, grid_y))
         # plt.savefig(f"./quiver.pdf")
+    if show == 5:
+        datas = ['b', 'g', 'm']
+        for i in range(cp):
+            plt.plot(c[:, i, 0], c[:, i, 1], f'{datas[i]}o-', markersize=2)
+            plt.scatter(c[0, i, 0], c[0, i, 1], c=datas[i])
+        plt.xlim(0, 1)
+        plt.ylim(0, 1)
 
     plt.tight_layout(pad=1.03)
     plt.show()
