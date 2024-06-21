@@ -6,6 +6,7 @@ import numpy as np
 config.quality = "example_quality"
 # config.quality = "high_quality"
 # config.quality = "production_quality"
+FEFU_BLUE = "#0066b3"
 
 class Intro(Slide):
     def construct(self):
@@ -81,6 +82,23 @@ class ModelLV(Slide):
         )
         sgroup += xgroup
         self.play(Write(xgroup))
+
+        sgroup2 = VGroup(
+            box_s1 := Rectangle(height=1.5, width=4).shift(LEFT * 3 + UP * 1.2),
+            Text(r"Жертва 1").move_to(box_s1),
+            box_s2 := Rectangle(height=1.5, width=4).shift(RIGHT * 3 + UP * 1.2),
+            Text(r"Жертва 2").move_to(box_s2),
+            box_h := Rectangle(height=1.5, width=4).shift(DOWN * 1.2),
+            Text(r"Хищник").move_to(box_h),
+            Arrow(buff=0, start=box_s2.get_edge_center(DOWN)+LEFT, end=box_h.get_edge_center(UP)+RIGHT),
+            Arrow(buff=0, start=box_s1.get_edge_center(DOWN)+RIGHT, end=box_h.get_edge_center(UP)+LEFT),
+            Arrow(buff=0, start=box_s1.get_edge_center(RIGHT), end=box_s2.get_edge_center(LEFT)),
+            Arrow(buff=0, start=box_h.get_edge_center(RIGHT), end=box_h.get_edge_center(RIGHT)+RIGHT),
+            MathTex("x_1").next_to(box_s1,DOWN),
+            MathTex("x_2").next_to(box_s2,DOWN),
+            MathTex("x_3").next_to(box_h,DOWN),
+        ).shift(UP)
+
         self.next_slide()
         
         tex = MathTex(r"\dot{x} = f(x)").shift(DOWN*2)
@@ -90,6 +108,10 @@ class ModelLV(Slide):
         self.play(Write(tex), Write(tt))
         self.next_slide()
 
+        self.play(TransformMatchingShapes(sgroup, sgroup2))
+        self.next_slide()
+
+        self.play(TransformMatchingShapes(sgroup2, sgroup))
 
         self.play(FadeOut(sgroup), FadeOut(tex), FadeOut(tt))
         title = Text("Модель Лотки-Вольтерры")
@@ -195,7 +217,7 @@ class LV2D1(Slide, MovingCameraScene):
             \dot{x}_3 = -6 x_3 + 1 \cdot 2 x_1 x_3 + 0.5 \cdot 0.5 x_2 x_3
         \end{cases}""")
 
-        model_name = Text("Модель 1").to_edge(UP)
+        model_name = Text("Эксперимент 1").to_edge(UP)
 
         self.play(Write(lv3), Write(model_name))
         self.next_slide()
@@ -532,7 +554,7 @@ class LV2D2(Slide, MovingCameraScene):
             \dot{x}_3 = -4 x_3 + 3 \cdot 2 x_1 x_3 + 1 \cdot 0.5 x_2 x_3
         \end{cases}""")
 
-        model_name = Text("Модель 2").to_edge(UP)
+        model_name = Text("Эксперимент 2").to_edge(UP)
 
         self.play(Write(lv3), Write(model_name))
         self.next_slide()
@@ -868,7 +890,6 @@ class LV3D2(ThreeDSlide):
         self.next_slide()
 
 
-
 class ModelK(Slide):
     def construct(self):
         title = Text("Модель Колмогорова")
@@ -915,6 +936,22 @@ class ModelK(Slide):
             MathTex("x_3").next_to(box_h2,DOWN),
         ).scale(0.4).to_edge(DL)
 
+        sgroup2 = VGroup(
+            box_s1 := Rectangle(height=1.5, width=4).shift(LEFT * 3 + UP * 1.2),
+            Text(r"Жертва 1").move_to(box_s1),
+            box_s2 := Rectangle(height=1.5, width=4).shift(RIGHT * 3 + UP * 1.2),
+            Text(r"Жертва 2").move_to(box_s2),
+            box_h := Rectangle(height=1.5, width=4).shift(DOWN * 1.2),
+            Text(r"Хищник").move_to(box_h),
+            Arrow(buff=0, start=box_s2.get_edge_center(DOWN)+LEFT, end=box_h.get_edge_center(UP)+RIGHT),
+            Arrow(buff=0, start=box_s1.get_edge_center(DOWN)+RIGHT, end=box_h.get_edge_center(UP)+LEFT),
+            Arrow(buff=0, start=box_s1.get_edge_center(RIGHT), end=box_s2.get_edge_center(LEFT)),
+            Arrow(buff=0, start=box_h.get_edge_center(RIGHT), end=box_h.get_edge_center(RIGHT)+RIGHT),
+            MathTex("x_1").next_to(box_s1,DOWN),
+            MathTex("x_2").next_to(box_s2,DOWN),
+            MathTex("x_3").next_to(box_h,DOWN),
+        ).scale(0.4).to_edge(DL)
+
         k3f = MathTex(r"""
         \begin{cases}
             \dot{x}_1 = f_1(x_1, x_2, x_3) \\
@@ -957,7 +994,33 @@ class ModelK(Slide):
         self.play(TransformMatchingShapes(k3g, k3l))
         self.next_slide()
 
-        self.play(Unwrite(title), Unwrite(assump), Unwrite(sgroup, run_time=2), Unwrite(k3l))
+        self.play(TransformMatchingShapes(sgroup, sgroup2))
+        self.next_slide()
+
+        k3g2 = MathTex(r"""\begin{cases}
+            \dot{x}_1 = \varepsilon_1(x_1)x_1 - V_{12}(x_1)x_2 - V_{13}(x_1)x_3 \\
+            \dot{x}_2 = \varepsilon_2(x_2)x_2 +  K_{12}(x_1)x_2 - V_{23}(x_2)x_3 \\
+            \dot{x}_3 = K_{13}(x_1)x_3 + K_{23}(x_2)x_3 \\ 
+        \end{cases}""")
+
+        k3l2 = MathTex(r"""\begin{cases}
+            \dot{x}_1 = \left( -\varepsilon_1 x_1 + \delta_1 \right) x_1 - v_{12} x_1 x_2 - v_{13} x_1 x_3 \\
+            \dot{x}_2 = \left( -\varepsilon_2 x_2 + \delta_2 \right) x_2 + \left( k_{12} x_1 - m_{12} \right)x_2 - v_{23} x_2 x_3 \\
+            \dot{x}_3 = \left( k_{13} x_1 - m_{13} \right) x_3 + \left( k_{23} x_2 - m_{23} \right)x_3 \\
+        \end{cases}""")
+
+        assump2 = MathTex(r"""\begin{split}
+            \varepsilon_i' < 0 \hspace{1em} \varepsilon_i(0) > 0 > \varepsilon_i(\infty) \\
+            K_{ij}' > 0 \hspace{1em} K_{ij}(0) < 0 < K_{ij}(\infty) \\
+            V_{ij}(x_i) > 0, ~ x_i > 0 \hspace{1em} V_{ij}(0) = 0 \\
+        \end{split}""").to_corner(DR)
+
+        self.play(TransformMatchingShapes(k3l, k3g2), ReplacementTransform(assump, assump2))
+        self.next_slide()
+        self.play(TransformMatchingShapes(k3g2, k3l2))
+        self.next_slide()
+
+        self.play(Unwrite(title), Unwrite(assump2), Unwrite(sgroup2, run_time=2), Unwrite(k3l2))
         self.wait()
 
         self.next_slide()
@@ -965,6 +1028,18 @@ class ModelK(Slide):
         
 class K2D1(Slide, MovingCameraScene):
     def construct(self):
+
+        k3 = MathTex(r"""\begin{cases}
+            \dot{x}_1 = ( -x_1 + 10 ) x_1 - 2 x_1 x_2 - 3 x_1 x_3 \\
+            \dot{x}_2 = (x_1 - 5)x_2 - 1 \cdot x_2 x_3 \\
+            \dot{x}_3 = (x_1 - 3)x_3 + (x_2 - 4)x_3 \\
+        \end{cases}""")
+
+        model_name = Text("Эксперимент 1").to_edge(UP)
+
+        self.play(Write(k3), Write(model_name))
+        self.next_slide()
+        self.play(Unwrite(k3), Unwrite(model_name), run_time=1)
 
         def right_x1(x):
             x= x*2
@@ -1374,6 +1449,19 @@ class K3D1(ThreeDSlide):
 class K2D2(Slide, MovingCameraScene):
     def construct(self):
 
+        k3 = MathTex(r"""\begin{cases}
+            \dot{x}_1 = (-x_1 + 10 ) x_1 - 2 x_1 x_2 - 3 x_1 x_3 \\
+            \dot{x}_2 = (-3 x_2 + 9) x_2 + (x_1 - 5)x_2 - 1 \cdot x_2 x_3 \\
+            \dot{x}_3 = (x_1 - 3)x_3 + (x_2 - 4)x_3 \\
+        \end{cases}""")
+
+        model_name = Text("Эксперимент 2").to_edge(UP)
+
+        self.play(Write(k3), Write(model_name))
+        self.next_slide()
+        self.play(Unwrite(k3), Unwrite(model_name), run_time=1)
+
+
         def right_x1(x):
             x= x*2
             return np.array([
@@ -1657,6 +1745,9 @@ class K3D2(ThreeDSlide):
         dots_group += Dot3D(color=PURE_RED).move_to(axes.c2p(10,0.1,0.1))
         dots_group += Dot3D(color=PURE_RED).move_to(axes.c2p(0.1,4/3,0.1))
 
+        dots_group += Dot3D(color=PURE_GREEN).move_to(axes.c2p(7,0.1,1))
+        dots_group += Dot3D(color=PURE_GREEN).move_to(axes.c2p(22/5,14/5,0.1))
+
         dots_group += Dot3D(color=RED).move_to(axes.c2p(1,1,1))
         dots_group += Dot3D(color=GREEN).move_to(axes.c2p(10,1,1))
         dots_group += Dot3D(color=BLUE).move_to(axes.c2p(1,10,1))
@@ -1796,8 +1887,8 @@ class Outro(Slide):
 
         self.play(Succession(
             Write(thx, run_time=4),
-            Circumscribe(thx, color="#0066b3", run_time=2, time_width=2),
-            Wiggle(thx)
+            Circumscribe(thx, color=FEFU_BLUE, run_time=2),
+            Indicate(thx, color=FEFU_BLUE)
         ))
 
         self.next_slide()
@@ -1806,5 +1897,7 @@ class Outro(Slide):
             Unwrite(thx, reverse=False),
             run_time=4
             )
+        self.wait()
+        self.add(Tex("-1").to_corner(DR).set_opacity(0.1))
         self.wait()
         self.next_slide()
