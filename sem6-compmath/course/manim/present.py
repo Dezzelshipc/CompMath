@@ -3,9 +3,9 @@ from manim_slides import Slide, ThreeDSlide
 import numpy as np
 
 # QUALITIES
-config.quality = "example_quality"
+# config.quality = "example_quality"
 # config.quality = "high_quality"
-# config.quality = "production_quality"
+config.quality = "production_quality"
 FEFU_BLUE = "#0066b3"
 
 class Intro(Slide):
@@ -184,16 +184,20 @@ class ModelLV(Slide):
         
         an_t = Text("Анализ").next_to(title, DOWN)
 
-        self.play(Write(an_t))
         
 
         balance = MathTex(r"\dot{x} = 0 ~ \Rightarrow ~ f(x^*) = 0").move_to( UP)
         firstlin = MathTex(r"J = \frac{\partial f}{\partial x} \qquad A = J\big|_{x^*}")
         detlin = MathTex(r"\det(\lambda I - A) = 0 \qquad \forall i: \Re (\lambda_i) < 0").move_to(DOWN)
 
-        self.play(Write(balance), run_time=1)
-        self.play(Write(firstlin), run_time=1)
-        self.play(Write(detlin), run_time=1)
+        self.play(Succession(
+            Write(an_t),
+            Write(balance),
+            Write(firstlin),
+            Write(detlin)
+            ),
+            run_time=3
+        )
         self.next_slide()
 
         self.play(
@@ -1819,11 +1823,11 @@ class K3D2(ThreeDSlide):
             ([47/11, 30/11, 1/22], RED),
             ([47/11, 30/11, 1/2], GREEN),
             ([47/11, 2, 1/11], BLUE),
-            ([47/11, 35/11, 1/11], YELLOW),
-            ([40/11, 30/11, 1/11], PINK),
-            ([55/11, 30/11, 1/11], PURPLE),
-            ([5, 4, 1/2], GREY),
-            ([3, 1.5, 1/30], ORANGE),
+            ([47/11, 40/11, 1/11], YELLOW),
+            ([35/11, 30/11, 1/11], PINK),
+            ([60/11, 30/11, 1/11], PURPLE),
+            ([5, 4, 1], GREY),
+            ([3, 1.5, 1/60], ORANGE),
         ]
 
         dots_group = VGroup()
