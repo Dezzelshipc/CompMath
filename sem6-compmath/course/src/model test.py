@@ -69,29 +69,35 @@ x1, x2, x3 = sy.symbols('x1 x2 x3')
 #     [k13 * a13, k23 * a23, 0, eps3]
 # ])
 
-ksi1, ksi2, ksi3 = 10, 8, 6
-a12, a13, a23 = 6, 2, 0.5
-k12, k13, k23 = 4, 1, 0.5
+# 1
+# ksi1, ksi2, ksi3 = 10, 8, 6
+# a12, a13, a23 = 6, 2, 0.5
+# k12, k13, k23 = 4, 1, 0.5
+
+# 2
+ksi1, ksi2, ksi3 = 16, 8, 4
+a12, a13, a23 = 8, 2, 0.5
+k12, k13, k23 = 9, 3, 1
 
 x = (x1,x2,x3)
 
 
-# m = sy.Matrix([
-#     (ksi1 - a12 * x[1] - a13 * x[2]) * x[0],
-#     (ksi2 + k12 * a12 * x[0] - a23 * x[2]) * x[1],
-#     (-ksi3 + k13 * a13 * x[0] + k23 * a23 * x[1]) * x[2]
-# ])
+m = sy.Matrix([
+    (ksi1 - a12 * x[1] - a13 * x[2]) * x[0],
+    (ksi2 + k12 * a12 * x[0] - a23 * x[2]) * x[1],
+    (-ksi3 + k13 * a13 * x[0] + k23 * a23 * x[1]) * x[2]
+])
 # m = sy.Matrix([
 #        ((-1 * x[0] + 10) * x[0] - 2 * x[1] * x[0] - 3 * x[2] * x[0]),
 #         ( (1 * x[0] - 5) * x[1] - 1 * x[2] * x[1]),
 #         ((1 * x[0] - 3) * x[2] + (1 * x[1] - 4) * x[2]),
 # ])
 
-m = sy.Matrix([
-       ((-1 * x[0] + 10) * x[0] - 2 * x[1] * x[0] - 3 * x[2] * x[0]),
-        ((-3 * x[1] + 9) * x[1] + (1 * x[0] - 5) * x[1] - 1 * x[2] * x[1]),
-        ((1 * x[0] - 3) * x[2] + (1 * x[1] - 4) * x[2]),
-])
+# m = sy.Matrix([
+#        ((-1 * x[0] + 10) * x[0] - 2 * x[1] * x[0] - 3 * x[2] * x[0]),
+#         ((-3 * x[1] + 9) * x[1] + (1 * x[0] - 5) * x[1] - 1 * x[2] * x[1]),
+#         ((1 * x[0] - 3) * x[2] + (1 * x[1] - 4) * x[2]),
+# ])
 
     
 x = sy.solve(m,x1, x2, x3 )
@@ -140,33 +146,33 @@ print(x)
 #     print()
 
 # K2
-for x in sy.solve(m,x1, x2, x3 ):
-    m = sy.Matrix([
-        [(-2 * x[0] + 10 - 2 * x[1] - 3 * x[2] ),  - 2 * x[0], - 3 * x[0]],
-        [1 * x[1], -6*x[1] + 9 + (x[0] - 5) - x[2], -1 * x[1]],
-        [1 * x[2], 1 * x[2], x[0] - 3 + x[1] - 4]
-    ])
-
-    eig = m.eigenvals()
-    print(x)
-    for v in eig:
-        print(v.evalf())
-    print()
-
-# LV
 # for x in sy.solve(m,x1, x2, x3 ):
 #     m = sy.Matrix([
-#         [ksi1 - a12 * x[1] - a13 * x[2], -a12 * x[0], -a13 * x[0]],
-#         [k12 * a12 * x[1], ksi2 + k12 * a12 * x[0] - a23 * x[2], -a23 * x[1]],
-#         [k13 * a13 * x[2], k23 * a23 * x[2], -ksi3 + k13 * a13 * x[0] + k23 * a23 * x[1]]
+#         [(-2 * x[0] + 10 - 2 * x[1] - 3 * x[2] ),  - 2 * x[0], - 3 * x[0]],
+#         [1 * x[1], -6*x[1] + 9 + (x[0] - 5) - x[2], -1 * x[1]],
+#         [1 * x[2], 1 * x[2], x[0] - 3 + x[1] - 4]
 #     ])
 
 #     eig = m.eigenvals()
 #     print(x)
-#     # print(eig)
 #     for v in eig:
 #         print(v.evalf())
 #     print()
+
+# LV
+for x in sy.solve(m,x1, x2, x3 ):
+    m = sy.Matrix([
+        [ksi1 - a12 * x[1] - a13 * x[2], -a12 * x[0], -a13 * x[0]],
+        [k12 * a12 * x[1], ksi2 + k12 * a12 * x[0] - a23 * x[2], -a23 * x[1]],
+        [k13 * a13 * x[2], k23 * a23 * x[2], -ksi3 + k13 * a13 * x[0] + k23 * a23 * x[1]]
+    ])
+
+    eig = m.eigenvals()
+    print(x)
+    # print(eig)
+    for v in eig:
+        print(v.evalf())
+    print()
 
 # lam = sy.symbols('lambda')
 # p = m.charpoly(lam)

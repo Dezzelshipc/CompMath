@@ -23,7 +23,7 @@ class Intro(Slide):
 
         self.play(LaggedStart( ApplyWave(logo), Circumscribe(logo, Circle), lag_ratio=0.25))
 
-        names = Text("Держапольский Юрий Витальевич\nМакарова Виктория Александовна\nБ9121-01.03.02сп").scale(0.5).to_corner(DL)
+        names = Text("Держапольский Юрий Витальевич\nМакарова Виктория Александровна\nБ9121-01.03.02сп").scale(0.5).to_corner(DL)
 
         title = VGroup(
             Text("Модели конкуренции в экологии и экономике").scale(1.2),
@@ -171,9 +171,9 @@ class ModelLV(Slide):
 
         lv3l = MathTex(r"""
         \begin{cases}
-            \dot{x}_1 = \varepsilon_1 x_1 - \alpha_{12} x_1 x_2 - \alpha_{13} x_1 x_3 \\
-            \dot{x}_2 = \varepsilon_2 x_2 + k_{12} \alpha_{12} x_1 x_2 - \alpha_{23} x_2 x_3 \\
-            \dot{x}_3 = -\varepsilon_3 x_3 + k_{13} \alpha_{13} x_1 x_3 + k_{23} \alpha_{23} x_2 x_3
+            \dot{x}_1 = \varepsilon_1 x_1 - v_{12} x_1 x_2 - v_{13} x_1 x_3 \\
+            \dot{x}_2 = \varepsilon_2 x_2 + k_{12} v_{12} x_1 x_2 - v_{23} x_2 x_3 \\
+            \dot{x}_3 = -\varepsilon_3 x_3 + k_{13} v_{13} x_1 x_3 + k_{23} v_{23} x_2 x_3
         \end{cases}
         """)
 
@@ -235,7 +235,7 @@ class LV2D1(Slide, MovingCameraScene):
             x= x*10
             return np.array([
                 (ksi2 - a23 * x[1]) * x[0] if x[0] < 100 else 0,
-                (-ksi3  + k23 * a23 * x[0]) * x[1],
+                (-ksi3  + k23 * a23 * x[0]) * x[1] if x[1] < 1000 else 0,
                 0
             ])/50
 
@@ -243,7 +243,7 @@ class LV2D1(Slide, MovingCameraScene):
             x= x*2
             return np.array([
                 (ksi1 - a13 * x[1]) * x[0] if x[0] < 20 else 0,
-                (-ksi3 + k13 * a13 * x[0]) * x[1],
+                (-ksi3 + k13 * a13 * x[0]) * x[1] if x[1] < 1000 else 0,
                 0
             ])/10
 
@@ -251,7 +251,7 @@ class LV2D1(Slide, MovingCameraScene):
             x = x*10
             return np.array([
                 (ksi1 - a12 * x[1]) * x[0] if x[0] < 100 else 0,
-                (ksi2 + k12 * a12 * x[0]) * x[1],
+                (ksi2 + k12 * a12 * x[0]) * x[1] if x[1] < 1000 else 0,
                 0
             ])/100
         
@@ -296,18 +296,25 @@ class LV2D1(Slide, MovingCameraScene):
 
 
         dots_group = VGroup()
+        dots_group += Dot(color=WHITE).move_to(axes.c2p(24,16,0))
+
         dots_group += Dot(color=GREEN).move_to(axes.c2p(5,5,0))
         dots_group += Dot(color=BLUE).move_to(axes.c2p(10,10,0))
         dots_group += Dot(color=YELLOW).move_to(axes.c2p(15,15,0))
         dots_group += Dot(color=PINK).move_to(axes.c2p(20,20,0))
 
-        dots_group += Dot(color=WHITE).move_to(axes.c2p(25,15,0))
+        dots_group += Dot(color=PURPLE).move_to(axes.c2p(25,15,0))
 
         dots_group += Dot(color=PURE_GREEN).move_to(axes.c2p(0.1,0,0))
         dots_group += Dot(color=PURE_BLUE).move_to(axes.c2p(0,50,0))
 
 
-        self.play(Create(dots_group))
+        info = VGroup(
+            it := MathTex(r"(0, 24, 16)").to_corner(DL).shift(SHIFT+UP),
+            MathTex(r"(-166, \pm i ~ 6.93 )", color=YELLOW).to_corner(DL).shift(SHIFT)
+        )
+
+        self.play(Create(dots_group), Write(info))
         self.next_slide()
 
         grp = VGroup()
@@ -329,7 +336,7 @@ class LV2D1(Slide, MovingCameraScene):
         for dot in dots_group:
             dot.clear_updaters()
 
-        self.play(ShrinkToCenter(dots_group))    
+        self.play(ShrinkToCenter(dots_group), Unwrite(info))    
 
         vector_field2 = ArrowVectorField(
             right_x2,
@@ -356,17 +363,24 @@ class LV2D1(Slide, MovingCameraScene):
         self.next_slide()
 
         dots_group = VGroup()
+        dots_group += Dot(color=WHITE).move_to(axes2.c2p(3,5,0))
+
         dots_group += Dot(color=GREEN).move_to(axes2.c2p(2,1,0))
         dots_group += Dot(color=BLUE).move_to(axes2.c2p(2,1.5,0))
         dots_group += Dot(color=YELLOW).move_to(axes2.c2p(2,2,2,0))
         dots_group += Dot(color=PINK).move_to(axes2.c2p(2,2.5,0))
 
-        dots_group += Dot(color=WHITE).move_to(axes2.c2p(2.5,5,0))
+        dots_group += Dot(color=PURPLE).move_to(axes2.c2p(2.5,5,0))
 
         dots_group += Dot(color=PURE_GREEN).move_to(axes2.c2p(0.1,0,0))
         dots_group += Dot(color=PURE_BLUE).move_to(axes2.c2p(0,10,0))
 
-        self.play(Create(dots_group))
+        info = VGroup(
+            it := MathTex(r"(3, 0, 5)").to_corner(DL).shift(SHIFT+UP),
+            MathTex(r"( 77.5, \pm i ~ 7.74 )", color=YELLOW).to_corner(DL).shift(SHIFT)
+        )
+
+        self.play(Create(dots_group), Write(info))
         self.next_slide()
 
         grp = VGroup()
@@ -386,7 +400,7 @@ class LV2D1(Slide, MovingCameraScene):
         for dot in dots_group:
             dot.clear_updaters()
 
-        self.play(ShrinkToCenter(dots_group))
+        self.play(ShrinkToCenter(dots_group), Unwrite(info))
         
 
         vector_field3 = ArrowVectorField(
@@ -415,6 +429,8 @@ class LV2D1(Slide, MovingCameraScene):
         self.next_slide()
 
         dots_group = VGroup()
+        dots_group += Dot(color=WHITE).move_to(axes.c2p(0,0,0))
+
         dots_group += Dot(color=GREEN,      point= axes3.c2p(5,5,0))
         dots_group += Dot(color=BLUE,       point= axes3.c2p(10,5,0))
         dots_group += Dot(color=YELLOW,     point= axes3.c2p(15,5,0))
@@ -499,7 +515,6 @@ class LV3D1(ThreeDSlide):
 
         self.play(vector_field.animate.set_opacity(0.2))
 
-
         dots_group = VGroup()
         dots_group += Dot3D(color=GREEN)    .move_to(axes.c2p(5,5,5))
         dots_group += Dot3D(color=BLUE)     .move_to(axes.c2p(10,10,10))
@@ -535,7 +550,6 @@ class LV3D1(ThreeDSlide):
 
 
         self.play(theta.animate.set_value((360+30) * DEGREES), run_time=8, rate_func=rate_functions.smootherstep)
-        # self.wait()
 
         self.next_slide()
 
@@ -635,19 +649,25 @@ class LV2D2(Slide, MovingCameraScene):
 
 
         dots_group = VGroup()
+        dots_group += Dot(color=WHITE).move_to(axes.c2p(8,16,0))
+
         dots_group += Dot(color=GREEN).move_to(axes.c2p(5,5,0))
         dots_group += Dot(color=BLUE).move_to(axes.c2p(10,10,0))
         dots_group += Dot(color=YELLOW).move_to(axes.c2p(10,4,0))
         dots_group += Dot(color=PINK).move_to(axes.c2p(20,20,0))
-        # dots_group += Dot(color=ORANGE).move_to(axes.c2p(50,5,0))
 
-        dots_group += Dot(color=WHITE).move_to(axes.c2p(10,15,0))
+        dots_group += Dot(color=ORANGE).move_to(axes.c2p(10,15,0))
 
         dots_group += Dot(color=PURE_GREEN).move_to(axes.c2p(0.1,0,0))
         dots_group += Dot(color=PURE_BLUE).move_to(axes.c2p(0,50,0))
 
+        info = VGroup(
+            it := MathTex(r"(0, 8, 16)").to_corner(DL).shift(SHIFT+UP),
+            MathTex(r"( -80, \pm i ~ 5.66 )", color=YELLOW).to_corner(DL).shift(SHIFT)
+        )
 
-        self.play(Create(dots_group))
+
+        self.play(Create(dots_group), Write(info))
         self.next_slide()
 
         grp = VGroup()
@@ -669,7 +689,7 @@ class LV2D2(Slide, MovingCameraScene):
         for dot in dots_group:
             dot.clear_updaters()
 
-        self.play(ShrinkToCenter(dots_group))    
+        self.play(ShrinkToCenter(dots_group), Unwrite(info))    
 
         vector_field2 = ArrowVectorField(
             right_x2,
@@ -696,17 +716,24 @@ class LV2D2(Slide, MovingCameraScene):
         self.next_slide()
 
         dots_group = VGroup()
+        dots_group += Dot(color=WHITE).move_to(axes2.c2p(2/3,8,0))
+
         dots_group += Dot(color=GREEN).move_to(axes2.c2p(1/2,1,0))
         dots_group += Dot(color=BLUE).move_to(axes2.c2p(1/2,3,0))
         dots_group += Dot(color=YELLOW).move_to(axes2.c2p(1/2,5,0))
         dots_group += Dot(color=PINK).move_to(axes2.c2p(1/2,7,0))
 
-        dots_group += Dot(color=WHITE).move_to(axes2.c2p(2.5,5,0))
+        dots_group += Dot(color=ORANGE).move_to(axes2.c2p(2.5,5,0))
 
         dots_group += Dot(color=PURE_GREEN).move_to(axes2.c2p(0.1,0,0))
         dots_group += Dot(color=PURE_BLUE).move_to(axes2.c2p(0,20,0))
 
-        self.play(Create(dots_group))
+        info = VGroup(
+            it := MathTex(r"\left( \frac{2}{3}, 0, 8 \right)").to_corner(DL).shift(SHIFT+UP),
+            MathTex(r"( 52, \pm i ~ 8 )", color=YELLOW).to_corner(DL).shift(SHIFT)
+        )
+
+        self.play(Create(dots_group), Write(info))
         self.next_slide()
 
         grp = VGroup()
@@ -726,7 +753,7 @@ class LV2D2(Slide, MovingCameraScene):
         for dot in dots_group:
             dot.clear_updaters()
 
-        self.play(ShrinkToCenter(dots_group))
+        self.play(ShrinkToCenter(dots_group), Unwrite(info))
         
 
         vector_field3 = ArrowVectorField(
@@ -755,6 +782,8 @@ class LV2D2(Slide, MovingCameraScene):
         self.next_slide()
 
         dots_group = VGroup()
+        dots_group += Dot(color=WHITE).move_to(axes.c2p(0,0,0))
+
         dots_group += Dot(color=GREEN,      point= axes3.c2p(5,5,0))
         dots_group += Dot(color=BLUE,       point= axes3.c2p(10,5,0))
         dots_group += Dot(color=YELLOW,     point= axes3.c2p(15,5,0))
@@ -1111,12 +1140,14 @@ class K2D1(Slide, MovingCameraScene):
 
 
         dots_group = VGroup()
+        dots_group += Dot(color=WHITE).move_to(axes.c2p(0,0,0))
+
         dots_group += Dot(color=GREEN).move_to(axes.c2p(12,2,0))
         dots_group += Dot(color=BLUE).move_to(axes.c2p(15,5,0))
         dots_group += Dot(color=YELLOW).move_to(axes.c2p(17,7,0))
         dots_group += Dot(color=PINK).move_to(axes.c2p(12,10,0))
 
-        dots_group += Dot(color=WHITE).move_to(axes.c2p(15,15,0))
+        dots_group += Dot(color=ORANGE).move_to(axes.c2p(15,15,0))
 
         dots_group += Dot(color=PURE_GREEN).move_to(axes.c2p(10,0,0))
         dots_group += Dot(color=PURE_BLUE).move_to(axes.c2p(0,10,0))
@@ -1163,13 +1194,15 @@ class K2D1(Slide, MovingCameraScene):
         self.next_slide()
 
         dots_group = VGroup()
+        dots_group += Dot(color=WHITE, point= axes.c2p(10,0,0))
+        dots_group += Dot(color=WHITE, point= axes.c2p(7,1,0))
+
         dots_group += Dot(color=GREEN).move_to(axes.c2p(2,2,0))
         dots_group += Dot(color=BLUE).move_to(axes.c2p(10,5,0))
         dots_group += Dot(color=YELLOW).move_to(axes.c2p(7,7,0))
         dots_group += Dot(color=PINK).move_to(axes.c2p(10,10,0))
 
         dots_group += Dot(color=PURPLE).move_to(axes.c2p(12,3,0))
-        dots_group += Dot(color=WHITE).move_to(axes.c2p(15,15,0))
         dots_group += Dot(color=ORANGE).move_to(axes.c2p(15,1,0))
 
         dots_group += Dot(color=PURE_RED).move_to(axes.c2p(10,0.1,0))
@@ -1177,7 +1210,16 @@ class K2D1(Slide, MovingCameraScene):
         dots_group += Dot(color=PURE_GREEN).move_to(axes.c2p(20,0,0))
         dots_group += Dot(color=PURE_BLUE).move_to(axes.c2p(0,10,0))
 
-        self.play(Create(dots_group))
+
+        info = VGroup(
+            it := MathTex(r"\left[ 10, 0, 0 \right]").to_corner(DL).shift(SHIFT+UP*3),
+            MathTex(r"[ 5, 3, -10 ]", color=YELLOW).to_corner(DL).shift(SHIFT+UP*2),
+
+            it := MathTex(r"\left( 7, 0, 1 \right)").to_corner(DL).shift(SHIFT+UP),
+            MathTex(r"( 1, -3.5 \pm i ~ 2.9 )", color=YELLOW).to_corner(DL).shift(SHIFT),
+        )
+
+        self.play(Create(dots_group), Write(info))
         self.next_slide()
 
         grp = VGroup()
@@ -1197,7 +1239,7 @@ class K2D1(Slide, MovingCameraScene):
         for dot in dots_group:
             dot.clear_updaters()
 
-        self.play(ShrinkToCenter(dots_group))
+        self.play(ShrinkToCenter(dots_group), Unwrite(info))
 
         
         vector_field3 = ArrowVectorField(
@@ -1220,13 +1262,15 @@ class K2D1(Slide, MovingCameraScene):
         self.next_slide()
 
         dots_group = VGroup()
+        dots_group += Dot(color=WHITE).move_to(axes.c2p(10,0,0))
+        dots_group += Dot(color=WHITE).move_to(axes.c2p(5,2.5,0))
+
         dots_group += Dot(color=GREEN).move_to(axes.c2p(2,2,0))
         dots_group += Dot(color=BLUE).move_to(axes.c2p(10,5,0))
         dots_group += Dot(color=YELLOW).move_to(axes.c2p(7,7,0))
         dots_group += Dot(color=PINK).move_to(axes.c2p(10,10,0))
 
         dots_group += Dot(color=PURPLE).move_to(axes.c2p(12,3,0))
-        dots_group += Dot(color=WHITE).move_to(axes.c2p(15,15,0))
         dots_group += Dot(color=ORANGE).move_to(axes.c2p(15,1,0))
 
         dots_group += Dot(color=PURE_RED).move_to(axes.c2p(10,0.1,0))
@@ -1234,7 +1278,15 @@ class K2D1(Slide, MovingCameraScene):
         dots_group += Dot(color=PURE_GREEN).move_to(axes.c2p(20,0,0))
         dots_group += Dot(color=PURE_BLUE).move_to(axes.c2p(0,10,0))
 
-        self.play(Create(dots_group))
+        info = VGroup(
+            it := MathTex(r"\left[ 10, 0, 0 \right]").to_corner(DL).shift(SHIFT+UP*3),
+            MathTex(r"[ 5, 3, -10 ]", color=YELLOW).to_corner(DL).shift(SHIFT+UP*2),
+
+            it := MathTex(r"\left( 5, 2.5, 0 \right)").to_corner(DL).shift(SHIFT+UP),
+            MathTex(r"( 0.5, -2.5 \pm i ~ 4.3 )", color=YELLOW).to_corner(DL).shift(SHIFT),
+        )
+
+        self.play(Create(dots_group), Write(info))
         self.next_slide()
 
         grp = VGroup()
@@ -1257,7 +1309,9 @@ class K2D1(Slide, MovingCameraScene):
             FadeOut(vector_field3, scale=0.5), 
             FadeOut(axes, scale=0.5), 
             FadeOut(ax_labels, scale=0.5), 
-            ShrinkToCenter(dots_group))
+            ShrinkToCenter(dots_group),
+            Unwrite(info)
+        )
 
         self.next_slide()
 
@@ -1269,9 +1323,9 @@ class K3D1(ThreeDSlide):
             x = x + 2
             x = x * 2
             return np.array([
-                ((-1 * x[0] + 10) * x[0] - 2 * x[1] * x[0] - 3 * x[2] * x[0]),
-                ((1 * x[0] - 5) * x[1] - 1 * x[2] * x[1]),
-                ((1 * x[0] - 3) * x[2] + (1 * x[1] - 4) * x[2])
+                ((-1 * x[0] + 10) * x[0] - 2 * x[1] * x[0] - 3 * x[2] * x[0]) if x[0] < 1000 else 0,
+                ((1 * x[0] - 5) * x[1] - 1 * x[2] * x[1]) if x[1] < 1000 else 0,
+                ((1 * x[0] - 3) * x[2] + (1 * x[1] - 4) * x[2]) if x[2] < 1000 else 0
             ])/10
 
         def right_p(x):
@@ -1347,6 +1401,16 @@ class K3D1(ThreeDSlide):
         self.wait(0.1)
 
         self.next_slide()
+
+        info = VGroup(
+            it := MathTex(r"\left( 5.5, 1.5, 0.5 \right)").to_corner(DL).shift(UP),
+            MathTex(r"( -0.3, -2.5 \pm i 4.1 )", color=YELLOW).to_corner(DL),
+        ).set_opacity(0)
+
+        self.add_fixed_in_frame_mobjects(info)
+        self.play(info.animate.set_opacity(1))
+        self.next_slide()
+        self.play(Unwrite(info))
 
         for d in dots_group:
             d.clear_updaters()
@@ -1533,19 +1597,24 @@ class K2D2(Slide, MovingCameraScene):
 
 
         dots_group = VGroup()
+        dots_group += Dot(color=WHITE).move_to(axes.c2p(4/3,0,0))
+
         dots_group += Dot(color=GREEN).move_to(axes.c2p(12,2,0))
         dots_group += Dot(color=BLUE).move_to(axes.c2p(15,5,0))
         dots_group += Dot(color=YELLOW).move_to(axes.c2p(17,7,0))
         dots_group += Dot(color=PINK).move_to(axes.c2p(12,10,0))
         dots_group += Dot(color=ORANGE).move_to(axes.c2p(1/2,12,0))
 
-        dots_group += Dot(color=WHITE).move_to(axes.c2p(15,15,0))
-
         dots_group += Dot(color=PURE_GREEN).move_to(axes.c2p(10,0,0))
         dots_group += Dot(color=PURE_GREEN).move_to(axes.c2p(0.1,0,0))
         dots_group += Dot(color=PURE_BLUE).move_to(axes.c2p(0,10,0))
 
-        self.play(Create(dots_group))
+        info = VGroup(
+            it := MathTex(r"\left( 0, \frac{4}{3}, 0 \right)").to_corner(DL).shift(SHIFT+UP),
+            MathTex(r"( 7.3, -5.6, -4 )", color=YELLOW).to_corner(DL).shift(SHIFT),
+        )
+
+        self.play(Create(dots_group), Write(info))
         self.next_slide()
 
         grp = VGroup()
@@ -1564,8 +1633,7 @@ class K2D2(Slide, MovingCameraScene):
         for dot in dots_group:
             dot.clear_updaters()
 
-        self.play(ShrinkToCenter(dots_group))
-
+        self.play(ShrinkToCenter(dots_group), Unwrite(info))
         
 
         vector_field2 = ArrowVectorField(
@@ -1588,13 +1656,15 @@ class K2D2(Slide, MovingCameraScene):
         self.next_slide()
 
         dots_group = VGroup()
+        dots_group += Dot(color=WHITE).move_to(axes.c2p(7,1,0))
+        dots_group += Dot(color=WHITE).move_to(axes.c2p(10,0,0))
+
         dots_group += Dot(color=GREEN).move_to(axes.c2p(2,2,0))
         dots_group += Dot(color=BLUE).move_to(axes.c2p(10,5,0))
         dots_group += Dot(color=YELLOW).move_to(axes.c2p(7,7,0))
         dots_group += Dot(color=PINK).move_to(axes.c2p(10,10,0))
 
         dots_group += Dot(color=PURPLE).move_to(axes.c2p(12,3,0))
-        dots_group += Dot(color=WHITE).move_to(axes.c2p(2,12,0))
         dots_group += Dot(color=ORANGE).move_to(axes.c2p(15,1,0))
 
         dots_group += Dot(color=PURE_RED).move_to(axes.c2p(10,0.1,0))
@@ -1602,7 +1672,15 @@ class K2D2(Slide, MovingCameraScene):
         dots_group += Dot(color=PURE_GREEN).move_to(axes.c2p(20,0,0))
         dots_group += Dot(color=PURE_BLUE).move_to(axes.c2p(0,10,0))
 
-        self.play(Create(dots_group))
+        info = VGroup(
+            it := MathTex(r"\left[ 10, 0, 0 \right]").to_corner(DL).shift(SHIFT+UP*3),
+            MathTex(r"[ 14, 3, -10 ]", color=YELLOW).to_corner(DL).shift(SHIFT+UP*2),
+
+            it := MathTex(r"\left( 7, 0, 1 \right)").to_corner(DL).shift(SHIFT+UP),
+            MathTex(r"( 10, -3.5 \pm i ~ 2.9 )", color=YELLOW).to_corner(DL).shift(SHIFT),
+        )
+
+        self.play(Create(dots_group), Write(info))
         self.next_slide()
 
         grp = VGroup()
@@ -1622,7 +1700,7 @@ class K2D2(Slide, MovingCameraScene):
         for dot in dots_group:
             dot.clear_updaters()
 
-        self.play(ShrinkToCenter(dots_group))
+        self.play(ShrinkToCenter(dots_group), Unwrite(info))
 
         
 
@@ -1647,14 +1725,18 @@ class K2D2(Slide, MovingCameraScene):
         self.next_slide()
 
         dots_group = VGroup()
+        dots_group += Dot(color=WHITE).move_to(axes.c2p(10,0,0))
+        dots_group += Dot(color=WHITE).move_to(axes.c2p(0,4/3,0))
+        dots_group += Dot(color=WHITE).move_to(axes.c2p(22/5,14/5,0))
+
         dots_group += Dot(color=GREEN).move_to(axes.c2p(5,1/2,0))
         dots_group += Dot(color=BLUE).move_to(axes.c2p(14,5,0))
         dots_group += Dot(color=YELLOW).move_to(axes.c2p(6,10,0))
         dots_group += Dot(color=PINK).move_to(axes.c2p(10,10,0))
 
         dots_group += Dot(color=PURPLE).move_to(axes.c2p(1/2,1/2,0))
-        dots_group += Dot(color=WHITE).move_to(axes.c2p(1,10,0))
         dots_group += Dot(color=ORANGE).move_to(axes.c2p(15,0.1,0))
+        dots_group += Dot(color=GOLD).move_to(axes.c2p(1,10,0))
 
         dots_group += Dot(color=PURE_RED).move_to(axes.c2p(10,0.1,0))
         dots_group += Dot(color=PURE_RED).move_to(axes.c2p(0.1,4/3,0))
@@ -1663,7 +1745,18 @@ class K2D2(Slide, MovingCameraScene):
         dots_group += Dot(color=PURE_BLUE).move_to(axes.c2p(0,10,0))
         dots_group += Dot(color=PURE_BLUE).move_to(axes.c2p(0,0.1,0))
 
-        self.play(Create(dots_group))
+        info = VGroup(
+            it := MathTex(r"\left( 0, \frac{4}{3}, 0 \right)").to_corner(DL).shift(SHIFT+UP*5),
+            MathTex(r"( 10, -3.5 \pm i ~ 2.9 )", color=YELLOW).scale(0.8).to_corner(DL).shift(SHIFT+UP*4),
+
+            it := MathTex(r"\left( 4.4, 2.8, 0 \right)").to_corner(DL).shift(SHIFT+UP*3),
+            MathTex(r"( 0.2, -6.4 \pm i 4.5 )", color=YELLOW).scale(0.8).to_corner(DL).shift(SHIFT+UP*2),
+
+            it := MathTex(r"\left[ 10, 0, 0 \right]").to_corner(DL).shift(SHIFT+UP*1),
+            MathTex(r"[ 14, 3, -10 ]", color=YELLOW).to_corner(DL).shift(SHIFT),
+        )
+
+        self.play(Create(dots_group), Write(info))
         self.next_slide()
 
         grp = VGroup()
@@ -1689,7 +1782,9 @@ class K2D2(Slide, MovingCameraScene):
             FadeOut(vector_field3, scale=0.5), 
             FadeOut(axes, scale=0.5), 
             FadeOut(ax_labels, scale=0.5), 
-            ShrinkToCenter(dots_group))
+            ShrinkToCenter(dots_group),
+            Unwrite(info)
+        )
 
         self.next_slide()
 
@@ -1779,10 +1874,20 @@ class K3D2(ThreeDSlide):
 
         phi, theta, focal_distance, gamma, distance_to_origin = self.camera.get_value_trackers()
         self.play(theta.animate.set_value((360-40) * DEGREES), run_time=10, rate_func=rate_functions.smootherstep)
-        # self.wait(0.1)
+        self.wait(0.1)
 
         self.next_slide()
 
+        info = VGroup(
+            it := MathTex(r"\left( 5.5, 1.5, 0.5 \right)").to_corner(DL).shift(UP),
+            MathTex(r"( -0.3, -2.5 \pm i 4.1 )", color=YELLOW).to_corner(DL),
+        ).set_opacity(0)
+
+        self.add_fixed_in_frame_mobjects(info)
+        self.play(info.animate.set_opacity(1))
+        self.next_slide()
+        self.play(Unwrite(info))
+        
         for d in dots_group:
             d.clear_updaters()
 
