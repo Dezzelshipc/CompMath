@@ -1,0 +1,105 @@
+\section{Уравнение Пуассона}
+    Пусть \( \Omega \) -- ограниченная область в \( \mathbb{R}^3 \) с границей \( \Gamma \in C^1 \), \( \Omega_e \) -- её внешность, \( f \in C\left( \Omega \right) \) либо \( f \in C\left( \Omega_e \right) \), \( g \in C \left( \Gamma \right) \), \( \mathrm{n} \) -- единичный вектор внешней нормали к границе \(\Gamma\), \( \overline{\Omega}_e = \Omega_e \cup \Gamma \). Тогда уравнение Пуассона выглядит так:
+    \begin{equation}
+        \Delta u = f, \label{lapl}
+    \end{equation}
+    где \(\Delta\) -- оператор Лапласа.
+
+    % \begin{remark}
+    %     123
+    % \end{remark}
+
+    Третьи краевые задачи для уравнения Пуассона имеют вид:
+    \begin{enumerate}
+        \item \it Внутренняя задача.\normalfont Найти функцию \(u \in C^2 \left(\Omega\right) \cap C^1 ( \overline{\Omega} ) \), удовлетворяющую уравнению \eqref{lapl} в \( \Omega \) и граничному условию 
+        \begin{equation}
+            \frac{\partial u}{\partial n} + au = g ~ \text{на} ~ \Gamma. \label{bound}
+        \end{equation}
+        Здесь \( a: \Gamma \rightarrow \mathbb{R}, a \in C(\Gamma) \), и \( \frac{\partial u}{\partial n} \) -- производная по внешней нормали к границе \( \Gamma \).
+        \item \it Внешняя задача.\normalfont Найти функцию \(u \in C^2 \left(\Omega_e\right) \cap C^1 ( \overline{\Omega}_e ) \), удовлетворяющую уравнению \eqref{lapl} в \( \Omega_e \), граничному условию \eqref{bound} и условию регулярности на бесконечности
+        \begin{equation}
+            u( \mathrm{x} ) = o(1) ~ \text{при} ~ |\mathrm{x}| \to \infty. \label{reg}
+        \end{equation}
+    \end{enumerate}
+
+    \subsection{Теоремы единственности и устойчивости решений третьих краевых задач}
+
+    \begin{theorem}[Единственность внутренней задачи]
+        Решение \( u \in C^2 (\Omega) \cap C^1(\overline{\Omega}) \) внутренней третьей краевой задачи \eqref{lapl}, \eqref{bound} единственно при
+        \begin{equation} \tag{$i$}
+            a \in C(\Gamma), ~ a \geq 0 ~ \text{на} ~ \Gamma, ~ \int_\Gamma a d\sigma > 0. \label{i}
+        \end{equation}
+    \end{theorem}
+
+    \begin{proof}
+        Предположим, что задача \eqref{lapl}, \eqref{bound} имеет два решения: \(u_1\) и \(u_2\). Рассмотрим их разность \( u = u_2 - u_1 \), найдём лапласиан и подставим в краевое условие:
+        \begin{equation*}
+            \Delta u = \Delta u_2 - \Delta u_1 = f - f = 0. \tag{$j$} \label{lu0}
+        \end{equation*}
+        \begin{equation*}
+            \frac{\partial u}{\partial n} + au = \frac{\partial u_2}{\partial n} + au_2 - \left( \frac{\partial u_1}{\partial n} + au_1 \right) = g - g = 0 \Rightarrow \frac{\partial u}{\partial n} = -au. \tag{$jj$} \label{bv0}
+        \end{equation*}
+        Значит, что функция \( u \) является гармонической в \(\Omega\) с третьим однородным краевым условием на \( \Gamma \).
+        
+        Воспользуемся первой формулой Грина:
+        \begin{equation}
+            \int_\Omega \nabla u \nabla v d\mathrm{x} = -\int_\Omega v \Delta u d\mathrm{x} + \int_\Gamma v \frac{\partial u}{\partial n} d\sigma. \label{green}
+        \end{equation}
+
+        Пологая в формуле \eqref{green} \( v = u \), получим
+        \begin{equation}
+            \int_\Omega | \nabla u |^2 d\mathrm{x} = -\int_\Omega u \Delta u d\mathrm{x} + \int_\Gamma u \frac{\partial u}{\partial n} d\sigma. \label{green_uu}
+        \end{equation}
+        
+        Учитывая условия \eqref{lu0}, \eqref{bv0} выводим
+        \begin{equation}
+            \int_\Omega | \nabla u |^2 d\mathrm{x} + \int_\Gamma a u^2 d\sigma = 0. \label{green_sub}
+        \end{equation}
+        
+        Поскольку по условию \eqref{i} \( a \geq 0 \), то для того, чтобы сумма положительных величин была равна нулю необходимо, что эти величины были равны нулю. Значит \( \int_\Omega | \nabla u |^2 d\mathrm{x} = 0 \), откуда \( |\nabla u| = 0 \) в \( \Omega \Rightarrow u = u_0 = \text{const} \). Подставляя \( u = u_0 \) в \eqref{green_sub}, будем иметь
+        \begin{equation}
+            \int_\Gamma a u_0^2 ~ d\sigma = u_0^2  \int_\Gamma a d\sigma = 0.
+        \end{equation} 
+        Из третьего условия в \eqref{i} получаем, что \(u_0 = 0 \Rightarrow u_1 = u_2 \).
+    \end{proof}
+
+    \begin{theorem}[Устойчивость внутренней задачи ???]
+        Пусть \(u_1, u_2\) -- решения третьей внутренней краевой задачи \eqref{lapl} при граничных условиях
+        \begin{equation}
+            \left( \frac{\partial u_1}{\partial n} + au_1 \right) \Big|_\Gamma = g_1, ~ 
+            \left( \frac{\partial u_2}{\partial n} + au_2 \right) \Big|_\Gamma = g_2,
+        \end{equation}
+        и пусть
+        \begin{equation}
+            | g_1 (\mathrm{x}) - g_2 (\mathrm{x}) | \leq \varepsilon \left\Vert B\right\Vert ~ \forall\mathrm{x} \in \Gamma,
+        \end{equation}
+        где \( \left\Vert B \right\Vert = \left\Vert \frac{\partial}{\partial n} + a\right\Vert \) -- норма дифференциального оператора, задающего граничное условие.
+
+        Тогда выполняется неравенство
+        \begin{equation}
+            | u_1(x) - u_2 (x) | \leq \varepsilon ~ \textnormal{на} ~ \overline{\Omega}.
+        \end{equation}
+    \end{theorem}
+
+    \begin{proof}
+        Пусть функция \( u = u_1 - u_2 \), тогда по \eqref{lu0} \( \Delta u = 0 \) -- гармоническая функция в \(\Omega\), \( u \in C(\Omega) \) и удовлетворяющая условию \( \left| \frac{\partial u}{\partial n} + au \right| \leq \varepsilon \Vert B \Vert \) на \( \Gamma \). Тогда ???
+    \end{proof}
+
+
+    \begin{theorem}[Единственность внешней задачи]
+        Решение \( u \in C^2 (\Omega_e) \cap C^1(\overline{\Omega}_e) \) внутренней третьей краевой задачи \eqref{lapl}, \eqref{bound}, \eqref{reg} единственно, если \( \Omega_e \) -- связное множество и \( a \in C(\Gamma), ~ a \geq 0 ~ \text{на} ~ \Gamma. \label{i2} \)
+    \end{theorem}
+
+    \begin{proof}
+        Предположим, что задача \eqref{lapl}, \eqref{bound}, \eqref{reg} имеет два решения: \(u_1\) и \(u_2\). Возьмём шар достаточно большого радиуса \(B_R\) с границей \(\Gamma_R\), что \(\Omega_R \supset \Omega\), которым ограничим область \(\Omega\), получая \(\Omega_R = \Omega \cap B_R\). Имеем границу \( \partial \Omega_R = \Gamma \cup \Gamma_R \). Применим формулу Грина \eqref{green}, полагая \( u = u_2 - u_1, v = u \), и учитывая \(\Delta u = 0\) в \(\Gamma_R\) \eqref{lu0}, будем иметь
+        \begin{equation}
+            \int_{\Omega_R} | \nabla u |^2 d\mathrm{x} = \int_\Gamma u \frac{\partial u}{\partial n} d\sigma + \int_{\Gamma_R} u \frac{\partial u}{\partial n} d\sigma.
+        \end{equation} 
+        
+        В силу поведения функции \( |\nabla u| = O(|\mathrm{x}|^{-2}) \) при \(|\mathrm{x}| \to \infty \), имеем \( |\nabla u|^2 = O( |\mathrm{x}|^{-4}) \), в то время как объём \(\Omega_R\) растёт как \(O (R^3) \), \(R = |x|\). Отсюда следует, что при \(R \to \infty \) собственный интеграл в правой части стремится к сходящемуся несобственному интегралу \( \int_{\Omega_e} | \nabla u |^2 d\mathrm{x} \). Также величина \( \left( u \frac{\partial u}{\partial n} \right) \big|_{\Gamma_R} \) убывает как \( O( R^{-3}) \), тогда как площадь поверхности \( \Gamma_R \) растёт как \( O(R^2) \). Поэтому, переходя к пределу при \(R \to \infty \) и учитывая, что \( \frac{\partial u}{\partial n} = -au \) на \( \Gamma \) \eqref{bv0}, получим
+        
+        \begin{equation}
+            \int_{\Omega_e} | \nabla u |^2 d\mathrm{x} + \int_\Gamma au^2 d\sigma = 0.
+        \end{equation}
+        
+    \end{proof}
