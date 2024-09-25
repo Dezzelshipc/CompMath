@@ -14,3 +14,5 @@
 **/manim/media
 **/manim/slides
 **/manim/*.html
+
+*.pkl
