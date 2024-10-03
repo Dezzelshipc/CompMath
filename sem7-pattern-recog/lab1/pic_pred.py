@@ -8,7 +8,7 @@ from matplotlib import colormaps
 cmap = colormaps["gray"]
 knc: KNeighborsClassifier = joblib.load("model.pkl")
 
-image = Image.open("pics/Pic0.bmp")
+image = Image.open("../pics/Pic9.bmp")
 
 image_f = np.array(image).flatten() / 255.
 

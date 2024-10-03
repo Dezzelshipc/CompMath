@@ -10,7 +10,7 @@ import os
 cmap = colormaps["gray"]
 knc: KNeighborsClassifier = joblib.load("model.pkl")
 
-pics_path = os.scandir("./pics")
+pics_path = os.scandir("../pics")
 
 
 def prepare(pic_path):

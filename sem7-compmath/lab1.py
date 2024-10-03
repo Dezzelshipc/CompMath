@@ -32,7 +32,7 @@ a1, b1, c1 = 1, 0, np.e + 1
 # a0, b0, c0 = 1, 0, 0
 # a1, b1, c1 = 1, 0, 0
 
-n = 10
+n = 2
 tl, h = np.linspace(a, b, n + 1, retstep=True)
 mu = 0.5  # h/(h+h)
 print(tl, h)
@@ -68,9 +68,9 @@ M = F - q(tl) * v
 
 # print(v)
 
-N = 10000
-
-n_in = N // n
+# N = 10000
+# n_in = N // n
+n_in = 100
 
 xl = np.zeros(0)
 uu = np.zeros(0)
@@ -94,8 +94,11 @@ plt.figure("Решения")
 plt.plot(xl, uu)
 plt.plot(xl, ex, "--")
 plt.legend(["Численное", "Точное"])
+plt.grid()
 
 plt.figure("Ошибка")
 plt.plot(xl, abs(uu - exact(xl)))
+plt.title(f"{n = }")
+plt.grid()
 
 plt.show()

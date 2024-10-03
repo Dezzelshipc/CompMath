@@ -41,13 +41,13 @@ def u(x, c):
 
 
 a, b = 0, 1
-a0, b0, c0 = 1, 0, exact(a)
-a1, b1, c1 = 1, 0, exact(b)
+# a0, b0, c0 = 1, 0, exact(a)
+# a1, b1, c1 = 1, 0, exact(b)
 
-# a0, b0, c0 = 1, 0, 0
-# a1, b1, c1 = 0, 1, 1
+a0, b0, c0 = 1, 0, 0
+a1, b1, c1 = 0, 1, 1
 
-n = 10
+n = 1000
 tl, h = np.linspace(a, b, n + 1, retstep=True)
 tl = np.append(tl, [b + h, b + 2 * h, b + 3 * h, a - 3 * h, a - 2 * h, a - h])
 print(tl, h)
@@ -103,12 +103,16 @@ plt.figure("Решение")
 plt.plot(xl, uu)
 plt.plot(xl, ex, "--")
 plt.legend(["Численное", "Точное"])
+plt.grid()
 
-for i in range(-1, n + 2):
-    plt.plot(xl, const[i] * bs(xl, i - 2, 3))
+if 1:
+    for i in range(-1, n + 2):
+        plt.plot(xl, const[i] * bs(xl, i - 2, 3))
 
 plt.figure("Модуль ошибки")
 xl1 = np.linspace(a, b, N)
 plt.plot(xl, abs(u(xl1, const) - exact(xl1)))
+plt.title(f"{n = }")
+plt.grid()
 
 plt.show()
