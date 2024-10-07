@@ -43,7 +43,7 @@ ax, bx = 0, 4
 at, bt = 0, 0.1
 a = 16 / np.pi
 
-n = 100 # spase steps
+n = 100 # space steps
 m = 10000 # time steps
 
 u = np.zeros((m+1, n+1))

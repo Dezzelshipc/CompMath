@@ -4,35 +4,33 @@ import matplotlib.pyplot as plt
 
 
 # var 13
+# var 21'
 def exact(x):
-    return x + np.exp(x)
-
+    # return x + np.exp(x)
+    # return np.sqrt(x+1) * np.log(x+1)
+    return np.sin(x)/np.sin(1) - x
 
 def p(x):
     return 0
 
 
 def q(x):
-    return -1
-    # return 1 + x**2
-
+    # return -1
+    # return -1/(np.sqrt(x+1) * (x+1))
+    return 1
 
 def f(x):
     return -x
-    # return -1
-
+    # return (-1/(x+1) - 1/(4 * (x+1)**1.5)) * np.log(x+1)
 
 a, b = 0, 1
-# a0, b0, c0 = 1, 0, exact(a)
-# a1, b1, c1 = 1, 0, exact(b)
+a0, b0, c0 = 1, 0, exact(a)
+a1, b1, c1 = 1, 0, exact(b)
 
-a0, b0, c0 = 1, 0, 1
-a1, b1, c1 = 1, 0, np.e + 1
+# a0, b0, c0 = 1, 0, 1
+# a1, b1, c1 = 1, 0, np.e + 1
 
-# a0, b0, c0 = 1, 0, 0
-# a1, b1, c1 = 1, 0, 0
-
-n = 2
+n = 3
 tl, h = np.linspace(a, b, n + 1, retstep=True)
 mu = 0.5  # h/(h+h)
 print(tl, h)
@@ -59,14 +57,14 @@ F[-1] = c1 * h - 1 / 6 * b1 * h ** 2 * (f(tl[-2]) + 2 * f(tl[-1]))
 
 
 matrix = np.diag(A[1:], -1) + np.diag(C) + np.diag(D[:-1], 1)
-# print(matrix)
-# print(F)
+print(matrix)
+print(F)
 
 v = np.linalg.solve(matrix, F)
 
 M = F - q(tl) * v
 
-# print(v)
+print(v)
 
 # N = 10000
 # n_in = N // n

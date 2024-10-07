@@ -1,4 +1,4 @@
-# Poisson eq (eliptic)
+# Poisson eq (elliptic)
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
