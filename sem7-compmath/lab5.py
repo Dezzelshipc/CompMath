@@ -1,3 +1,4 @@
+# https://лови5.рф/upload/uf/09b/vraz7xspskir759cukwoqan1sedpcnt8/CHislennoe-reshenie.pdf
 # quadrature method for Volterra eq type 2
 import numpy as np
 import matplotlib.pyplot as plt
@@ -18,7 +19,7 @@ def exact(x):
 l = 1
 
 a, b = 0, 3 * np.pi
-n = 10000
+n = 10
 
 xl, h = np.linspace(a, b, n + 1, retstep=True)
 
@@ -29,6 +30,7 @@ w[0] = w[-1] = l / 2
 u = np.zeros(n + 1)
 
 for i in range(n + 1):
+    print(f"\r{i}", end="")
     Ki = lambda s: K(xl[i], s)
     u[i] = (F[i] + sum((w * Ki(xl) * h * u))) / (1 - w[i] * Ki(xl[i]))
 

@@ -1,3 +1,4 @@
+# https://лови5.рф/upload/uf/477/uzvy38jk0t31titcv5nft2evy4qmv20x/CHislennoe-reshenie-uravneniya-Fredgolma-2-roda-metodom-kv.pdf
 # quadrature method for Fredholm eq type 2
 import numpy as np
 import matplotlib.pyplot as plt
@@ -18,7 +19,7 @@ def exact(x):
 l = 7
 
 a, b = -3 * np.pi, 3 * np.pi
-n = 10000
+n = 1000
 
 xl, h = np.linspace(a, b, n + 1, retstep=True)
 
@@ -28,6 +29,7 @@ w = l * np.ones(n + 1)
 w[0] = w[-1] = l / 2
 
 for i in range(n + 1):
+    print(f"\r{i}", end="")
     Ki = lambda s: K(xl[i], s)
     matrix[i] -= w * Ki(xl) * h
 

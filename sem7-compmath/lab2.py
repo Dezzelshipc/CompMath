@@ -47,7 +47,7 @@ a, b = 0, 1
 a0, b0, c0 = 1, 0, 0
 a1, b1, c1 = 0, 1, 1
 
-n = 1000
+n = 100
 tl, h = np.linspace(a, b, n + 1, retstep=True)
 tl = np.append(tl, [b + h, b + 2 * h, b + 3 * h, a - 3 * h, a - 2 * h, a - h])
 print(tl, h)

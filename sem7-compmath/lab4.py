@@ -1,20 +1,20 @@
-# 2-cycle splitting for parabolic pde (heat eq)
+# changing directions method for parabolic pde (heat eq)
 import numpy as np
 import matplotlib.pyplot as plt
 
 
 def exact(x, y, t):
-    return t * np.exp(x+y)
+    # return t * np.exp(x + y)
     # return t * np.sin(np.pi * x) * np.sin(np.pi * y)
     # return t + (y ** 2 + x ** 2)
-    # return t + (y ** 2 + x ** 2) / 4
+    return t + (y ** 2 + x ** 2) / 4
 
 
 def f(x, y, t):
-    return (1 - 2 * t) * np.exp(x+y)
+    # return (1 - 2 * t) * np.exp(x + y)
     # return (1 + 2 * t * np.pi ** 2) * np.sin(np.pi * x) * np.sin(np.pi * y)
     # return -3
-    # return 0
+    return 0
 
 
 def l(size):
@@ -25,8 +25,6 @@ def l(size):
     # lmat[0, 0] = lmat[-1, -1] = 1
     lmat[0, :3] = [1, -2, 1]
     lmat[-1, -3:] = [1, -2, 1]
-    # lmat[0, :2] = [-2, 1]
-    # lmat[-1, -2:] = [1, -2]
     return lmat
 
 
@@ -35,8 +33,8 @@ ax, bx = 0, 1
 ay, by = 0, 1
 
 nt = 10
-nx = 10
-ny = 10
+nx = 20
+ny = 20
 
 tl, ht = np.linspace(at, bt, nt + 1, retstep=True)
 xl, hx = np.linspace(ax, bx, nx + 1, retstep=True)
@@ -48,38 +46,70 @@ xx, yy = np.meshgrid(xl, yl)
 
 u[0] = exact(*np.meshgrid(xl, yl), 0)
 
+for ti in range(1, nt + 1):
+    for yi in range(ny + 1):
+        for xi in [0, -1]:
+            u[ti, yi, xi] = exact(xl[xi], yl[yi], tl[ti])
+
+    for yi in [0, -1]:
+        for xi in range(nx + 1):
+            u[ti, yi, xi] = exact(xl[xi], yl[yi], tl[ti])
+
 l1 = -l(nx) / hx ** 2
 l2 = -l(ny) / hy ** 2
 
+print(l1)
 
-def half_step(lmat: np.matrix, vals: np.array):
-    I = np.identity(len(lmat))
-    q_step = (I - ht / 2 * lmat) @ vals
-    mat = I + ht / 2 * lmat
-    return np.linalg.solve(mat, q_step)
+I1 = np.identity(len(l1))
+I2 = np.identity(len(l2))
 
+ms = [I2 + 2 * ht * l2,
+      I1 - 2 * ht * l1,
+      I1 + 2 * ht * l1,
+      I2 - 2 * ht * l2]
 
-h_step = np.zeros((ny + 1, nx + 1))
-for ti in range(1, nt + 1, 2):
+# for mi in [1, 3]:
+#     ms[mi][0,0] = ms[mi][-1,-1] = 1
+
+for ti in range(1, nt + 1):
+    h_step = u[ti - 1].copy()
+    t1_2 = (tl[ti - 1] + tl[ti]) / 2
+    f1_2 = f(*np.meshgrid(xl, yl), t1_2)
+
+    for xi in range(nx + 1):
+        h_step[:, xi] = ms[0] @ h_step[:, xi]
+
+    h_step += f1_2 * 2 * ht
+
+    # for yi in range(ny + 1):
+    #     for xi in [0, -1]:
+    #         h_step[yi, xi] = exact(xl[xi], yl[yi], t1_2)
+    #
+    # for yi in [0, -1]:
+    #     for xi in range(nx + 1):
+    #         h_step[yi, xi] = exact(xl[xi], yl[yi], t1_2)
+
+    for yi in range(ny + 1):
+        h_step[yi] = np.linalg.solve(ms[1], h_step[yi])
 
 
     for yi in range(ny + 1):
-        h_step[yi] = half_step(l1, u[ti - 1, yi])
-    u[ti] = h_step.copy()
+        h_step[yi] = ms[2] @ h_step[yi]
+
+    h_step += f1_2 * 2 * ht
+
+    # for yi in range(ny + 1):
+    #     for xi in [0, -1]:
+    #         h_step[yi, xi] = exact(xl[xi], yl[yi], tl[ti])
+    #
+    # for yi in [0, -1]:
+    #     for xi in range(nx + 1):
+    #         h_step[yi, xi] = exact(xl[xi], yl[yi], tl[ti])
 
     for xi in range(nx + 1):
-        h_step[:, xi] = half_step(l2, u[ti, :, xi])
-    u[ti] = (h_step.copy() + ht * f(*np.meshgrid(xl, yl), tl[ti]))
+        h_step[:, xi] = np.linalg.solve(ms[3], h_step[:, xi])
 
-
-    for xi in range(nx + 1):
-        h_step[:, xi] = half_step(l2, u[ti, :, xi] + ht * f(xl[xi], yl, tl[ti]))
-    u[ti + 1] = h_step.copy()
-
-    for yi in range(ny + 1):
-        h_step[yi] = half_step(l1, u[ti + 1, yi])
-    u[ti + 1] = h_step.copy()
-
+    u[ti] = h_step
 
 
 ue = u.copy()
