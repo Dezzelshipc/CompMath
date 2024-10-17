@@ -5,27 +5,31 @@ import matplotlib.pyplot as plt
 
 # var 25
 def exact(x):
-    return np.log(x ** 2 + x + 1)
+    # return np.log(x ** 2 + x + 1)
     # return np.sqrt(x+1) * np.log(x+1)
     # return 0.988 * (1-x**2) - 0.0543 * (1-x**4)
+    return -2 * np.sqrt(x+1)
 
 
 def p(x):
-    return 1 / (x ** 2 + x + 1)
+    # return 1 / (x ** 2 + x + 1)
     # return 2 * np.sqrt(x+1) / (x+1)
     # return 0
+    return 0
 
 
 def q(x):
-    return 0
+    # return 0
     # return -1 / (np.sqrt(x+1) * (x+1))
     # return (1 + x ** 2)
+    return -2/(x+1)**2
 
 
 def f(x):
-    return (2 - 2 * x ** 2) / (x ** 2 + x + 1) ** 2
+    # return (2 - 2 * x ** 2) / (x ** 2 + x + 1) ** 2
     # return (2 - np.log(x+1) / (4 * np.sqrt(x+1))) / (x+1)
     # return -1
+    return 4.5/(x+1)**1.5
 
 
 def bs(t, i, d):
@@ -44,8 +48,8 @@ a, b = 0, 1
 # a0, b0, c0 = 1, 0, exact(a)
 # a1, b1, c1 = 1, 0, exact(b)
 
-a0, b0, c0 = 1, 0, 0
-a1, b1, c1 = 0, 1, 1
+a0, b0, c0 = 1, -2, 0
+a1, b1, c1 = 0, 1, -np.sqrt(2)/2
 
 n = 100
 tl, h = np.linspace(a, b, n + 1, retstep=True)

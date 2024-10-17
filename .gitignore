@@ -16,3 +16,4 @@
 **/manim/*.html
 
 *.pkl
+*.keras
