@@ -4,15 +4,15 @@ import matplotlib.pyplot as plt
 
 
 def exact(x, y, t):
-    # return t * np.exp(x+y)
-    return t * np.sin(np.pi * x) * np.sin(np.pi * y)
+    return t * np.exp(x+y)
+    # return t * np.sin(np.pi * x) * np.sin(np.pi * y)
     # return t + (y ** 2 + x ** 2)
     # return t + (y ** 2 + x ** 2) / 4
 
 
 def f(x, y, t):
-    # return (1 - 2 * t) * np.exp(x+y)
-    return (1 + 2 * t * np.pi ** 2) * np.sin(np.pi * x) * np.sin(np.pi * y)
+    return (1 - 2 * t) * np.exp(x+y)
+    # return (1 + 2 * t * np.pi ** 2) * np.sin(np.pi * x) * np.sin(np.pi * y)
     # return -3
     # return 0
 
@@ -33,8 +33,8 @@ ax, bx = 0, 1
 ay, by = 0, 1
 
 nt = 100
-nx = 20
-ny = 20
+nx = 10
+ny = 10
 
 tl, ht = np.linspace(at, bt, nt + 1, retstep=True)
 xl, hx = np.linspace(ax, bx, nx + 1, retstep=True)
@@ -51,7 +51,7 @@ l2 = -l(ny) / hy ** 2
 
 
 h_step = np.zeros((ny + 1, nx + 1))
-for ti in range(1, nt, 1):
+for ti in range(1, nt, 2):
     print(f"\r{ti}", end="")
     def half_step(lmat: np.matrix, vals: np.array, ex0, ex1):
         I = np.identity(len(lmat))

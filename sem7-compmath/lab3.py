@@ -20,13 +20,10 @@ def f(x, y, t):
 def l(size):
     lmat = -2 * np.identity(size + 1)
     ones1 = np.ones(size + 1)
-    ones1[0] = ones1[-1] = 0
     lmat += np.diag(ones1[1:], -1) + np.diag(ones1[:-1], 1)
     # lmat[0, 0] = lmat[-1, -1] = 1
-    lmat[0, :3] = [1, -2, 1]
-    lmat[-1, -3:] = [1, -2, 1]
-    # lmat[0, :2] = [-2, 1]
-    # lmat[-1, -2:] = [1, -2]
+    # lmat[0, :3] = [1, -2, 1]
+    # lmat[-1, -3:] = [1, -2, 1]
     return lmat
 
 
@@ -127,6 +124,8 @@ ani = FuncAnimation(fig,
                     frames=frames,
                     blit=False,
                     interval=interval)
+
+# ani.save("./anim.gif")
 
 diff = np.zeros(nt + 1)
 for ti in range(nt + 1):

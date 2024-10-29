@@ -1,17 +1,18 @@
 # 2-cycle splitting for parabolic pde (heat eq)
 import numpy as np
 import matplotlib.pyplot as plt
+import scipy
 
 
 def exact(x, y, t):
-    return t * np.exp(x+y)
+    return t * np.exp(x + y)
     # return t * np.sin(np.pi * x) * np.sin(np.pi * y)
     # return t + (y ** 2 + x ** 2)
     # return t + (y ** 2 + x ** 2) / 4
 
 
 def f(x, y, t):
-    return (1 - 2 * t) * np.exp(x+y)
+    return (1 - 2 * t) * np.exp(x + y)
     # return (1 + 2 * t * np.pi ** 2) * np.sin(np.pi * x) * np.sin(np.pi * y)
     # return -3
     # return 0
@@ -20,9 +21,9 @@ def f(x, y, t):
 def l(size):
     lmat = -2 * np.identity(size + 1)
     ones1 = np.ones(size + 1)
-    ones1[0] = ones1[-1] = 0
+    # ones1[0] = ones1[-1] = 0
     lmat += np.diag(ones1[1:], -1) + np.diag(ones1[:-1], 1)
-    lmat[0, 0] = lmat[-1, -1] = 1
+    # lmat[0, 0] = lmat[-1, -1] = 1
     # lmat[0, :3] = [1, -2, 1]
     # lmat[-1, -3:] = [1, -2, 1]
     return lmat
@@ -32,9 +33,9 @@ at, bt = 0, 1
 ax, bx = 0, 1
 ay, by = 0, 1
 
-nt = 20
-nx = 20
-ny = 20
+nt = 10
+nx = 4
+ny = 3
 
 tl, ht = np.linspace(at, bt, nt + 1, retstep=True)
 xl, hx = np.linspace(ax, bx, nx + 1, retstep=True)
@@ -49,10 +50,11 @@ u[0] = exact(*np.meshgrid(xl, yl), 0)
 l1 = -l(nx) / hx ** 2
 l2 = -l(ny) / hy ** 2
 
-
 h_step = np.zeros((ny + 1, nx + 1))
 for ti in range(1, nt + 1, 2):
     print(f"\r{ti}", end="")
+
+
     def half_step(lmat: np.matrix, vals: np.array, ex0, ex1):
         I = np.identity(len(lmat))
         q_step = (I - ht / 2 * lmat) @ vals
@@ -62,11 +64,20 @@ for ti in range(1, nt + 1, 2):
         mat = I + ht / 2 * lmat
         mat[0] = mat[-1] = 0
         mat[0, 0] = mat[-1, -1] = 1
-        return np.linalg.solve(mat, q_step)
+        mat1 = np.zeros((3, len(mat)))
+        for i in range(1, -2, -1):
+            ls = i if i > 0 else None
+            rs = i if i < 0 else None
+
+            mat1[1 - i, ls:rs] = np.diag(mat, i)
+
+        print(mat1, q_step)
+        slv = scipy.linalg.solve_banded((1, 1), mat1, q_step)
+        return slv
 
 
     for yi in range(ny + 1):
-        e0, e1 = exact(np.array([xl[0], xl[-1]]), yl[yi], (tl[ti-1] + tl[ti]) / 2)
+        e0, e1 = exact(np.array([xl[0], xl[-1]]), yl[yi], (tl[ti - 1] + tl[ti]) / 2)
         h_step[yi] = half_step(l1, u[ti - 1, yi], e0, e1)
     u[ti] = h_step.copy()
 
@@ -75,18 +86,15 @@ for ti in range(1, nt + 1, 2):
         h_step[:, xi] = half_step(l2, u[ti, :, xi], e0, e1)
     u[ti] = (h_step.copy() + ht * f(*np.meshgrid(xl, yl), tl[ti]))
 
-
     for xi in range(nx + 1):
-        e0, e1 = exact(xl[xi], np.array([yl[0], yl[-1]]), (tl[ti] + tl[ti+1]) / 2)
+        e0, e1 = exact(xl[xi], np.array([yl[0], yl[-1]]), (tl[ti] + tl[ti + 1]) / 2)
         h_step[:, xi] = half_step(l2, u[ti, :, xi] + ht * f(xl[xi], yl, tl[ti]), e0, e1)
     u[ti + 1] = h_step.copy()
 
     for yi in range(ny + 1):
-        e0, e1 = exact(np.array([xl[0], xl[-1]]), yl[yi], tl[ti+1])
+        e0, e1 = exact(np.array([xl[0], xl[-1]]), yl[yi], tl[ti + 1])
         h_step[yi] = half_step(l1, u[ti + 1, yi], e0, e1)
     u[ti + 1] = h_step.copy()
-
-
 
 ue = u.copy()
 for ti in range(1, nt + 1):
@@ -125,7 +133,8 @@ def update(ti):
 
 update(0)
 
-frames, interval = range(nt + 1), 1000 * (bt - at) / nt
+frames, interval = range(0, nt + 1, nt//10), 1000 * (bt - at) / 10
+print(nt + 1, nt//10, frames)
 print(f"ms: {interval}")
 
 ani = FuncAnimation(fig,
@@ -134,9 +143,10 @@ ani = FuncAnimation(fig,
                     blit=False,
                     interval=interval)
 
+
 diff = np.zeros(nt + 1)
 for ti in range(nt + 1):
-    diff[ti] = np.max((u[ti] - ue[ti]))
+    diff[ti] = np.max(abs(u[ti] - ue[ti]))
 # print(diff)
 
 plt.figure("Модуль разности")
