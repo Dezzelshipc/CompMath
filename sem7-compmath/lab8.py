@@ -6,31 +6,37 @@ from scipy.integrate import quad
 
 
 def K(x, s):
-    return x ** 2 * np.exp(x ** 2 * s ** 4)
+    # return x ** 2 * np.exp(x ** 2 * s ** 4)
     # return x*(np.exp(s*x) - 1)
+    return (1 + s) * (np.exp(0.2 * s * x) - 1)
 
 # alpha
 def Kx(i):
-    return lambda x: x ** (2 + 2 * i)
+    # return lambda x: x ** (2 + 2 * i)
     # return lambda x: x ** (2 + i)
+    return lambda x: x ** (1 + i)
 
 # beta
 def Ks(i):
-    return lambda s: s ** (4 * i) / factorial(i)
+    # return lambda s: s ** (4 * i) / factorial(i)
     # return lambda s: s ** (1 + i) / factorial(i+1)
+    return lambda s: s ** (1 + i) * (s+1) * 0.2**(i+1) / factorial(i+1)
 
 
 def f(x):
-    return x ** 3 - np.exp(x ** 2) + 1
+    # return x ** 3 - np.exp(x ** 2) + 1
     # return np.exp(x) - x
+    return np.exp(-x)
 
 
 def exact(x):
-    return x ** 3
-    # return 1
+    # return x ** 3
+    # return 1 + 0 * x
+    return 0 * x
 
-l = 4
+# l = 4
 # l = -1
+l = 1
 
 a, b = 0, 1
 
@@ -49,6 +55,16 @@ def solve(n=3):
 
     return lambda x: f(x) + l * sum(C[i] * Kx(i)(x) for i in range(n))
 
+def find_nev(u, xl, h):
+    def nev_int(x):
+        Kk = lambda s: K(x, s)
+        un = Kk(xl[0]) * u[0] + Kk(xl[-1]) * u[-1] + 2 * sum(Kk(xl[1:-1]) * u[1:-1])
+        un = h / 2 * un
+        return un
+
+    nev_i = np.array([nev_int(x) for x in xl])
+
+    return u - l * nev_i - f(xl)
 
 def plot(n = 3, xn = 1000):
     xl = np.linspace(a, b, xn+1)
@@ -71,9 +87,9 @@ def plot(n = 3, xn = 1000):
     plt.show()
 
 
-def error_plot():
+def error_show():
     xn = 1000
-    xl = np.linspace(a, b, xn + 1)
+    xl, h = np.linspace(a, b, xn + 1, retstep=True)
 
     ue = np.zeros(xn + 1) + exact(xl)
 
@@ -82,8 +98,37 @@ def error_plot():
         u = solve(n)
         u_v = u(xl)
 
-        print(n, max(abs(u_v - ue)))
+        nevf = lambda x: u(x) - l * quad(lambda s: K(x, s) * u(s), a, b)[0] - f(x)
+        nev = np.zeros_like(xl)
+        for i, x in enumerate(xl):
+            nev[i] = nevf(x)
+
+        print(n, max(abs(u_v - ue)), max(abs(find_nev(u_v, xl, h))), max(abs(nev)))
 
 
-# plot(10)
-error_plot()
+def test_7_8():
+    nk = 100
+    ns = 10
+    from lab7 import solve as solve7
+    x, u7, h = solve7(nk, retstep=True)
+    u8f = solve(ns)
+    u8 = u8f(x)
+
+
+    plt.figure("Решения")
+    plt.plot(x, u7)
+    plt.plot(x, u8, "--")
+    plt.legend(["Квадратура", "Вырожденные ядра"])
+    plt.title(f"{nk = }, {ns = }")
+
+    plt.figure("Модуль разности")
+    plt.plot(x, abs(u7 - u8))
+    plt.grid()
+
+    plt.show()
+
+
+if __name__ == "__main__":
+    # plot(10)
+    error_show()
+    test_7_8()

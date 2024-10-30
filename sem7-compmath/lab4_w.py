@@ -70,12 +70,15 @@ def solve(nt=10, ny=10, nx=10):
     mat2[[0, -1]] = 0
     mat2[0, 0] = mat2[-1, -1] = 1
 
+    mat1f = (I1 - ht / 2 * l1)
+    mat2f = (I2 - ht / 2 * l2)
+
     for ti in range(1, nt + 1):
         print(f"\r{ti}", end="")
         t2 = (tl[ti] + tl[ti-1])/2
         htf = ht/2 * f(*np.meshgrid(xl, yl), t2)
 
-        tmp = (I2 - ht / 2 * l2) @ u[ti - 1]
+        tmp = mat2f @ u[ti - 1]
         tmp += htf
         tmp2 = np.zeros_like(tmp)
         for yi in range(ny+1):
@@ -83,7 +86,7 @@ def solve(nt=10, ny=10, nx=10):
                 tmp[yi,j] = exact(xl[j], yl[yi], t2)
             tmp2[yi] = TDMA(mat1, tmp[yi])
 
-        tmp = (I1 - ht / 2 * l1) @ tmp2.T
+        tmp = mat1f @ tmp2.T
         tmp = tmp.T + htf
         tmp2 = np.zeros_like(tmp)
         for xi in range(nx+1):
@@ -102,7 +105,7 @@ from matplotlib.animation import FuncAnimation
 
 
 def plot_3d():
-    nt = 1000
+    nt = 10000
     n = 10
     x, y, t, u = solve(nt, n, n)
 
@@ -159,7 +162,7 @@ def plot_3d():
 
     plt.show()
 
-def error_plot():
+def error_show():
     n = 100
     ntl = [10, 100, 1000]
     for nt in ntl:
@@ -175,5 +178,5 @@ def error_plot():
 
         print("", np.max(diff))
 
-plot_3d()
-# error_plot()
+# plot_3d()
+error_show()

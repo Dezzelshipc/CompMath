@@ -53,7 +53,7 @@ def solve(nt=10, ny=10, nx=10):
     u = np.zeros((nt + 1, ny + 1, nx + 1))
 
     # u[0] = exact(*np.meshgrid(xl, yl), 0)
-    for ti in range(nt+1):
+    for ti in range(nt + 1):
         u[ti] = exact(*np.meshgrid(xl, yl), tl[ti])
 
     l1 = -l(nx) / hx ** 2
@@ -70,21 +70,24 @@ def solve(nt=10, ny=10, nx=10):
     mat2[[0, -1]] = 0
     mat2[0, 0] = mat2[-1, -1] = 1
 
+    mat1f = (I1 - ht / 2 * l1)
+    mat2f = (I2 - ht / 2 * l2)
+
     for ti in range(1, nt + 1, 2):
         print(f"\r{ti}", end="")
         # j-1 to j
-        tmp = (I1 - ht / 2 * l1) @ u[ti - 1].T
+        tmp = mat1f @ u[ti - 1].T
         tmp = tmp.T
         tmp2 = np.zeros_like(tmp)
-        t2 = (tl[ti] + tl[ti-1])/2
-        for yi in range(ny+1):
+        t2 = (tl[ti] + tl[ti - 1]) / 2
+        for yi in range(ny + 1):
             for j in [0, -1]:
-                tmp[yi,j] = exact(xl[j], yl[yi], t2)
+                tmp[yi, j] = exact(xl[j], yl[yi], t2)
             tmp2[yi] = TDMA(mat1, tmp[yi])
 
-        tmp = (I2 - ht / 2 * l2) @ tmp2
+        tmp = mat2f @ tmp2
         tmp2 = np.zeros_like(tmp)
-        for xi in range(nx+1):
+        for xi in range(nx + 1):
             for j in [0, -1]:
                 tmp[j, xi] = exact(xl[xi], yl[j], tl[ti])
             tmp2[:, xi] = TDMA(mat2, tmp[:, xi])
@@ -93,23 +96,23 @@ def solve(nt=10, ny=10, nx=10):
         u[ti] = tmp2.copy() + htf
 
         # j to j+1
-        tmp = (I2 - ht / 2 * l2) @ (u[ti] + htf)
+        tmp = mat2f @ (u[ti] + htf)
         tmp2 = np.zeros_like(tmp)
-        t2 = (tl[ti] + tl[ti+1])/2
-        for xi in range(nx+1):
+        t2 = (tl[ti] + tl[ti + 1]) / 2
+        for xi in range(nx + 1):
             for j in [0, -1]:
                 tmp[j, xi] = exact(xl[xi], yl[j], t2)
             tmp2[:, xi] = TDMA(mat2, tmp[:, xi])
 
-        tmp = (I1 - ht / 2 * l1) @ tmp2.T
+        tmp = mat1f @ tmp2.T
         tmp = tmp.T
         tmp2 = np.zeros_like(tmp)
-        for yi in range(ny+1):
+        for yi in range(ny + 1):
             for j in [0, -1]:
-                tmp[yi,j] = exact(xl[j], yl[yi], tl[ti+1])
+                tmp[yi, j] = exact(xl[j], yl[yi], tl[ti + 1])
             tmp2[yi] = TDMA(mat1, tmp[yi])
 
-        u[ti + 1,1:-1,1:-1] = tmp2.copy()[1:-1,1:-1]
+        u[ti + 1, 1:-1, 1:-1] = tmp2.copy()[1:-1, 1:-1]
 
     return xl, yl, tl, u
 
@@ -117,9 +120,7 @@ def solve(nt=10, ny=10, nx=10):
 from matplotlib.animation import FuncAnimation
 
 
-def plot_3d():
-    nt = 1000
-    n = 10
+def plot_3d(nt=1000, n=10):
     x, y, t, u = solve(nt, n, n)
 
     xx, yy = np.meshgrid(x, y)
@@ -129,6 +130,7 @@ def plot_3d():
 
     ht = 1 / nt
     zlim = [np.min([u, ue]) - 2 * ht, np.max([u, ue]) + 2 * ht]
+
     # print(zlim)
 
     def plot3d(ax, solution, ti):
@@ -167,15 +169,19 @@ def plot_3d():
 
     diff = np.zeros(nt + 1)
     for ti in range(nt + 1):
-        diff[ti] = np.max(abs(u[ti] - ue[ti])[:, :])
+        diff[ti] = np.max(abs(u[ti] - ue[ti]))
     # print(diff)
 
     plt.figure("Модуль разности")
     plt.plot(t, diff)
+    plt.plot(t[::2], diff[::2])
+    plt.plot(t[1::2], diff[1::2])
+    plt.legend(["Общая", "Чётные шаги", "Нечётные шаги"])
 
     plt.show()
 
-def error_plot():
+
+def error_show():
     n = 100
     ntl = [10, 100, 1000]
     for nt in ntl:
@@ -187,9 +193,10 @@ def error_plot():
 
         diff = np.zeros(len(u))
         for ti in range(len(u)):
-            diff[ti] = np.max(abs(u[ti] - ue[ti])[:, :])
+            diff[ti] = np.max(abs(u[ti] - ue[ti]))
 
         print("", np.max(diff))
 
-plot_3d()
-error_plot()
+
+# error_show()
+plot_3d(100, 10)
