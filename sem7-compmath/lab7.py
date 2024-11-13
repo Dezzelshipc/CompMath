@@ -5,25 +5,31 @@ import matplotlib.pyplot as plt
 
 
 def K(x, s):
+    # return x ** 2 * np.exp(x ** 2 * s ** 4)
     # return np.pi + np.sin(2 * (x + s))
-    return (1 + s) * (np.exp(0.2 * s * x) - 1)
+    # return (1 + s) * (np.exp(0.2 * s * x) - 1)
+    return np.sin(0.6 * x* s)/s
 
 
 def f(x):
+    # return x ** 3 - np.exp(x ** 2) + 1
     # return x * np.cos(x) - 28 * np.pi * np.cos(2 * x)
-    return np.exp(-x)
+    # return np.exp(-x)
+    return x
 
 
 def exact(x):
+    # return x ** 3
     # return x * np.cos(x)
     return 0*x
 
-
+l = 4
 # l = 7
-l = 1
+# l = 1
 
+a, b = 1e-15, 1
 # a, b = -3 * np.pi, 3 * np.pi
-a, b = 0, 1
+# a, b = 0, 1
 
 def solve(n = 100, retstep=False):
     xl, h = np.linspace(a, b, n + 1, retstep=True)
@@ -82,5 +88,5 @@ def error_show():
         print("", max(abs(u - ue)), max(abs(find_nev(u, x, h))))
 
 if __name__ == "__main__":
-    # plot(2)
-    error_show()
+    plot(100)
+    # error_show()

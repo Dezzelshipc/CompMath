@@ -8,34 +8,41 @@ from scipy.integrate import quad
 def K(x, s):
     # return x ** 2 * np.exp(x ** 2 * s ** 4)
     # return x*(np.exp(s*x) - 1)
-    return (1 + s) * (np.exp(0.2 * s * x) - 1)
+    # return (1 + s) * (np.exp(0.2 * s * x) - 1)
+    return x * (np.sin(x*s) - 1)
 
 # alpha
 def Kx(i):
     # return lambda x: x ** (2 + 2 * i)
     # return lambda x: x ** (2 + i)
-    return lambda x: x ** (1 + i)
+    # return lambda x: x ** (1 + i)
+    return lambda x: x**(2*i) if i > 0 else x
 
 # beta
 def Ks(i):
     # return lambda s: s ** (4 * i) / factorial(i)
     # return lambda s: s ** (1 + i) / factorial(i+1)
-    return lambda s: s ** (1 + i) * (s+1) * 0.2**(i+1) / factorial(i+1)
+    # return lambda s: s ** (1 + i) * (s+1) * 0.2**(i+1) / factorial(i+1)
+    return lambda s: (-1)**(i+1) * s**(2*i - 1) / factorial(2*i-1) if i > 0 else -1
 
 
 def f(x):
     # return x ** 3 - np.exp(x ** 2) + 1
     # return np.exp(x) - x
-    return np.exp(-x)
+    # return np.exp(-x)
+    return x + np.cos(x)
 
 
 def exact(x):
     # return x ** 3
     # return 1 + 0 * x
-    return 0 * x
+    # return 0 * x
+    return 1 + 0 * x
+
 
 # l = 4
 # l = -1
+# l = 1
 l = 1
 
 a, b = 0, 1
@@ -80,9 +87,17 @@ def plot(n = 3, xn = 1000):
     plt.title(f"{n = }")
     plt.grid()
 
-    plt.figure("Модуль ошибки")
+    plt.figure("Сравнение")
     plt.plot(xl, abs(u_v - e))
     plt.grid()
+
+    nevf = lambda x: u(x) - l * quad(lambda s: K(x, s) * u(s), a, b)[0] - f(x)
+    nev = np.zeros_like(xl)
+    for i, x in enumerate(xl):
+        nev[i] = nevf(x)
+    plt.plot(xl, nev, "--")
+
+    plt.legend(["Ошибка", "Невязка"])
 
     plt.show()
 
@@ -129,6 +144,6 @@ def test_7_8():
 
 
 if __name__ == "__main__":
-    # plot(10)
+    plot(3)
     error_show()
     test_7_8()
