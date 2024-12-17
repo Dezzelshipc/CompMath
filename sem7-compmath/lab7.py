@@ -5,48 +5,88 @@ import matplotlib.pyplot as plt
 
 
 def K(x, s):
-    return np.pi + np.sin(2 * (x + s))
+    # return x ** 2 * np.exp(x ** 2 * s ** 4)
+    # return np.pi + np.sin(2 * (x + s))
+    # return (1 + s) * (np.exp(0.2 * s * x) - 1)
+    return np.sin(0.6 * x* s)/s
 
 
 def f(x):
-    return x * np.cos(x) - 28 * np.pi * np.cos(2 * x)
+    # return x ** 3 - np.exp(x ** 2) + 1
+    # return x * np.cos(x) - 28 * np.pi * np.cos(2 * x)
+    # return np.exp(-x)
+    return x
 
 
 def exact(x):
-    return x * np.cos(x)
+    # return x ** 3
+    # return x * np.cos(x)
+    return 0*x
 
+l = 4
+# l = 7
+# l = 1
 
-l = 7
+a, b = 1e-15, 1
+# a, b = -3 * np.pi, 3 * np.pi
+# a, b = 0, 1
 
-a, b = -3 * np.pi, 3 * np.pi
-n = 1000
+def solve(n = 100, retstep=False):
+    xl, h = np.linspace(a, b, n + 1, retstep=True)
 
-xl, h = np.linspace(a, b, n + 1, retstep=True)
+    matrix = np.identity(n + 1)
+    F = np.zeros(n + 1) + f(xl)
+    A = l * np.ones(n + 1)
+    A[0] = A[-1] = l / 2
 
-matrix = np.identity(n + 1)
-F = np.zeros(n + 1) + f(xl)
-w = l * np.ones(n + 1)
-w[0] = w[-1] = l / 2
+    for i in range(n + 1):
+        print(f"\r{i}", end="")
+        Ki = lambda s: K(xl[i], s)
+        matrix[i] -= A * Ki(xl) * h
 
-for i in range(n + 1):
-    print(f"\r{i}", end="")
-    Ki = lambda s: K(xl[i], s)
-    matrix[i] -= w * Ki(xl) * h
+    u = np.linalg.solve(matrix, F)
 
-# print(matrix, F)
+    if retstep:
+        return xl, u, h
+    return xl, u
 
-u = np.linalg.solve(matrix, F)
-e = exact(xl)
+def find_nev(u, xl, h):
+    def nev_int(x):
+        Kk = lambda s: K(x, s)
+        un = Kk(xl[0]) * u[0] + Kk(xl[-1]) * u[-1] + 2 * sum(Kk(xl[1:-1]) * u[1:-1])
+        un = h / 2 * un
+        return un
 
-plt.figure("Решение")
-plt.plot(xl, u)
-plt.plot(xl, e, "--")
-plt.legend(["Численное", "Точное"])
-plt.title(f"{n = }")
-plt.grid()
+    nev_i = np.array([nev_int(x) for x in xl])
 
-plt.figure("Модуль ошибки")
-plt.plot(xl, abs(u - e))
-plt.grid()
+    return u - l * nev_i - f(xl)
 
-plt.show()
+def plot(n = 100):
+    xl, u = solve(n)
+    e = exact(xl)
+
+    plt.figure("Решение")
+    plt.plot(xl, u)
+    plt.plot(xl, e, "--")
+    plt.legend(["Численное", "Точное"])
+    plt.title(f"{n = }")
+    plt.grid()
+
+    plt.figure("Модуль ошибки")
+    plt.plot(xl, abs(u - e))
+    plt.grid()
+
+    plt.show()
+
+def error_show():
+    nl = [10, 20, 50, 100, 500, 1000]
+    # nl = [2, 5, 10]
+    for n in nl:
+        x, u, h = solve(int(n), retstep=True)
+        ue = exact(x)
+
+        print("", max(abs(u - ue)), max(abs(find_nev(u, x, h))))
+
+if __name__ == "__main__":
+    plot(100)
+    # error_show()
