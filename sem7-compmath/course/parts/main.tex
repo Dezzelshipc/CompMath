@@ -46,7 +46,10 @@
     \subsubsection{Погрешность вычислений}
     При соблюдении условий диагонального преобладания
     \[
-        b_1 \leq 0, \quad b_2, a_j \geq 0, \quad |a_j| + |b_j| = 0, \quad j\in\{1,2\}; \quad q(x) \leq q < 0
+        b_1 \leq 0, \quad b_2, a_j \geq 0, \quad |a_j| + |b_j| = 0, \quad j\in\{1,2\}; \quad q(x) \leq q < 0;
+    \]
+    \[
+        h^2_{i-1} \max(|q_{i-1}|, |q_i|) \leq 6, i = \overline{1,N}
     \]
     и если точное решение \( y \in C^2 W^4_{\Delta, \infty} [a, b] \), то \( \left\| S(x) - y(x) \right\|_C = O\left( \overline{h}^2 \right) \).
 
